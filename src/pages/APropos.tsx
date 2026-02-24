@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
+import { getAdminCabinetName, listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 
 const credentials = [
   {
@@ -150,7 +150,7 @@ const APropos = () => {
   const contactPhone = publicAdmin?.phone?.trim() ?? "";
   const contactEmail = publicAdmin?.email?.trim() ?? "";
   const contactPhoneHref = contactPhone ? `tel:${contactPhone.replace(/[^\d+]/g, "")}` : "";
-  const cabinetName = publicAdmin?.tagline?.trim() || "Cabinet non renseigne";
+  const cabinetName = getAdminCabinetName(publicAdmin) || "Cabinet non renseigne";
   const geometreName = publicAdmin?.name?.trim() || "Geometre non renseigne";
   const geometreGrade = publicAdmin?.grade?.trim() || "Grade non renseigne";
   const cabinetCity = publicAdmin?.city?.trim() || "";

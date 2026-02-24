@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, Award, MapPin, Calendar, Phone, Mail } from "lucide-react";
 import heroImage from "@/assets/hero-surveyor.jpg";
 import { useEffect, useState } from "react";
-import { listActiveAdmins, pickPrimaryAdmin } from "@/lib/admin";
+import { getAdminCabinetName, listActiveAdmins, pickPrimaryAdmin } from "@/lib/admin";
 import { supabase } from "@/integrations/supabase/client";
 
 const heroContent = {
@@ -37,7 +37,7 @@ export function HeroSection() {
       const mainAdmin = pickPrimaryAdmin(admins);
       const dynamicHeroImage = mainAdmin?.hero_image_url?.trim();
       setHeroBackgroundImage(dynamicHeroImage || heroImage);
-      setHeroCabinetName(mainAdmin?.tagline?.trim() || heroContent.cabinetName);
+      setHeroCabinetName(getAdminCabinetName(mainAdmin) || heroContent.cabinetName);
       setGeometreName(mainAdmin?.name?.trim() || "");
       setGeometreGrade(mainAdmin?.grade?.trim() || "");
       setGeometrePhone(mainAdmin?.phone?.trim() || "");

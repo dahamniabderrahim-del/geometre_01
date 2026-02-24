@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
+import { getAdminCabinetName, listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 import { formatContactNotificationMessage } from "@/lib/notification-message";
 import { Link } from "react-router-dom";
 
@@ -49,7 +49,7 @@ const Contact = () => {
   }, []);
 
   const contactAdmin = defaultAdmin;
-  const contactCabinetName = contactAdmin?.tagline?.trim() ?? "";
+  const contactCabinetName = getAdminCabinetName(contactAdmin);
   const contactGeometreName = contactAdmin?.name?.trim() ?? "";
   const contactAddress = contactAdmin?.address?.trim() ?? "";
   const contactCity = contactAdmin?.city?.trim() ?? "";

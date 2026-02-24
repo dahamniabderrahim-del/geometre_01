@@ -2,7 +2,7 @@ import { CheckCircle2, Award, Shield, Users, Target, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
+import { getAdminCabinetName, listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 import { useEffect, useMemo, useState } from "react";
 
 const values = [
@@ -62,7 +62,7 @@ export function AboutSection() {
     };
   }, []);
 
-  const cabinetName = publicAdmin?.tagline?.trim() || "Cabinet non renseigne";
+  const cabinetName = getAdminCabinetName(publicAdmin) || "Cabinet non renseigne";
   const geometreName = publicAdmin?.name?.trim() || "Geometre non renseigne";
   const geometreGrade = publicAdmin?.grade?.trim() || "";
   const teamValue = teamCount === null ? "--" : String(teamCount);

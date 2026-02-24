@@ -4,6 +4,11 @@ import { getConfiguredAdminEmails, isAdminEmail } from "@/lib/auth";
 
 export type AdminProfile = Tables<"admins">;
 
+type AdminWithCabinetAliases = AdminProfile & {
+  cabinet_name?: string | null;
+  nom_cabinet?: string | null;
+};
+
 const ADMIN_SELECT = "*";
 
 const CACHE_TTL_MS = 60_000;
@@ -32,8 +37,21 @@ const adminBySlugPromise = new Map<string, Promise<AdminProfile | null>>();
 
 const normalizeEmail = (value?: string | null) => value?.trim().toLowerCase() ?? "";
 const nonEmpty = (value?: string | null) => Boolean(value?.trim());
+
+export function getAdminCabinetName(admin?: AdminProfile | null) {
+  const record = (admin ?? null) as AdminWithCabinetAliases | null;
+  if (!record) return "";
+
+  return (
+    record.cabinet_name?.trim() ||
+    record.tagline?.trim() ||
+    record.nom_cabinet?.trim() ||
+    ""
+  );
+}
+
 const profileScore = (admin: AdminProfile) =>
-  (nonEmpty(admin.tagline) ? 4 : 0) +
+  (nonEmpty(getAdminCabinetName(admin)) ? 4 : 0) +
   (nonEmpty(admin.grade) ? 3 : 0) +
   (nonEmpty(admin.name) ? 2 : 0) +
   (nonEmpty(admin.phone) ? 1 : 0) +

@@ -8,7 +8,13 @@ import { useAuth } from "@/hooks/use-auth";
 import { useAdminProfile } from "@/hooks/use-admin";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { invalidateAdminCache, listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
+import {
+  getAdminCabinetName,
+  invalidateAdminCache,
+  listActiveAdmins,
+  pickPrimaryAdmin,
+  type AdminProfile,
+} from "@/lib/admin";
 import { getLocalAuthRecord, setLocalAuth } from "@/lib/local-auth";
 import { uploadAdminAvatarImage, uploadAdminHeroImage } from "@/lib/storage";
 import { KeyRound, Save, Settings } from "lucide-react";
@@ -49,6 +55,16 @@ const emptyAdminForm: AdminForm = {
 };
 
 const normalizeEmail = (value?: string | null) => value?.trim().toLowerCase() ?? "";
+
+const isUnknownColumnError = (error?: { code?: string | null; message?: string | null } | null) => {
+  const code = (error?.code ?? "").toLowerCase();
+  const message = (error?.message ?? "").toLowerCase();
+  return (
+    code === "42703" ||
+    code === "pgrst204" ||
+    (message.includes("column") && message.includes("does not exist"))
+  );
+};
 
 const ParametresCompte = () => {
   const { user, loading: authLoading } = useAuth();
@@ -114,7 +130,7 @@ const ParametresCompte = () => {
       email: currentAdmin.email ?? "",
       phone: currentAdmin.phone ?? "",
       active: currentAdmin.active ?? true,
-      cabinet_name: currentAdmin.tagline ?? DEFAULT_CABINET_NAME,
+      cabinet_name: getAdminCabinetName(currentAdmin) || DEFAULT_CABINET_NAME,
       bio: currentAdmin.bio ?? "",
       address: currentAdmin.address ?? "",
       city: currentAdmin.city ?? "",
@@ -206,12 +222,11 @@ const ParametresCompte = () => {
       }
     }
 
-    const payload = {
+    const basePayload = {
       name: geometreName,
       email,
       phone: form.phone.trim() || null,
       active: form.active,
-      tagline: cabinetName || null,
       bio: form.bio.trim() || null,
       address: form.address.trim() || null,
       city: form.city.trim() || null,
@@ -221,12 +236,31 @@ const ParametresCompte = () => {
       hero_image_url: form.hero_image_url.trim() || null,
     };
 
-    const { error } = await supabase.from("admins").update(payload).eq("id", currentAdmin.id);
+    const payloadCandidates: Array<Record<string, unknown>> = [
+      { ...basePayload, cabinet_name: cabinetName || null },
+      { ...basePayload, tagline: cabinetName || null },
+      basePayload,
+    ];
 
-    if (error) {
+    let updateError: { message?: string | null } | null = null;
+
+    for (const payload of payloadCandidates) {
+      const { error } = await supabase.from("admins").update(payload).eq("id", currentAdmin.id);
+      if (!error) {
+        updateError = null;
+        break;
+      }
+
+      updateError = error;
+      if (!isUnknownColumnError(error)) {
+        break;
+      }
+    }
+
+    if (updateError) {
       toast({
         title: "Erreur",
-        description: error.message || "Modification impossible.",
+        description: updateError.message || "Modification impossible.",
         variant: "destructive",
       });
       setSavingAdmin(false);
@@ -239,7 +273,7 @@ const ParametresCompte = () => {
         ...localAuth,
         email,
         full_name: geometreName,
-        avatar_url: payload.avatar_url ?? localAuth.avatar_url,
+        avatar_url: basePayload.avatar_url ?? localAuth.avatar_url,
       });
     }
 

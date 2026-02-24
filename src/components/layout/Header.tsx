@@ -20,7 +20,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useAdminProfile } from "@/hooks/use-admin";
 import { clearLocalAuth } from "@/lib/local-auth";
 import { parseDatabaseTimestamp } from "@/lib/datetime";
-import { listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
+import { getAdminCabinetName, listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 import { parseContactNotificationMessage } from "@/lib/notification-message";
 
 const navLinks = [
@@ -131,8 +131,8 @@ export function Header() {
   const { admin, isAdmin } = useAdminProfile(user?.email);
   const [publicAdmin, setPublicAdmin] = useState<AdminProfile | null>(null);
   const cabinetName =
-    admin?.tagline?.trim() ||
-    publicAdmin?.tagline?.trim() ||
+    getAdminCabinetName(admin) ||
+    getAdminCabinetName(publicAdmin) ||
     "Cabinet non renseigne";
   const cabinetSubtitle =
     admin?.grade?.trim() ||
