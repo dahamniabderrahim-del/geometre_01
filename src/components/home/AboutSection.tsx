@@ -64,6 +64,7 @@ export function AboutSection() {
 
   const cabinetName = publicAdmin?.tagline?.trim() || "Cabinet geometre expert foncier";
   const geometreName = publicAdmin?.name?.trim() || "Ayoub Benali";
+  const geometreGrade = publicAdmin?.grade?.trim() || "Geometre expert foncier";
   const teamValue = teamCount === null ? "--" : String(teamCount);
   const projectsValue = projectsCount === null ? "--" : String(projectsCount);
   const teamFeatureLabel =
@@ -105,7 +106,8 @@ export function AboutSection() {
                     </svg>
                   </div>
                   <h3 className="font-serif text-3xl font-bold mb-2">{cabinetName}</h3>
-                  <p className="text-primary-foreground/80 mb-4">{geometreName}</p>
+                  <p className="text-primary-foreground/80">{geometreName}</p>
+                  <p className="text-primary-foreground/70 mb-4 text-sm">{geometreGrade}</p>
                   <p className="text-secondary font-semibold">
                     {publicAdmin?.city?.trim() ? `Base a ${publicAdmin.city.trim()}` : "Informations du compte"}
                   </p>

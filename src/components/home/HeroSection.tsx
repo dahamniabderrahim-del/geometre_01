@@ -20,6 +20,7 @@ export function HeroSection() {
   const [heroBackgroundImage, setHeroBackgroundImage] = useState(heroImage);
   const [heroCabinetName, setHeroCabinetName] = useState(heroContent.cabinetName);
   const [geometreName, setGeometreName] = useState("Ayoub Benali");
+  const [geometreGrade, setGeometreGrade] = useState("Geometre expert foncier");
   const [teamCount, setTeamCount] = useState(0);
   const [projectsCount, setProjectsCount] = useState(0);
   const [servicesCount, setServicesCount] = useState(0);
@@ -36,6 +37,7 @@ export function HeroSection() {
       setHeroBackgroundImage(dynamicHeroImage || heroImage);
       setHeroCabinetName(mainAdmin?.tagline?.trim() || heroContent.cabinetName);
       setGeometreName(mainAdmin?.name?.trim() || "Ayoub Benali");
+      setGeometreGrade(mainAdmin?.grade?.trim() || "Geometre expert foncier");
 
       let teamCountQuery = supabase.from("equipe").select("id", { count: "exact", head: true }).eq("active", true);
       let projectsCountQuery = supabase.from("realisations").select("id", { count: "exact", head: true });
@@ -68,6 +70,7 @@ export function HeroSection() {
         setHeroBackgroundImage(heroImage);
         setHeroCabinetName(heroContent.cabinetName);
         setGeometreName("Ayoub Benali");
+        setGeometreGrade("Geometre expert foncier");
         setTeamCount(0);
         setProjectsCount(0);
         setServicesCount(0);
@@ -198,7 +201,7 @@ export function HeroSection() {
                   </svg>
                 </div>
                 <h3 className="font-serif text-xl font-bold text-primary-foreground">Cabinet {heroCabinetName}</h3>
-                <p className="text-secondary font-medium">Geometre-Expert Foncier</p>
+                <p className="text-secondary font-medium">{geometreGrade}</p>
                 {geometreName && (
                   <p className="mt-1 text-sm text-primary-foreground/85">{geometreName}</p>
                 )}

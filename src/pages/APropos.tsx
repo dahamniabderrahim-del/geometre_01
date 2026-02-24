@@ -152,6 +152,7 @@ const APropos = () => {
   const contactPhoneHref = contactPhone ? `tel:${contactPhone.replace(/[^\d+]/g, "")}` : "";
   const cabinetName = publicAdmin?.tagline?.trim() || "Cabinet geometre expert foncier";
   const geometreName = publicAdmin?.name?.trim() || "Ayoub Benali";
+  const geometreGrade = publicAdmin?.grade?.trim() || "Geometre expert foncier";
   const cabinetCity = publicAdmin?.city?.trim() || "";
   const teamCount = teamMembers.length;
   const contactChannelsCount = [contactPhone, contactEmail].filter(Boolean).length;
@@ -211,7 +212,7 @@ const APropos = () => {
                   foncieres de maniere definitive.
                 </p>
                 <p>
-                  Le cabinet {cabinetName} est pilote par {geometreName}. Nous intervenons pour des
+                  Le cabinet {cabinetName} est pilote par {geometreName} ({geometreGrade}). Nous intervenons pour des
                   missions de bornage, topographie, expertise et conseil.
                 </p>
                 <p>

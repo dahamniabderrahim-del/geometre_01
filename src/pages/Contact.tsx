@@ -50,6 +50,7 @@ const Contact = () => {
 
   const contactAdmin = defaultAdmin;
   const contactCabinetName = contactAdmin?.tagline?.trim() || "Cabinet geometre expert foncier";
+  const contactGeometreName = contactAdmin?.name?.trim() || "Ayoub Benali";
   const contactAddress = contactAdmin?.address?.trim() ?? "";
   const contactCity = contactAdmin?.city?.trim() ?? "";
   const contactPhone = contactAdmin?.phone?.trim() ?? "";
@@ -206,6 +207,9 @@ const Contact = () => {
                     </h3>
                     <p className="text-muted-foreground text-sm">
                       {contactCabinetName || "Cabinet non renseigne."}
+                    </p>
+                    <p className="text-muted-foreground text-sm mt-1">
+                      Geometre: {contactGeometreName}
                     </p>
                   </div>
                 </div>

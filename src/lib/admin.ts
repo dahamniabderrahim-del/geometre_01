@@ -5,7 +5,7 @@ import { isAdminEmail } from "@/lib/auth";
 export type AdminProfile = Tables<"admins">;
 
 const ADMIN_SELECT =
-  "id, name, email, phone, active, slug, tagline, bio, address, city, opening_hours_weekdays, opening_hours_saturday, avatar_url, hero_image_url, theme_primary, theme_primary_foreground, theme_secondary, theme_secondary_foreground, theme_gradient_hero, theme_gradient_gold";
+  "id, name, grade, email, phone, active, slug, tagline, bio, address, city, opening_hours_weekdays, opening_hours_saturday, avatar_url, hero_image_url, theme_primary, theme_primary_foreground, theme_secondary, theme_secondary_foreground, theme_gradient_hero, theme_gradient_gold";
 
 const CACHE_TTL_MS = 60_000;
 
