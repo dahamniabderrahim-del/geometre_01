@@ -45,6 +45,7 @@ const AuthCallback = () => {
         const user = data.session?.user;
         const admins = await listActiveAdmins();
         const defaultAdmin = pickPrimaryAdmin(admins);
+        const targetAdminId = defaultAdmin?.id ?? null;
 
         if (user?.email) {
           const normalizedEmail = user.email.trim().toLowerCase();
@@ -52,44 +53,31 @@ const AuthCallback = () => {
             (user.user_metadata?.full_name as string | undefined) ||
             normalizedEmail.split("@")[0];
 
-          const { data: existingUser } = await supabase
+          const { data: upsertedUser, error: upsertError } = await supabase
             .from("users")
-            .select("id, name, email")
-            .ilike("email", normalizedEmail)
-            .limit(1)
-            .maybeSingle();
+            .upsert(
+              {
+                name: userName,
+                email: normalizedEmail,
+                password: "",
+                admin_id: targetAdminId,
+              },
+              { onConflict: "email" }
+            )
+            .select("id, name, email, password_updated_at")
+            .single();
 
-          let localUser = existingUser;
-
-          if (!existingUser) {
-            const { data: insertedUser, error: upsertError } = await supabase
-              .from("users")
-              .upsert(
-                {
-                  id: user.id,
-                  name: userName,
-                  email: normalizedEmail,
-                  password: "",
-                  admin_id: defaultAdmin?.id ?? null,
-                },
-                { onConflict: "email" }
-              )
-              .select("id, name, email")
-              .single();
-
-            if (upsertError) {
-              console.warn("Google signup users upsert failed:", upsertError.message);
-            }
-
-            localUser = insertedUser ?? null;
+          if (upsertError) {
+            console.warn("Google signup users upsert failed:", upsertError.message);
           }
 
           setLocalAuth({
-            id: localUser?.id ?? user.id,
-            email: localUser?.email ?? normalizedEmail,
-            full_name: localUser?.name || userName,
+            id: upsertedUser?.id ?? user.id,
+            email: upsertedUser?.email ?? normalizedEmail,
+            full_name: upsertedUser?.name || userName,
             avatar_url: (user.user_metadata?.avatar_url as string | undefined) ?? null,
             role: "user",
+            password_updated_at: upsertedUser?.password_updated_at ?? null,
           });
         }
         navigate(redirectPath ?? "/");

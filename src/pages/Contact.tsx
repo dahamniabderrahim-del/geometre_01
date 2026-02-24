@@ -1,4 +1,4 @@
-import { Layout } from "@/components/layout/Layout";
+ï»¿import { Layout } from "@/components/layout/Layout";
 import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { getAdminCabinetName, listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 import { formatContactNotificationMessage } from "@/lib/notification-message";
+import { getReadableErrorMessage } from "@/lib/error-message";
 import { Link } from "react-router-dom";
 
 const Contact = () => {
@@ -145,7 +146,7 @@ const Contact = () => {
       if (notifError) {
         toast({
           title: "Erreur",
-          description: notifError.message ?? "Impossible d'envoyer le message. Réessayez.",
+          description: getReadableErrorMessage(notifError, "Impossible d'envoyer le message. Reessayez."),
           variant: "destructive",
         });
         return;
@@ -157,8 +158,8 @@ const Contact = () => {
       }
 
       toast({
-        title: "Message envoyé !",
-        description: "Nous vous répondrons dans les plus brefs délais.",
+        title: "Message envoyÃ© !",
+        description: "Nous vous rÃ©pondrons dans les plus brefs dÃ©lais.",
       });
       setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
     } finally {
@@ -183,8 +184,8 @@ const Contact = () => {
               <span className="text-gradient">Contactez</span>-nous
             </h1>
             <p className="text-muted-foreground text-lg">
-              Une question, un projet ? N'hésitez pas à nous contacter. Nous vous
-              répondrons sous 24h.
+              Une question, un projet ? N'hÃ©sitez pas Ã  nous contacter. Nous vous
+              rÃ©pondrons sous 24h.
             </p>
           </div>
         </div>
@@ -244,7 +245,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-serif font-semibold text-foreground mb-1">
-                      Téléphone
+                      TÃ©lÃ©phone
                     </h3>
                     <p className="text-muted-foreground text-sm">
                       {contactPhone || "Telephone non renseigne."}
@@ -302,7 +303,7 @@ const Contact = () => {
                 ) : !user ? (
                   <div className="space-y-4">
                     <p className="text-muted-foreground">
-                      Vous devez être connecté pour envoyer un message.
+                      Vous devez Ãªtre connectÃ© pour envoyer un message.
                     </p>
                     <Link to="/connexion?redirect=/contact">
                       <Button>Se connecter</Button>
@@ -373,7 +374,7 @@ const Contact = () => {
                         name="message"
                         value={formData.message}
                         onChange={handleChange}
-                        placeholder="Décrivez votre projet..."
+                        placeholder="DÃ©crivez votre projet..."
                         rows={6}
                         required
                       />
@@ -421,3 +422,6 @@ const Contact = () => {
 };
 
 export default Contact;
+
+
+

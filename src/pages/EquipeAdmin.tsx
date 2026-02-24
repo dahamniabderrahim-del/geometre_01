@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useAdminProfile } from "@/hooks/use-admin";
 import { useToast } from "@/hooks/use-toast";
 import { uploadEquipeImage } from "@/lib/storage";
+import { getReadableErrorMessage } from "@/lib/error-message";
 import { Plus, Pencil, Search, Trash2, Users } from "lucide-react";
 
 type EquipeRow = {
@@ -203,7 +204,7 @@ const EquipeAdmin = () => {
     } catch (error: any) {
       toast({
         title: "Erreur upload",
-        description: error?.message ?? "Impossible d'envoyer l'image.",
+        description: getReadableErrorMessage(error, "Impossible d'envoyer l'image."),
         variant: "destructive",
       });
     } finally {
@@ -282,7 +283,7 @@ const EquipeAdmin = () => {
     } catch (error: any) {
       toast({
         title: "Erreur upload",
-        description: error?.message ?? "Impossible d'envoyer l'image.",
+        description: getReadableErrorMessage(error, "Impossible d'envoyer l'image."),
         variant: "destructive",
       });
     } finally {
@@ -361,7 +362,7 @@ const EquipeAdmin = () => {
     if (error) {
       toast({
         title: "Erreur",
-        description: error.message || "Creation impossible.",
+        description: getReadableErrorMessage(error, "Creation impossible."),
         variant: "destructive",
       });
       setSaving(false);
@@ -413,7 +414,7 @@ const EquipeAdmin = () => {
     if (error) {
       toast({
         title: "Erreur",
-        description: error.message || "Mise a jour impossible.",
+        description: getReadableErrorMessage(error, "Mise a jour impossible."),
         variant: "destructive",
       });
       setRowSaving(false);

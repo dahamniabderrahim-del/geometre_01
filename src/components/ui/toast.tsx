@@ -14,7 +14,7 @@ const ToastViewport = React.forwardRef<
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
-      "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
+      "fixed left-0 top-0 z-[100] box-border flex max-h-screen w-full flex-col-reverse p-4 sm:left-auto sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
       className,
     )}
     {...props}
@@ -90,7 +90,11 @@ const ToastDescription = React.forwardRef<
   React.ElementRef<typeof ToastPrimitives.Description>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitives.Description ref={ref} className={cn("text-sm opacity-90", className)} {...props} />
+  <ToastPrimitives.Description
+    ref={ref}
+    className={cn("text-sm opacity-90 break-words whitespace-pre-wrap", className)}
+    {...props}
+  />
 ));
 ToastDescription.displayName = ToastPrimitives.Description.displayName;
 

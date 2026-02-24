@@ -40,6 +40,7 @@ export type Database = {
           theme_gradient_gold: string | null
           created_at: string
           updated_at: string
+          password_updated_at: string | null
         }
         Insert: {
           id?: string
@@ -66,6 +67,7 @@ export type Database = {
           theme_gradient_gold?: string | null
           created_at?: string
           updated_at?: string
+          password_updated_at?: string | null
         }
         Update: {
           id?: string
@@ -92,6 +94,7 @@ export type Database = {
           theme_gradient_gold?: string | null
           created_at?: string
           updated_at?: string
+          password_updated_at?: string | null
         }
         Relationships: []
       }
@@ -107,6 +110,7 @@ export type Database = {
           admin_id: string | null
           created_at: string
           updated_at: string
+          password_updated_at: string | null
         }
         Insert: {
           id?: string
@@ -119,6 +123,7 @@ export type Database = {
           admin_id?: string | null
           created_at?: string
           updated_at?: string
+          password_updated_at?: string | null
         }
         Update: {
           id?: string
@@ -131,6 +136,7 @@ export type Database = {
           admin_id?: string | null
           created_at?: string
           updated_at?: string
+          password_updated_at?: string | null
         }
         Relationships: []
       }

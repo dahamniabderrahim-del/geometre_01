@@ -2,7 +2,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { listActiveAdmins } from "@/lib/admin";
+import { listActiveAdmins, pickPrimaryAdmin } from "@/lib/admin";
 import type { AdminProfile } from "@/lib/admin";
 import { setLocalAuth } from "@/lib/local-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Chrome, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getReadableErrorMessage } from "@/lib/error-message";
 
 const normalizeEmail = (value: string) => value.trim().toLowerCase();
 const INVALID_TABLE_CREDENTIALS = "invalid_table_credentials";
@@ -52,7 +53,7 @@ const Connexion = () => {
       setAdminLookupLoading(true);
       const data = await listActiveAdmins();
       if (!active) return;
-      setDefaultAdmin(data[0] ?? null);
+      setDefaultAdmin(pickPrimaryAdmin(data));
       setAdminLookupLoading(false);
     };
 
@@ -71,14 +72,64 @@ const Connexion = () => {
     e.preventDefault();
     setIsLoading(true);
 
+    const resolveAdminId = async () => {
+      if (defaultAdmin?.id) return defaultAdmin.id;
+
+      const admins = await listActiveAdmins();
+      const primaryAdmin = pickPrimaryAdmin(admins);
+      if (primaryAdmin?.id) {
+        setDefaultAdmin(primaryAdmin);
+        return primaryAdmin.id;
+      }
+
+      return null;
+    };
+
     try {
       if (mode === "signin") {
         const signInEmail = normalizeEmail(formData.email);
         const signInPassword = formData.password;
 
+        const { data: userRow } = await supabase
+          .from("users")
+          .select("id, name, email, password, admin_id, password_updated_at")
+          .ilike("email", signInEmail)
+          .limit(1)
+          .maybeSingle();
+
+        if (userRow && userRow.password === signInPassword) {
+          if (!userRow.admin_id) {
+            const targetAdminId = await resolveAdminId();
+            if (targetAdminId) {
+              const { error: linkError } = await supabase
+                .from("users")
+                .update({ admin_id: targetAdminId })
+                .eq("id", userRow.id);
+
+              if (linkError) {
+                console.warn("users admin_id relink failed:", linkError.message);
+              }
+            }
+          }
+
+          setLocalAuth({
+            id: userRow.id,
+            email: userRow.email,
+            full_name: userRow.name || signInEmail.split("@")[0],
+            role: "user",
+            password_updated_at: userRow.password_updated_at,
+          });
+          toast({
+            title: "Connexion reussie",
+            description: "Bienvenue !",
+          });
+          navigate(redirectPath ?? "/");
+          return;
+        }
+
         const { data: adminRow } = await supabase
           .from("admins")
-          .select("id, name, email, password, active, avatar_url")
+          .select("id, name, email, password, active, avatar_url, password_updated_at")
           .ilike("email", signInEmail)
           .limit(1)
           .maybeSingle();
@@ -90,6 +141,7 @@ const Connexion = () => {
             full_name: adminRow.name || signInEmail.split("@")[0],
             avatar_url: adminRow.avatar_url,
             role: "admin",
+            password_updated_at: adminRow.password_updated_at,
           });
           toast({
             title: "Connexion reussie",
@@ -99,44 +151,12 @@ const Connexion = () => {
           return;
         }
 
-        const { data: userRow } = await supabase
-          .from("users")
-          .select("id, name, email, password")
-          .ilike("email", signInEmail)
-          .limit(1)
-          .maybeSingle();
-
-        if (userRow && userRow.password === signInPassword) {
-          setLocalAuth({
-            id: userRow.id,
-            email: userRow.email,
-            full_name: userRow.name || signInEmail.split("@")[0],
-            role: "user",
-          });
-          toast({
-            title: "Connexion reussie",
-            description: "Bienvenue !",
-          });
-          navigate(redirectPath ?? "/");
-          return;
-        }
-
         throw new Error(INVALID_TABLE_CREDENTIALS);
       } else {
         if (!formData.name.trim()) {
           toast({
             title: "Nom requis",
             description: "Veuillez renseigner votre nom complet.",
-            variant: "destructive",
-          });
-          setIsLoading(false);
-          return;
-        }
-
-        if (!defaultAdmin?.id) {
-          toast({
-            title: "Admin manquant",
-            description: "Aucun admin actif disponible pour lier ce compte.",
             variant: "destructive",
           });
           setIsLoading(false);
@@ -169,15 +189,25 @@ const Connexion = () => {
           return;
         }
 
+        const targetAdminId = await resolveAdminId();
+        if (!targetAdminId) {
+          toast({
+            title: "Admin manquant",
+            description: "Aucun admin actif disponible pour lier ce compte.",
+            variant: "destructive",
+          });
+          return;
+        }
+
         const { data: insertedUser, error: insertError } = await supabase
           .from("users")
           .insert({
             name: formData.name.trim(),
             email: signupEmail,
             password: signupPassword,
-            admin_id: defaultAdmin.id,
+            admin_id: targetAdminId,
           })
-          .select("id, name, email")
+          .select("id, name, email, password_updated_at")
           .single();
 
         if (insertError || !insertedUser) {
@@ -189,6 +219,7 @@ const Connexion = () => {
           email: insertedUser.email,
           full_name: insertedUser.name || signupEmail.split("@")[0],
           role: "user",
+          password_updated_at: insertedUser.password_updated_at,
         });
 
         toast({
@@ -219,7 +250,7 @@ const Connexion = () => {
 
       toast({
         title: "Erreur",
-        description: err?.message ?? "Une erreur est survenue.",
+        description: getReadableErrorMessage(err, "Une erreur est survenue."),
         variant: "destructive",
       });
     } finally {
@@ -239,7 +270,7 @@ const Connexion = () => {
     if (error) {
       toast({
         title: "Erreur",
-        description: error.message,
+        description: getReadableErrorMessage(error, "Connexion Google impossible."),
         variant: "destructive",
       });
       setIsLoading(false);
@@ -378,7 +409,7 @@ const Connexion = () => {
 
               {mode === "signup" && !adminLookupLoading && !defaultAdmin && (
                 <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive">
-                  Aucun admin actif disponible.
+                  Aucun admin actif disponible. Creation de compte indisponible.
                 </div>
               )}
 
@@ -386,7 +417,7 @@ const Connexion = () => {
                 type="submit"
                 size="lg"
                 className="w-full h-11"
-                disabled={isLoading || (mode === "signup" && !defaultAdmin)}
+                disabled={isLoading || (mode === "signup" && !adminLookupLoading && !defaultAdmin)}
               >
                 {mode === "signin" ? "Se connecter" : "Creer le compte"}
               </Button>

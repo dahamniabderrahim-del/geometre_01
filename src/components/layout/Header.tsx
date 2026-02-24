@@ -732,11 +732,12 @@ export function Header() {
             {/* Mobile menu button */}
             <button
               className={cn(
-                "lg:hidden p-2 rounded-md",
+                "lg:hidden p-2 rounded-md border border-border/70 bg-background/85 shadow-sm backdrop-blur-sm transition-colors",
                 isHomeTop
                   ? "text-black hover:bg-black/10"
-                  : "hover:bg-muted"
+                  : "text-foreground hover:bg-muted"
               )}
+              aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
               onClick={() => setIsOpen(!isOpen)}
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

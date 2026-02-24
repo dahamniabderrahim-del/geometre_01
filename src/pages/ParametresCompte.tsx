@@ -18,6 +18,7 @@ import {
 } from "@/lib/admin";
 import { getLocalAuthRecord, setLocalAuth } from "@/lib/local-auth";
 import { uploadAdminAvatarImage, uploadAdminHeroImage } from "@/lib/storage";
+import { getReadableErrorMessage } from "@/lib/error-message";
 import { KeyRound, Save, Settings } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -264,7 +265,7 @@ const ParametresCompte = () => {
     if (updateError) {
       toast({
         title: "Erreur",
-        description: updateError.message || "Modification impossible.",
+        description: getReadableErrorMessage(updateError, "Modification impossible."),
         variant: "destructive",
       });
       setSavingAdmin(false);
@@ -346,7 +347,7 @@ const ParametresCompte = () => {
     } catch (error: any) {
       toast({
         title: "Erreur upload",
-        description: error?.message ?? "Impossible d'envoyer l'image.",
+        description: getReadableErrorMessage(error, "Impossible d'envoyer l'image."),
         variant: "destructive",
       });
     } finally {
@@ -396,7 +397,7 @@ const ParametresCompte = () => {
       if (error) {
         toast({
           title: "Erreur",
-          description: error.message || "Changement de mot de passe impossible.",
+          description: getReadableErrorMessage(error, "Changement de mot de passe impossible."),
           variant: "destructive",
         });
         setSavingPassword(false);
@@ -408,7 +409,7 @@ const ParametresCompte = () => {
       if (error) {
         toast({
           title: "Erreur",
-          description: error.message || "Changement de mot de passe impossible.",
+          description: getReadableErrorMessage(error, "Changement de mot de passe impossible."),
           variant: "destructive",
         });
         setSavingPassword(false);

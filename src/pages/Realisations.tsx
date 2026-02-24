@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useAdminProfile } from "@/hooks/use-admin";
 import { uploadRealisationImage } from "@/lib/storage";
+import { getReadableErrorMessage } from "@/lib/error-message";
 
 const categoryOptions = [
   { id: "all", name: "Tous" },
@@ -152,7 +153,7 @@ const Realisations = () => {
     } catch (error: any) {
       toast({
         title: "Erreur upload",
-        description: error?.message ?? "Impossible d'envoyer l'image.",
+        description: getReadableErrorMessage(error, "Impossible d'envoyer l'image."),
         variant: "destructive",
       });
     } finally {
@@ -262,7 +263,7 @@ const Realisations = () => {
       if (updateError) {
         toast({
           title: "Erreur",
-          description: updateError.message || "Mise a jour impossible.",
+          description: getReadableErrorMessage(updateError, "Mise a jour impossible."),
           variant: "destructive",
         });
         setSaving(false);
@@ -279,7 +280,7 @@ const Realisations = () => {
       if (insertError) {
         toast({
           title: "Erreur",
-          description: insertError.message || "Creation impossible.",
+          description: getReadableErrorMessage(insertError, "Creation impossible."),
           variant: "destructive",
         });
         setSaving(false);

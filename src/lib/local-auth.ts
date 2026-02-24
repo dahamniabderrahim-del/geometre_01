@@ -6,6 +6,7 @@ export type LocalAuthRecord = {
   full_name: string;
   avatar_url?: string | null;
   role: "admin" | "user";
+  password_updated_at?: string | null;
 };
 
 const STORAGE_KEY = "geomweb_local_auth";
@@ -28,6 +29,7 @@ const buildUserFromRecord = (record: LocalAuthRecord): User => {
       full_name: record.full_name,
       avatar_url: record.avatar_url ?? undefined,
       role: record.role,
+      password_updated_at: record.password_updated_at ?? undefined,
     },
   } as User;
 };
@@ -58,6 +60,8 @@ export function getLocalAuthRecord(): LocalAuthRecord | null {
       full_name: parsed.full_name ?? parsed.email.split("@")[0],
       avatar_url: parsed.avatar_url ?? null,
       role: parsed.role === "admin" ? "admin" : "user",
+      password_updated_at:
+        typeof parsed.password_updated_at === "string" ? parsed.password_updated_at : null,
     };
   } catch {
     return null;
@@ -69,4 +73,3 @@ export function getLocalAuthUser(): User | null {
   if (!record) return null;
   return buildUserFromRecord(record);
 }
-

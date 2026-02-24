@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import serviceTopographieImage from "@/assets/service-topographie.jpg";
 import serviceBornageImage from "@/assets/service-bornage.jpg";
 import serviceFoncierImage from "@/assets/service-foncier.jpg";
+import { getReadableErrorMessage } from "@/lib/error-message";
 
 type ServiceRow = {
   id: string;
@@ -362,7 +363,7 @@ const Services = () => {
     } catch (error: any) {
       toast({
         title: "Erreur upload",
-        description: error?.message ?? "Impossible d'envoyer l'image.",
+        description: getReadableErrorMessage(error, "Impossible d'envoyer l'image."),
         variant: "destructive",
       });
     } finally {
@@ -487,7 +488,7 @@ const Services = () => {
       if (updateError) {
         toast({
           title: "Erreur",
-          description: updateError.message || "Mise a jour impossible.",
+          description: getReadableErrorMessage(updateError, "Mise a jour impossible."),
           variant: "destructive",
         });
         setSaving(false);
@@ -504,7 +505,7 @@ const Services = () => {
       if (insertError) {
         toast({
           title: "Erreur",
-          description: insertError.message || "Creation impossible.",
+          description: getReadableErrorMessage(insertError, "Creation impossible."),
           variant: "destructive",
         });
         setSaving(false);
