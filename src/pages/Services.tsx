@@ -13,7 +13,6 @@ import {
   FileCheck,
   Plane,
   Calculator,
-  CheckCircle2,
   Plus,
   Pencil,
   Search,
@@ -152,6 +151,10 @@ const makeSlug = (value: string) => {
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+};
+
+const formatServiceCardTitle = (title: string) => {
+  return title.replace(/\bet\b/gi, "&").replace(/\s+/g, " ").trim().toUpperCase();
 };
 
 const Services = () => {
@@ -811,64 +814,49 @@ const Services = () => {
             <p className="text-sm text-muted-foreground">Aucun service actif pour le moment.</p>
           )}
 
-          <div className="space-y-16">
-            {publicServices.map((service, index) => {
-              const Icon = iconMap[service.icon ?? ""] ?? Landmark;
-              const lines = service.description
-                .split("\n")
-                .map((line) => line.trim())
-                .filter(Boolean);
-              const mainDescription = lines[0] ?? service.description;
-              const features = lines.length > 1 ? lines.slice(1) : [];
+          <div className="rounded-[2rem] border border-[#d6dce8] bg-gradient-to-b from-[#f8fbff] to-white p-5 md:p-8">
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {publicServices.map((service) => {
+                const Icon = iconMap[service.icon ?? ""] ?? Landmark;
+                const cardTitle = formatServiceCardTitle(service.title);
 
-              return (
-                <div
-                  key={service.id}
-                  className={`grid lg:grid-cols-2 gap-8 items-center ${
-                    index % 2 === 1 ? "lg:grid-flow-dense" : ""
-                  }`}
-                >
-                  <div className={index % 2 === 1 ? "lg:col-start-2" : ""}>
-                    <div className="w-14 h-14 rounded-xl hero-gradient flex items-center justify-center mb-6 overflow-hidden">
+                return (
+                  <article
+                    key={service.id}
+                    className="group overflow-hidden rounded-[0.65rem] border border-[#cad4e2] bg-white shadow-[0_22px_40px_-30px_rgba(15,35,70,0.8)]"
+                  >
+                    <div className="relative aspect-[16/9] overflow-hidden bg-[#dfe6f0]">
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#1d34661a] to-transparent" />
+                      <div className="absolute left-4 top-4 z-10">
+                        {service.category && (
+                          <span className="inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-semibold tracking-wide text-[#1f2d50]">
+                            {service.category}
+                          </span>
+                        )}
+                      </div>
+
                       {service.image_url ? (
-                        <img src={service.image_url} alt={service.title} className="w-full h-full object-cover" />
+                        <img
+                          src={service.image_url}
+                          alt={service.title}
+                          className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                        />
                       ) : (
-                        <Icon className="w-7 h-7 text-primary-foreground" />
+                        <div className="flex h-full w-full items-center justify-center">
+                          <Icon className="h-16 w-16 text-[#6f7f9c]" />
+                        </div>
                       )}
                     </div>
-                    <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground mb-2">
-                      {service.title}
-                    </h2>
-                    {service.category && (
-                      <p className="text-sm text-secondary font-medium mb-3">{service.category}</p>
-                    )}
-                    <p className="text-muted-foreground mb-6 leading-relaxed">{mainDescription}</p>
-                    {features.length > 0 && (
-                      <ul className="space-y-3 mb-6">
-                        {features.map((feature) => (
-                          <li key={`${service.id}-${feature}`} className="flex items-center gap-3 text-sm text-foreground">
-                            <CheckCircle2 className="w-5 h-5 text-secondary shrink-0" />
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    <Button asChild>
-                      <Link to="/contact">Envoyer un message</Link>
-                    </Button>
-                  </div>
-                  <div className={`${index % 2 === 1 ? "lg:col-start-1 lg:row-start-1" : ""}`}>
-                    <div className="aspect-[4/3] rounded-2xl bg-muted shadow-soft flex items-center justify-center">
-                      {service.image_url ? (
-                        <img src={service.image_url} alt={service.title} className="w-full h-full object-cover rounded-2xl" />
-                      ) : (
-                        <Icon className="w-24 h-24 text-muted-foreground/30" />
-                      )}
+
+                    <div className="border-t border-[#d9e1ec] bg-[#f8fafc] px-5 py-4">
+                      <h2 className="text-xl font-black uppercase leading-[1.05] tracking-tight text-[#183066] md:text-[1.65rem]">
+                        {cardTitle}
+                      </h2>
                     </div>
-                  </div>
-                </div>
-              );
-            })}
+                  </article>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
