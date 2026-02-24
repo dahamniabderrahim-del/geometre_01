@@ -314,7 +314,7 @@ const Realisations = () => {
 
       {isAdmin && (
         <section className="py-12 border-b border-border">
-          <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-8">
+          <div className="container mx-auto px-4">
             <div className="bg-card rounded-xl shadow-soft p-6">
               <h2 className="font-serif text-xl font-bold mb-4">
                 {editingId ? "Modifier une realisation" : "Ajouter une realisation"}
@@ -408,37 +408,6 @@ const Realisations = () => {
                   )}
                 </div>
               </form>
-            </div>
-
-            <div className="bg-card rounded-xl shadow-soft p-6">
-              <h2 className="font-serif text-xl font-bold mb-4">Liste des realisations</h2>
-              {loading && <p className="text-sm text-muted-foreground">Chargement...</p>}
-              {!loading && projects.length === 0 && (
-                <p className="text-sm text-muted-foreground">Aucune realisation.</p>
-              )}
-              <div className="space-y-3">
-                {projects.map((item) => (
-                  <div
-                    key={item.id}
-                    className="border border-border rounded-lg p-3 flex items-center justify-between gap-3"
-                  >
-                    <div className="min-w-0">
-                      <p className="font-medium text-foreground truncate">{item.title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {categoryOptions.find((c) => c.id === item.category)?.name ?? item.category}
-                      </p>
-                    </div>
-                    <div className="flex gap-2 shrink-0">
-                      <Button variant="outline" size="sm" onClick={() => handleEdit(item)}>
-                        Modifier
-                      </Button>
-                      <Button variant="destructive" size="sm" onClick={() => handleDelete(item.id)}>
-                        Supprimer
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </section>
