@@ -729,12 +729,6 @@ export function Header() {
               </Link>
             )}
 
-            <Link to="/devis" className="hidden md:block">
-              <Button className="gold-gradient text-secondary-foreground font-semibold shadow-gold hover:shadow-strong transition-all">
-                Devis Gratuit
-              </Button>
-            </Link>
-
             {/* Mobile menu button */}
             <button
               className={cn(
@@ -818,11 +812,6 @@ export function Header() {
                 </DropdownMenu>
               )}
 
-              <Link to="/devis" onClick={() => setIsOpen(false)}>
-                <Button className="w-full gold-gradient text-secondary-foreground font-semibold">
-                  Devis Gratuit
-                </Button>
-              </Link>
               {!user && (
                 <Link to="/connexion" onClick={() => setIsOpen(false)}>
                   <Button variant="outline" className="w-full">
