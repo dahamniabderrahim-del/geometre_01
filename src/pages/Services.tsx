@@ -15,7 +15,6 @@ import {
   Calculator,
   Plus,
   Pencil,
-  Search,
   Trash2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -29,6 +28,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { uploadPublicImage } from "@/lib/storage";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import serviceTopographieImage from "@/assets/service-topographie.jpg";
+import serviceBornageImage from "@/assets/service-bornage.jpg";
+import serviceFoncierImage from "@/assets/service-foncier.jpg";
 
 const iconMap: Record<string, LucideIcon> = {
   landmark: Landmark,
@@ -45,22 +47,6 @@ const iconMap: Record<string, LucideIcon> = {
   plane: Plane,
   calculator: Calculator,
 };
-
-const iconOptions = [
-  { value: "landmark", label: "Landmark" },
-  { value: "file_spreadsheet", label: "FileSpreadsheet" },
-  { value: "building2", label: "Building2" },
-  { value: "scan_line", label: "ScanLine" },
-  { value: "crosshair", label: "Crosshair" },
-  { value: "scale", label: "Scale" },
-  { value: "map_pin", label: "MapPin" },
-  { value: "file_text", label: "FileText" },
-  { value: "ruler", label: "Ruler" },
-  { value: "compass", label: "Compass" },
-  { value: "file_check", label: "FileCheck" },
-  { value: "plane", label: "Plane" },
-  { value: "calculator", label: "Calculator" },
-];
 
 type ServiceRow = {
   id: string;
@@ -157,6 +143,30 @@ const formatServiceCardTitle = (title: string) => {
   return title.replace(/\bet\b/gi, "&").replace(/\s+/g, " ").trim().toUpperCase();
 };
 
+const serviceFallbackImages = [
+  serviceTopographieImage,
+  serviceBornageImage,
+  serviceFoncierImage,
+];
+
+const getServiceFallbackImage = (service: Pick<ServiceRow, "title" | "slug" | "category">, index: number) => {
+  const text = `${service.title} ${service.slug} ${service.category ?? ""}`.toLowerCase();
+
+  if (text.includes("topographie") || text.includes("mesur")) {
+    return serviceTopographieImage;
+  }
+
+  if (text.includes("bornage") || text.includes("division") || text.includes("arpentage")) {
+    return serviceBornageImage;
+  }
+
+  if (text.includes("foncier") || text.includes("expertise")) {
+    return serviceFoncierImage;
+  }
+
+  return serviceFallbackImages[index % serviceFallbackImages.length];
+};
+
 const Services = () => {
   const { toast } = useToast();
   const { user } = useAuth();
@@ -169,7 +179,6 @@ const Services = () => {
   const [form, setForm] = useState<ServiceForm>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-  const [serviceSearch, setServiceSearch] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -335,18 +344,6 @@ const Services = () => {
     if (!isAdmin || !admin?.id) return [];
     return services.filter((item) => item.admin_id === admin.id);
   }, [services, isAdmin, admin?.id]);
-
-  const filteredManagedServices = useMemo(() => {
-    const query = serviceSearch.trim().toLowerCase();
-    if (!query) return managedServices;
-
-    return managedServices.filter((item) =>
-      [item.title, item.slug, item.category ?? "", item.description]
-        .join(" ")
-        .toLowerCase()
-        .includes(query)
-    );
-  }, [managedServices, serviceSearch]);
 
   const resetForm = () => {
     setForm(emptyForm);
@@ -597,38 +594,21 @@ const Services = () => {
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Categorie</label>
-                    <Input name="category" value={form.category} onChange={handleFieldChange} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Icone</label>
-                    <select
-                      name="icon"
-                      value={form.icon}
-                      onChange={handleFieldChange}
-                      className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
-                    >
-                      {iconOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">Categorie</label>
+                  <Input name="category" value={form.category} onChange={handleFieldChange} />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    URL image icone
+                    URL image service (JPG)
                   </label>
                   <div className="flex items-center gap-2">
                     <Input
                       name="image_url"
                       value={form.image_url}
                       onChange={handleFieldChange}
-                      placeholder="https://.../icone.png"
+                      placeholder="https://.../service.jpg"
                     />
                     <Button
                       type="button"
@@ -653,7 +633,7 @@ const Services = () => {
                   {uploadingImage && <p className="text-xs text-muted-foreground mt-2">Upload en cours...</p>}
                   {form.image_url && (
                     <div className="mt-3 w-16 h-16 rounded-lg bg-muted overflow-hidden border border-border flex items-center justify-center">
-                      <img src={form.image_url} alt="Preview icone service" className="w-full h-full object-cover" />
+                      <img src={form.image_url} alt="Preview image service" className="w-full h-full object-cover" />
                     </div>
                   )}
                 </div>
@@ -694,26 +674,9 @@ const Services = () => {
             </div>
 
             <div className="overflow-hidden rounded-2xl border border-[#d8dde6] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
-              <div className="flex flex-col gap-4 border-b border-[#e2e7ef] bg-white px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-[#eef1f5] flex items-center justify-center">
-                    <FileSpreadsheet className="h-5 w-5 text-[#3b4a63]" />
-                  </div>
-                  <div>
-                    <h2 className="text-[2rem] font-bold leading-none text-[#111827]">Liste services</h2>
-                    <p className="mt-1 text-sm text-[#5c6f88]">{filteredManagedServices.length} services trouves</p>
-                  </div>
-                </div>
-
-                <div className="relative w-full sm:w-[260px]">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8a98ad]" />
-                  <Input
-                    value={serviceSearch}
-                    onChange={(e) => setServiceSearch(e.target.value)}
-                    placeholder="Rechercher..."
-                    className="h-10 rounded-2xl border-[#cfd6e1] bg-[#f8fafc] pl-9 text-sm text-[#334155] placeholder:text-[#94a3b8]"
-                  />
-                </div>
+              <div className="border-b border-[#e2e7ef] bg-white px-6 py-5">
+                <h2 className="text-[2rem] font-bold leading-none text-[#111827]">Services existants</h2>
+                <p className="mt-1 text-sm text-[#5c6f88]">{managedServices.length} services</p>
               </div>
 
               <div className="p-6">
@@ -721,83 +684,57 @@ const Services = () => {
                 {!loading && managedServices.length === 0 && (
                   <p className="text-sm text-muted-foreground">Aucun service.</p>
                 )}
-                {!loading && managedServices.length > 0 && filteredManagedServices.length === 0 && (
-                  <p className="text-sm text-muted-foreground">Aucun resultat pour cette recherche.</p>
-                )}
 
-                {!loading && filteredManagedServices.length > 0 && (
-                  <div className="overflow-x-auto rounded-xl border border-[#e2e7ef] bg-white">
-                    <table className="min-w-[860px] w-full text-[0.9rem]">
-                      <thead className="bg-[#f8fafc]">
-                        <tr>
-                          <th className="px-5 py-3 text-left text-[0.82rem] font-semibold uppercase tracking-wide text-[#667892]">Photo</th>
-                          <th className="px-5 py-3 text-left text-[0.82rem] font-semibold uppercase tracking-wide text-[#667892]">Titre</th>
-                          <th className="px-5 py-3 text-left text-[0.82rem] font-semibold uppercase tracking-wide text-[#667892]">Categorie</th>
-                          <th className="px-5 py-3 text-left text-[0.82rem] font-semibold uppercase tracking-wide text-[#667892]">Statut</th>
-                          <th className="px-5 py-3 text-left text-[0.82rem] font-semibold uppercase tracking-wide text-[#667892]">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredManagedServices.map((item) => {
-                          const Icon = iconMap[item.icon ?? ""] ?? Landmark;
+                {!loading && managedServices.length > 0 && (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {managedServices.map((item, index) => {
+                      const imageSrc = item.image_url || getServiceFallbackImage(item, index);
+                      const Icon = iconMap[item.icon ?? ""] ?? Landmark;
 
-                          return (
-                            <tr key={item.id} className="border-t border-[#e5e9f0] bg-white text-[0.88rem] text-[#1f2937] hover:bg-[#fff7d6]">
-                              <td className="px-5 py-4">
-                                <div className="w-10 h-10 rounded-full bg-[#e3d5a4] border border-[#d6c793] overflow-hidden flex items-center justify-center text-[#1f2a44]">
-                                  {item.image_url ? (
-                                    <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" />
-                                  ) : (
-                                    <Icon className="w-4 h-4" />
-                                  )}
-                                </div>
-                              </td>
-                              <td className="px-5 py-4">
-                                <p className="font-semibold text-[#111827]">{item.title}</p>
-                                <p className="text-[0.78rem] text-[#7b8aa0]">{item.slug}</p>
-                              </td>
-                              <td className="px-5 py-4">
-                                <span className="inline-flex rounded-lg bg-[#d9dce2] px-3 py-1.5 text-[0.82rem] font-medium text-[#1f2a44]">
-                                  {item.category || "Sans categorie"}
-                                </span>
-                              </td>
-                              <td className="px-5 py-4 font-medium">{item.active ? "Actif" : "Inactif"}</td>
-                              <td className="px-5 py-4">
-                                <div className="flex gap-2">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleEdit(item)}
-                                    className="h-8 rounded-xl border-[#cdd4de] bg-white px-4 text-[#111827] hover:bg-[#f8fafc]"
-                                  >
-                                    <Pencil className="w-4 h-4 mr-1" />
-                                    Modifier
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    onClick={() => handleDelete(item.id)}
-                                    className="h-8 w-8 rounded-md bg-[#ef2d2d] p-0 text-white hover:bg-[#dc2626]"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </Button>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+                      return (
+                        <article
+                          key={item.id}
+                          className="overflow-hidden rounded-xl border border-[#dbe2ee] bg-white shadow-[0_15px_30px_-24px_rgba(20,35,65,0.9)]"
+                        >
+                          <div className="relative aspect-[16/9] bg-[#eef2f8]">
+                            <img src={imageSrc} alt={item.title} className="h-full w-full object-cover" />
+                            {!item.image_url && (
+                              <div className="absolute left-3 top-3 rounded-full bg-white/85 p-2">
+                                <Icon className="h-4 w-4 text-[#445577]" />
+                              </div>
+                            )}
+                            <div className="absolute right-3 top-3 flex items-center gap-1.5">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={() => handleEdit(item)}
+                                className="h-7 w-7 rounded-md border-[#d5dbe6] bg-white/90 text-[#1f2d50] hover:bg-white"
+                                title="Modifier"
+                                aria-label="Modifier"
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button
+                                type="button"
+                                size="icon"
+                                onClick={() => handleDelete(item.id)}
+                                className="h-7 w-7 rounded-md bg-[#ef2d2d] p-0 text-white hover:bg-[#dc2626]"
+                                title="Supprimer"
+                                aria-label="Supprimer"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </div>
 
-                {!loading && (
-                  <div className="mt-3 flex items-center justify-between rounded-b-xl border border-t-0 border-[#e2e7ef] bg-[#f6f8fc] px-4 py-3">
-                    <p className="text-sm text-[#6b7890]">
-                      Affichage de {filteredManagedServices.length} sur {managedServices.length} services
-                    </p>
-                    <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-lg bg-[#1f2d50] px-3 text-sm font-semibold text-white">
-                      1
-                    </span>
+                          <div className="px-4 py-3">
+                            <p className="truncate font-semibold text-[#111827]">{item.title}</p>
+                            <p className="text-xs text-[#7b8aa0]">{item.category || "Sans categorie"}</p>
+                          </div>
+                        </article>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -816,9 +753,10 @@ const Services = () => {
 
           <div className="rounded-[2rem] border border-[#d6dce8] bg-gradient-to-b from-[#f8fbff] to-white p-5 md:p-8">
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {publicServices.map((service) => {
-                const Icon = iconMap[service.icon ?? ""] ?? Landmark;
+              {publicServices.map((service, index) => {
                 const cardTitle = formatServiceCardTitle(service.title);
+                const imageSrc = service.image_url || getServiceFallbackImage(service, index);
+                const canManageServiceCard = isAdmin && admin?.id === service.admin_id;
 
                 return (
                   <article
@@ -834,18 +772,36 @@ const Services = () => {
                           </span>
                         )}
                       </div>
-
-                      {service.image_url ? (
-                        <img
-                          src={service.image_url}
-                          alt={service.title}
-                          className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center">
-                          <Icon className="h-16 w-16 text-[#6f7f9c]" />
+                      {canManageServiceCard && (
+                        <div className="absolute right-3 top-3 z-20 flex items-center gap-1.5">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => handleEdit(service)}
+                            className="h-7 w-7 rounded-md border-[#d5dbe6] bg-white/90 text-[#1f2d50] hover:bg-white"
+                            title="Modifier"
+                            aria-label="Modifier"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </Button>
+                          <Button
+                            type="button"
+                            size="icon"
+                            onClick={() => handleDelete(service.id)}
+                            className="h-7 w-7 rounded-md bg-[#ef2d2d] p-0 text-white hover:bg-[#dc2626]"
+                            title="Supprimer"
+                            aria-label="Supprimer"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
                         </div>
                       )}
+                      <img
+                        src={imageSrc}
+                        alt={service.title}
+                        className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                      />
                     </div>
 
                     <div className="border-t border-[#d9e1ec] bg-[#f8fafc] px-5 py-4">
