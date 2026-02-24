@@ -4,8 +4,7 @@ import { getConfiguredAdminEmails, isAdminEmail } from "@/lib/auth";
 
 export type AdminProfile = Tables<"admins">;
 
-const ADMIN_SELECT =
-  "id, name, grade, email, phone, active, slug, tagline, bio, address, city, opening_hours_weekdays, opening_hours_saturday, avatar_url, hero_image_url, theme_primary, theme_primary_foreground, theme_secondary, theme_secondary_foreground, theme_gradient_hero, theme_gradient_gold";
+const ADMIN_SELECT = "*";
 
 const CACHE_TTL_MS = 60_000;
 
@@ -32,6 +31,19 @@ const adminBySlugCache = new Map<string, CacheEntry<AdminProfile | null>>();
 const adminBySlugPromise = new Map<string, Promise<AdminProfile | null>>();
 
 const normalizeEmail = (value?: string | null) => value?.trim().toLowerCase() ?? "";
+const nonEmpty = (value?: string | null) => Boolean(value?.trim());
+const profileScore = (admin: AdminProfile) =>
+  (nonEmpty(admin.tagline) ? 4 : 0) +
+  (nonEmpty(admin.grade) ? 3 : 0) +
+  (nonEmpty(admin.name) ? 2 : 0) +
+  (nonEmpty(admin.phone) ? 1 : 0) +
+  (nonEmpty(admin.email) ? 1 : 0);
+
+const byUpdatedAtDesc = (a: AdminProfile, b: AdminProfile) => {
+  const updatedAtA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+  const updatedAtB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+  return updatedAtB - updatedAtA;
+};
 
 export async function fetchAdminByEmail(email?: string | null) {
   if (!email) return null;
@@ -51,8 +63,10 @@ export async function fetchAdminByEmail(email?: string | null) {
   const request = supabase
     .from("admins")
     .select(ADMIN_SELECT)
-    .eq("email", cacheKey)
+    .ilike("email", cacheKey)
     .eq("active", true)
+    .order("updated_at", { ascending: false })
+    .limit(1)
     .maybeSingle()
     .then(({ data, error }) => {
       const value = error ? null : data ?? null;
@@ -119,7 +133,7 @@ export async function listActiveAdmins() {
     .from("admins")
     .select(ADMIN_SELECT)
     .eq("active", true)
-    .order("name", { ascending: true })
+    .order("updated_at", { ascending: false })
     .then(({ data, error }) => {
       const value = error ? [] : data ?? [];
       activeAdminsCache = { value, expiresAt: now() + CACHE_TTL_MS };
@@ -136,25 +150,26 @@ export async function listActiveAdmins() {
 
 export function pickPrimaryAdmin(admins: AdminProfile[]) {
   if (!admins.length) return null;
+  const bestProfile = [...admins].sort((a, b) => {
+    const scoreDiff = profileScore(b) - profileScore(a);
+    if (scoreDiff !== 0) return scoreDiff;
+    return byUpdatedAtDesc(a, b);
+  })[0];
 
   const configuredEmails = getConfiguredAdminEmails();
   if (!configuredEmails.length) {
-    return admins[0];
+    return bestProfile ?? admins[0];
   }
 
   const matchedAdmin = admins.find((admin) =>
     configuredEmails.includes(normalizeEmail(admin.email))
   );
 
-  if (matchedAdmin) {
+  if (matchedAdmin && profileScore(matchedAdmin) >= profileScore(bestProfile ?? matchedAdmin)) {
     return matchedAdmin;
   }
 
-  return [...admins].sort((a, b) => {
-    const updatedAtA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
-    const updatedAtB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
-    return updatedAtB - updatedAtA;
-  })[0] ?? admins[0];
+  return bestProfile ?? matchedAdmin ?? admins[0];
 }
 
 export async function isAdminUser(email?: string | null) {

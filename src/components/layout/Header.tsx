@@ -130,9 +130,14 @@ export function Header() {
   const { user } = useAuth();
   const { admin, isAdmin } = useAdminProfile(user?.email);
   const [publicAdmin, setPublicAdmin] = useState<AdminProfile | null>(null);
-  const visibleAdmin = admin ?? publicAdmin;
-  const cabinetName = visibleAdmin?.tagline?.trim() || "Cabinet non renseigne";
-  const cabinetSubtitle = visibleAdmin?.grade?.trim() || "GEOMETRE-EXPERT AGREE";
+  const cabinetName =
+    admin?.tagline?.trim() ||
+    publicAdmin?.tagline?.trim() ||
+    "Cabinet non renseigne";
+  const cabinetSubtitle =
+    admin?.grade?.trim() ||
+    publicAdmin?.grade?.trim() ||
+    "GEOMETRE-EXPERT AGREE";
   const userDisplayName =
     (isAdmin && admin?.name) ||
     (user?.user_metadata?.full_name as string | undefined) ||
@@ -158,10 +163,10 @@ export function Header() {
   const topBarTextClass = isHomeTop
     ? "text-black"
     : "text-muted-foreground";
-  const topBarPhone = visibleAdmin?.phone?.trim() ?? "";
-  const topBarEmail = visibleAdmin?.email?.trim() ?? "";
-  const topBarAddress = visibleAdmin?.address?.trim() ?? "";
-  const topBarCity = visibleAdmin?.city?.trim() ?? "";
+  const topBarPhone = admin?.phone?.trim() || publicAdmin?.phone?.trim() || "";
+  const topBarEmail = admin?.email?.trim() || publicAdmin?.email?.trim() || "";
+  const topBarAddress = admin?.address?.trim() || publicAdmin?.address?.trim() || "";
+  const topBarCity = admin?.city?.trim() || publicAdmin?.city?.trim() || "";
   const topBarLocation = [topBarAddress, topBarCity].filter(Boolean).join(", ");
   const visibleNavLinks = navLinks.filter((link) => link.href !== "/equipe" || isAdmin);
 
