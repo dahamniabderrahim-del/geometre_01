@@ -1,23 +1,5 @@
 ﻿import { Layout } from "@/components/layout/Layout";
-import {
-  Landmark,
-  FileSpreadsheet,
-  Building2,
-  ScanLine,
-  Crosshair,
-  Scale,
-  MapPin,
-  FileText,
-  Ruler,
-  Compass,
-  FileCheck,
-  Plane,
-  Calculator,
-  Plus,
-  Pencil,
-  Trash2,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,22 +13,6 @@ import { Link } from "react-router-dom";
 import serviceTopographieImage from "@/assets/service-topographie.jpg";
 import serviceBornageImage from "@/assets/service-bornage.jpg";
 import serviceFoncierImage from "@/assets/service-foncier.jpg";
-
-const iconMap: Record<string, LucideIcon> = {
-  landmark: Landmark,
-  file_spreadsheet: FileSpreadsheet,
-  building2: Building2,
-  scan_line: ScanLine,
-  crosshair: Crosshair,
-  scale: Scale,
-  map_pin: MapPin,
-  file_text: FileText,
-  ruler: Ruler,
-  compass: Compass,
-  file_check: FileCheck,
-  plane: Plane,
-  calculator: Calculator,
-};
 
 type ServiceRow = {
   id: string;
@@ -181,6 +147,8 @@ const Services = () => {
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
+  const formCardRef = useRef<HTMLDivElement | null>(null);
+  const titleInputRef = useRef<HTMLInputElement | null>(null);
 
   const buildRequiredServiceRows = (adminId: string) => {
     return REQUIRED_SERVICE_TEMPLATES.map((item) => ({
@@ -340,11 +308,6 @@ const Services = () => {
       .sort((a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title));
   }, [services]);
 
-  const managedServices = useMemo(() => {
-    if (!isAdmin || !admin?.id) return [];
-    return services.filter((item) => item.admin_id === admin.id);
-  }, [services, isAdmin, admin?.id]);
-
   const resetForm = () => {
     setForm(emptyForm);
     setEditingId(null);
@@ -420,6 +383,10 @@ const Services = () => {
       active: item.active,
       sort_order: item.sort_order,
     });
+    formCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.setTimeout(() => {
+      titleInputRef.current?.focus();
+    }, 200);
   };
 
   const handleDelete = async (id: string) => {
@@ -572,8 +539,8 @@ const Services = () => {
 
       {isAdmin && (
         <section className="py-12 border-b border-border">
-          <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-8">
-            <div className="bg-card rounded-xl shadow-soft p-6">
+          <div className="container mx-auto px-4">
+            <div ref={formCardRef} className="bg-card rounded-xl shadow-soft p-6">
               <h2 className="font-serif text-xl font-bold mb-4">
                 {editingId ? "Modifier un service" : "Ajouter un service"}
               </h2>
@@ -581,7 +548,7 @@ const Services = () => {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">Titre</label>
-                    <Input name="title" value={form.title} onChange={handleFieldChange} required />
+                    <Input ref={titleInputRef} name="title" value={form.title} onChange={handleFieldChange} required />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">Slug</label>
@@ -671,73 +638,6 @@ const Services = () => {
                   )}
                 </div>
               </form>
-            </div>
-
-            <div className="overflow-hidden rounded-2xl border border-[#d8dde6] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
-              <div className="border-b border-[#e2e7ef] bg-white px-6 py-5">
-                <h2 className="text-[2rem] font-bold leading-none text-[#111827]">Services existants</h2>
-                <p className="mt-1 text-sm text-[#5c6f88]">{managedServices.length} services</p>
-              </div>
-
-              <div className="p-6">
-                {loading && <p className="text-sm text-muted-foreground">Chargement...</p>}
-                {!loading && managedServices.length === 0 && (
-                  <p className="text-sm text-muted-foreground">Aucun service.</p>
-                )}
-
-                {!loading && managedServices.length > 0 && (
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {managedServices.map((item, index) => {
-                      const imageSrc = item.image_url || getServiceFallbackImage(item, index);
-                      const Icon = iconMap[item.icon ?? ""] ?? Landmark;
-
-                      return (
-                        <article
-                          key={item.id}
-                          className="overflow-hidden rounded-xl border border-[#dbe2ee] bg-white shadow-[0_15px_30px_-24px_rgba(20,35,65,0.9)]"
-                        >
-                          <div className="relative aspect-[16/9] bg-[#eef2f8]">
-                            <img src={imageSrc} alt={item.title} className="h-full w-full object-cover" />
-                            {!item.image_url && (
-                              <div className="absolute left-3 top-3 rounded-full bg-white/85 p-2">
-                                <Icon className="h-4 w-4 text-[#445577]" />
-                              </div>
-                            )}
-                            <div className="absolute right-3 top-3 flex items-center gap-1.5">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="icon"
-                                onClick={() => handleEdit(item)}
-                                className="h-7 w-7 rounded-md border-[#d5dbe6] bg-white/90 text-[#1f2d50] hover:bg-white"
-                                title="Modifier"
-                                aria-label="Modifier"
-                              >
-                                <Pencil className="h-3.5 w-3.5" />
-                              </Button>
-                              <Button
-                                type="button"
-                                size="icon"
-                                onClick={() => handleDelete(item.id)}
-                                className="h-7 w-7 rounded-md bg-[#ef2d2d] p-0 text-white hover:bg-[#dc2626]"
-                                title="Supprimer"
-                                aria-label="Supprimer"
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </Button>
-                            </div>
-                          </div>
-
-                          <div className="px-4 py-3">
-                            <p className="truncate font-semibold text-[#111827]">{item.title}</p>
-                            <p className="text-xs text-[#7b8aa0]">{item.category || "Sans categorie"}</p>
-                          </div>
-                        </article>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         </section>
