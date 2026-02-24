@@ -15,6 +15,14 @@ const buildFallbackReply = (userText: string) => {
     return "Bonjour. Je peux vous aider pour le bornage, la topographie, la copropriete et les demarches foncieres.";
   }
 
+  if (/^\d+$/.test(normalized)) {
+    return `J'ai bien recu "${userText.trim()}". Pouvez-vous preciser votre demande (bornage, devis, topographie, division parcellaire, etc.) ?`;
+  }
+
+  if (["bonjour", "salut", "hello", "bonsoir"].some((greeting) => normalized.includes(greeting))) {
+    return "Bonjour. Dites-moi votre besoin: bornage, topographie, demarches cadastrales ou demande de devis.";
+  }
+
   if (normalized.includes("devis") || normalized.includes("prix") || normalized.includes("tarif")) {
     return "Pour un prix precis, merci de demander un devis gratuit. Le tarif depend du type de mission et de la localisation.";
   }
@@ -27,7 +35,7 @@ const buildFallbackReply = (userText: string) => {
     return "Vous pouvez nous contacter via la page Contact. Horaires: lundi-vendredi 9h-18h, samedi 9h-12h.";
   }
 
-  return "Je peux vous orienter sur nos services de geometre-expert et sur la demande de devis gratuit.";
+  return `J'ai bien note votre message: "${userText.trim()}". Je peux vous orienter sur nos services de geometre-expert et sur la demande de devis gratuit.`;
 };
 
 const extractAssistantText = (payload: any) => {
@@ -200,6 +208,7 @@ export function ChatWidget() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fallbackNoticeShownRef = useRef(false);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -244,8 +253,14 @@ export function ChatWidget() {
             msg.toLowerCase().includes("configuration supabase manquante");
 
           const content = isNetworkError
-            ? `${buildFallbackReply(text)}\n\n[Mode secours: assistant serveur indisponible]`
+            ? `${buildFallbackReply(text)}${
+                fallbackNoticeShownRef.current ? "" : "\n\n[Mode secours: assistant serveur indisponible]"
+              }`
             : `[Erreur] ${msg}`;
+
+          if (isNetworkError) {
+            fallbackNoticeShownRef.current = true;
+          }
 
           setMessages((prev) => [...prev, { role: "assistant", content }]);
           setLoading(false);
