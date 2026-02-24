@@ -7,6 +7,9 @@ export type AdminProfile = Tables<"admins">;
 type AdminWithCabinetAliases = AdminProfile & {
   cabinet_name?: string | null;
   nom_cabinet?: string | null;
+  nom_du_cabinet?: string | null;
+  nomDuCabinet?: string | null;
+  "nom du cabinet"?: string | null;
 };
 
 const ADMIN_SELECT = "*";
@@ -43,9 +46,12 @@ export function getAdminCabinetName(admin?: AdminProfile | null) {
   if (!record) return "";
 
   return (
+    record.nom_du_cabinet?.trim() ||
     record.cabinet_name?.trim() ||
+    record["nom du cabinet"]?.trim() ||
     record.tagline?.trim() ||
     record.nom_cabinet?.trim() ||
+    record.nomDuCabinet?.trim() ||
     ""
   );
 }

@@ -237,6 +237,9 @@ const ParametresCompte = () => {
     };
 
     const payloadCandidates: Array<Record<string, unknown>> = [
+      { ...basePayload, nom_du_cabinet: cabinetName || null },
+      { ...basePayload, nom_cabinet: cabinetName || null },
+      { ...basePayload, "nom du cabinet": cabinetName || null },
       { ...basePayload, cabinet_name: cabinetName || null },
       { ...basePayload, tagline: cabinetName || null },
       basePayload,
