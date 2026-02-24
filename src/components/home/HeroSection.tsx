@@ -88,6 +88,11 @@ export function HeroSection() {
   }, []);
 
   const geometrePhoneHref = geometrePhone ? `tel:${geometrePhone.replace(/[^\d+]/g, "")}` : "";
+  const cabinetCardTitle = (() => {
+    const trimmed = heroCabinetName.trim();
+    if (!trimmed) return heroContent.cabinetName;
+    return /^cabinet\b/i.test(trimmed) ? trimmed : `Cabinet ${trimmed}`;
+  })();
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
@@ -208,7 +213,7 @@ export function HeroSection() {
                     <line x1="8" y1="14" x2="16" y2="14" />
                   </svg>
                 </div>
-                <h3 className="font-serif text-xl font-bold text-primary-foreground">Cabinet {heroCabinetName}</h3>
+                <h3 className="font-serif text-xl font-bold text-primary-foreground">{cabinetCardTitle}</h3>
                 <p className="text-secondary font-medium">{geometreGrade || "Grade non renseigne"}</p>
                 {geometreName && (
                   <p className="mt-1 text-sm text-primary-foreground/85">{geometreName}</p>
