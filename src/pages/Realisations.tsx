@@ -1,5 +1,5 @@
 ﻿import { Layout } from "@/components/layout/Layout";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -70,6 +70,7 @@ const Realisations = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
 
   const loadProjects = async () => {
     setLoading(true);
@@ -343,22 +344,34 @@ const Realisations = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">Image (URL)</label>
-                  <Input
-                    name="image_url"
-                    value={form.image_url}
-                    onChange={handleFormChange}
-                    placeholder="https://..."
-                    required
-                  />
-                  <label className="block text-sm font-medium text-foreground mt-3 mb-2">
-                    Ou choisir depuis le bureau
-                  </label>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageFileChange}
-                    disabled={uploadingImage}
-                  />
+                  <div className="flex items-center gap-2">
+                    <Input
+                      name="image_url"
+                      value={form.image_url}
+                      onChange={handleFormChange}
+                      placeholder="https://..."
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="h-10 px-3 min-w-[44px] text-base leading-none"
+                      onClick={() => imageInputRef.current?.click()}
+                      disabled={uploadingImage}
+                      title="Choisir depuis ordinateur"
+                      aria-label="Choisir depuis ordinateur"
+                    >
+                      ...
+                    </Button>
+                    <Input
+                      ref={imageInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageFileChange}
+                      disabled={uploadingImage}
+                      className="hidden"
+                    />
+                  </div>
                   {uploadingImage && (
                     <p className="text-xs text-muted-foreground mt-2">Upload en cours...</p>
                   )}

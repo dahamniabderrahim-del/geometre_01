@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { invalidateAdminCache, listActiveAdmins, type AdminProfile } from "@/lib/admin";
 import { getLocalAuthRecord, setLocalAuth } from "@/lib/local-auth";
 import { uploadAdminAvatarImage, uploadAdminHeroImage } from "@/lib/storage";
-import { ImagePlus, KeyRound, Save, Settings } from "lucide-react";
+import { KeyRound, Save, Settings } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -524,11 +524,13 @@ const ParametresCompte = () => {
                       <Button
                         type="button"
                         variant="outline"
+                        className="h-10 px-3 min-w-[44px] text-base leading-none"
                         onClick={() => avatarInputRef.current?.click()}
                         disabled={uploadingAvatar}
                         title="Choisir depuis ordinateur"
+                        aria-label="Choisir depuis ordinateur"
                       >
-                        <ImagePlus className="w-4 h-4" />
+                        ...
                       </Button>
                     </div>
                     <Input
@@ -558,11 +560,13 @@ const ParametresCompte = () => {
                       <Button
                         type="button"
                         variant="outline"
+                        className="h-10 px-3 min-w-[44px] text-base leading-none"
                         onClick={() => heroInputRef.current?.click()}
                         disabled={uploadingHero}
                         title="Choisir depuis ordinateur"
+                        aria-label="Choisir depuis ordinateur"
                       >
-                        <ImagePlus className="w-4 h-4" />
+                        ...
                       </Button>
                     </div>
                     <Input

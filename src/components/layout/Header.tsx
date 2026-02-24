@@ -153,7 +153,8 @@ export function Header() {
   const notifRef = useRef<HTMLDivElement>(null);
   const initialUnreadSoundPlayedRef = useRef(false);
   const location = useLocation();
-  const isHomeTop = location.pathname === "/" && !isScrolled;
+  const isHomeTop =
+    !isScrolled && (location.pathname === "/" || location.pathname === "/a-propos");
   const topBarTextClass = isHomeTop
     ? "text-black"
     : "text-muted-foreground";

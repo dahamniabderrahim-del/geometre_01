@@ -75,6 +75,7 @@ const EquipeAdmin = () => {
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const addImageInputRef = useRef<HTMLInputElement | null>(null);
+  const rowImageInputRef = useRef<HTMLInputElement | null>(null);
 
   const [rowEditId, setRowEditId] = useState<string | null>(null);
   const [rowDraft, setRowDraft] = useState<EquipeForm>(emptyForm);
@@ -675,20 +676,34 @@ const EquipeAdmin = () => {
                               <p className="text-[11px] text-muted-foreground mt-1">Cliquer sur la photo pour modifier</p>
                               {showRowImageOptions && (
                                 <div className="mt-2 space-y-2">
-                                  <Input
-                                    name="image_url"
-                                    value={rowDraft.image_url}
-                                    onChange={handleRowDraftChange}
-                                    placeholder="URL photo"
-                                    className="h-8 text-[0.82rem]"
-                                  />
-                                  <Input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleRowImageFileChange}
-                                    disabled={rowUploadingImage}
-                                    className="h-8 text-[0.82rem]"
-                                  />
+                                  <div className="flex items-center gap-2">
+                                    <Input
+                                      name="image_url"
+                                      value={rowDraft.image_url}
+                                      onChange={handleRowDraftChange}
+                                      placeholder="URL photo"
+                                      className="h-8 text-[0.82rem]"
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      className="h-8 px-2 min-w-[34px] text-sm leading-none"
+                                      onClick={() => rowImageInputRef.current?.click()}
+                                      disabled={rowUploadingImage}
+                                      title="Choisir depuis ordinateur"
+                                      aria-label="Choisir depuis ordinateur"
+                                    >
+                                      ...
+                                    </Button>
+                                    <Input
+                                      ref={rowImageInputRef}
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={handleRowImageFileChange}
+                                      disabled={rowUploadingImage}
+                                      className="hidden"
+                                    />
+                                  </div>
                                   {rowUploadingImage && (
                                     <p className="text-[11px] text-muted-foreground">Upload en cours...</p>
                                   )}
