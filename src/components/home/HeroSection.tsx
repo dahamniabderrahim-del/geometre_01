@@ -136,8 +136,8 @@ export function HeroSection() {
 
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-up" style={{ animationDelay: "0.3s" }}>
               <Button size="lg" className="gold-gradient text-secondary-foreground font-semibold shadow-gold hover:shadow-strong" asChild>
-                <Link to="/devis">
-                  Demander un devis
+                <Link to="/contact">
+                  Envoyer un message
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
               </Button>

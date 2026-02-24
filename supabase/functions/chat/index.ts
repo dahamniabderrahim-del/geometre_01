@@ -18,7 +18,7 @@ Style:
 - Si l'information est incertaine, indique les limites clairement.
 
 Regles metier GeoExpert:
-- Pour un prix exact, inviter a demander un devis gratuit.
+- Pour un prix exact, inviter l'utilisateur a contacter le cabinet.
 - Horaires du cabinet: lundi-vendredi 9h-18h, samedi 9h-12h.`;
 
 const MODEL = Deno.env.get("LOVABLE_MODEL")?.trim() || "google/gemini-2.5-pro";
@@ -41,11 +41,11 @@ const buildFallbackReply = (userText: string) => {
   const normalized = userText.trim().toLowerCase();
 
   if (!normalized) {
-    return "Bonjour. Je peux vous aider pour le bornage, la topographie, la copropriete et les demarches foncieres. Vous pouvez aussi demander un devis gratuit.";
+    return "Bonjour. Je peux vous aider pour le bornage, la topographie, la copropriete et les demarches foncieres.";
   }
 
   if (normalized.includes("devis") || normalized.includes("prix") || normalized.includes("tarif")) {
-    return "Pour un tarif precis, merci de demander un devis gratuit via le formulaire. Le montant depend du type de mission et de la localisation.";
+    return "Pour un tarif precis, merci de nous contacter via le formulaire. Le montant depend du type de mission et de la localisation.";
   }
 
   if (normalized.includes("bornage")) {

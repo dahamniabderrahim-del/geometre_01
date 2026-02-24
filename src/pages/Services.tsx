@@ -854,7 +854,7 @@ const Services = () => {
                       </ul>
                     )}
                     <Button asChild>
-                      <Link to="/contact">Demander un devis</Link>
+                      <Link to="/contact">Envoyer un message</Link>
                     </Button>
                   </div>
                   <div className={`${index % 2 === 1 ? "lg:col-start-1 lg:row-start-1" : ""}`}>
@@ -875,7 +875,7 @@ const Services = () => {
 
       <section className="py-16 hero-gradient">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="font-serif text-3xl font-bold text-primary-foreground mb-4">Besoin d'un devis ?</h2>
+          <h2 className="font-serif text-3xl font-bold text-primary-foreground mb-4">Besoin d'accompagnement ?</h2>
           <p className="text-primary-foreground/80 mb-8 max-w-lg mx-auto">
             Contactez-nous pour discuter de votre projet. Nous vous repondons sous 24h.
           </p>

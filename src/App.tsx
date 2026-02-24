@@ -11,7 +11,6 @@ const Services = lazy(() => import("./pages/Services"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Realisations = lazy(() => import("./pages/Realisations"));
 const Blog = lazy(() => import("./pages/Blog"));
-const Devis = lazy(() => import("./pages/Devis"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Connexion = lazy(() => import("./pages/Connexion"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
@@ -41,7 +40,6 @@ const App = () => (
             <Route path="/services" element={<Services />} />
             <Route path="/realisations" element={<Realisations />} />
             <Route path="/blog" element={<Blog />} />
-            <Route path="/devis" element={<Devis />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/connexion" element={<Connexion />} />
             <Route path="/auth/callback" element={<AuthCallback />} />

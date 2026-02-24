@@ -225,10 +225,10 @@ const APropos = () => {
 
               <div className="mt-8 flex gap-4">
                 <Button size="lg" className="gold-gradient text-secondary-foreground" asChild>
-                  <Link to="/devis">Demander un Devis</Link>
+                  <Link to="/contact">Envoyer un message</Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
-                  <Link to="/contact">Nous Contacter</Link>
+                  <Link to="/services">Voir nos services</Link>
                 </Button>
               </div>
             </div>
@@ -396,12 +396,12 @@ const APropos = () => {
             Besoin d'un Geometre-Expert ?
           </h2>
           <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
-            Contactez-nous pour une etude personnalisee de votre projet. Devis gratuit et sans
-            engagement.
+            Contactez-nous pour une etude personnalisee de votre projet et un accompagnement
+            adapte a votre besoin.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="gold-gradient text-secondary-foreground font-semibold" asChild>
-              <Link to="/devis">Demander un Devis Gratuit</Link>
+              <Link to="/contact">Envoyer un message</Link>
             </Button>
             <Button
               size="lg"
@@ -409,7 +409,7 @@ const APropos = () => {
               className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
               asChild
             >
-              <Link to="/contact">Prendre Rendez-vous</Link>
+              <Link to="/services">Voir nos services</Link>
             </Button>
           </div>
         </div>

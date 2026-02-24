@@ -32,21 +32,21 @@ export function CTASection() {
     <section className="py-20 hero-gradient relative overflow-hidden">
       {/* Geometric pattern */}
       <div className="absolute inset-0 geometric-pattern opacity-10" />
-      
+
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary-foreground mb-6">
             Un projet foncier ? Parlons-en !
           </h2>
           <p className="text-primary-foreground/80 text-lg mb-8 max-w-xl mx-auto">
-            Contactez-nous pour obtenir un devis gratuit et personnalisé. 
-            Notre équipe vous répond sous 24h.
+            Contactez-nous pour recevoir une reponse rapide et personnalisee.
+            Notre equipe vous repond sous 24h.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="heroOutline" size="xl" asChild>
               <Link to="/contact">
-                Demander un devis
+                Envoyer un message
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </Button>

@@ -16,15 +16,15 @@ const buildFallbackReply = (userText: string) => {
   }
 
   if (/^\d+$/.test(normalized)) {
-    return `J'ai bien recu "${userText.trim()}". Pouvez-vous preciser votre demande (bornage, devis, topographie, division parcellaire, etc.) ?`;
+    return `J'ai bien recu "${userText.trim()}". Pouvez-vous preciser votre demande (bornage, topographie, division parcellaire, etc.) ?`;
   }
 
   if (["bonjour", "salut", "hello", "bonsoir"].some((greeting) => normalized.includes(greeting))) {
-    return "Bonjour. Dites-moi votre besoin: bornage, topographie, demarches cadastrales ou demande de devis.";
+    return "Bonjour. Dites-moi votre besoin: bornage, topographie ou demarches cadastrales.";
   }
 
   if (normalized.includes("devis") || normalized.includes("prix") || normalized.includes("tarif")) {
-    return "Pour un prix precis, merci de demander un devis gratuit. Le tarif depend du type de mission et de la localisation.";
+    return "Pour un prix precis, merci de nous contacter. Le tarif depend du type de mission et de la localisation.";
   }
 
   if (normalized.includes("bornage")) {
@@ -35,7 +35,7 @@ const buildFallbackReply = (userText: string) => {
     return "Vous pouvez nous contacter via la page Contact. Horaires: lundi-vendredi 9h-18h, samedi 9h-12h.";
   }
 
-  return `J'ai bien note votre message: "${userText.trim()}". Je peux vous orienter sur nos services de geometre-expert et sur la demande de devis gratuit.`;
+  return `J'ai bien note votre message: "${userText.trim()}". Je peux vous orienter sur nos services de geometre-expert et la meilleure facon de nous contacter.`;
 };
 
 const extractAssistantText = (payload: any) => {
