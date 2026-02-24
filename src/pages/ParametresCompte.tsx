@@ -19,6 +19,7 @@ import {
 import { getLocalAuthRecord, setLocalAuth } from "@/lib/local-auth";
 import { uploadAdminAvatarImage, uploadAdminHeroImage } from "@/lib/storage";
 import { getReadableErrorMessage } from "@/lib/error-message";
+import { getPasswordFingerprint } from "@/lib/password-fingerprint";
 import { KeyRound, Save, Settings } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -392,6 +393,7 @@ const ParametresCompte = () => {
     }
 
     setSavingPassword(true);
+    let nextPasswordUpdatedAt: string | null = null;
     if (isAdmin && currentAdmin?.id) {
       const { error } = await supabase.from("admins").update({ password }).eq("id", currentAdmin.id);
       if (error) {
@@ -404,6 +406,13 @@ const ParametresCompte = () => {
         return;
       }
       invalidateAdminCache();
+
+      const { data: refreshedAdmin } = await supabase
+        .from("admins")
+        .select("password_updated_at")
+        .eq("id", currentAdmin.id)
+        .maybeSingle();
+      nextPasswordUpdatedAt = refreshedAdmin?.password_updated_at ?? null;
     } else if (user?.id) {
       const { error } = await supabase.from("users").update({ password }).eq("id", user.id);
       if (error) {
@@ -415,6 +424,13 @@ const ParametresCompte = () => {
         setSavingPassword(false);
         return;
       }
+
+      const { data: refreshedUser } = await supabase
+        .from("users")
+        .select("password_updated_at")
+        .eq("id", user.id)
+        .maybeSingle();
+      nextPasswordUpdatedAt = refreshedUser?.password_updated_at ?? null;
     } else {
       toast({
         title: "Erreur",
@@ -423,6 +439,16 @@ const ParametresCompte = () => {
       });
       setSavingPassword(false);
       return;
+    }
+
+    const localAuth = getLocalAuthRecord();
+    if (localAuth && localAuth.id === user?.id) {
+      const nextFingerprint = await getPasswordFingerprint(password);
+      setLocalAuth({
+        ...localAuth,
+        password_updated_at: nextPasswordUpdatedAt ?? localAuth.password_updated_at ?? null,
+        password_fingerprint: nextFingerprint,
+      });
     }
 
     toast({

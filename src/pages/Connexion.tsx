@@ -11,6 +11,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Chrome, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getReadableErrorMessage } from "@/lib/error-message";
+import { getPasswordFingerprint } from "@/lib/password-fingerprint";
 
 const normalizeEmail = (value: string) => value.trim().toLowerCase();
 const INVALID_TABLE_CREDENTIALS = "invalid_table_credentials";
@@ -98,6 +99,7 @@ const Connexion = () => {
           .maybeSingle();
 
         if (userRow && userRow.password === signInPassword) {
+          const passwordFingerprint = await getPasswordFingerprint(signInPassword);
           if (!userRow.admin_id) {
             const targetAdminId = await resolveAdminId();
             if (targetAdminId) {
@@ -118,6 +120,7 @@ const Connexion = () => {
             full_name: userRow.name || signInEmail.split("@")[0],
             role: "user",
             password_updated_at: userRow.password_updated_at,
+            password_fingerprint: passwordFingerprint,
           });
           toast({
             title: "Connexion reussie",
@@ -135,6 +138,7 @@ const Connexion = () => {
           .maybeSingle();
 
         if (adminRow?.active && adminRow.password === signInPassword) {
+          const passwordFingerprint = await getPasswordFingerprint(signInPassword);
           setLocalAuth({
             id: adminRow.id,
             email: adminRow.email,
@@ -142,6 +146,7 @@ const Connexion = () => {
             avatar_url: adminRow.avatar_url,
             role: "admin",
             password_updated_at: adminRow.password_updated_at,
+            password_fingerprint: passwordFingerprint,
           });
           toast({
             title: "Connexion reussie",
@@ -214,12 +219,14 @@ const Connexion = () => {
           throw insertError ?? new Error("Creation du compte impossible.");
         }
 
+        const passwordFingerprint = await getPasswordFingerprint(signupPassword);
         setLocalAuth({
           id: insertedUser.id,
           email: insertedUser.email,
           full_name: insertedUser.name || signupEmail.split("@")[0],
           role: "user",
           password_updated_at: insertedUser.password_updated_at,
+          password_fingerprint: passwordFingerprint,
         });
 
         toast({

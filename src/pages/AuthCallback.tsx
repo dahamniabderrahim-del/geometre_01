@@ -2,6 +2,7 @@ import { Layout } from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { isAdminUser, listActiveAdmins, pickPrimaryAdmin } from "@/lib/admin";
 import { setLocalAuth } from "@/lib/local-auth";
+import { getPasswordFingerprint } from "@/lib/password-fingerprint";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -30,14 +31,29 @@ const AuthCallback = () => {
       if (isAdmin) {
         const user = data.session?.user;
         if (user?.id && user.email) {
+          const { data: adminRow } = await supabase
+            .from("admins")
+            .select("id, name, email, avatar_url, password, password_updated_at")
+            .ilike("email", user.email.trim().toLowerCase())
+            .eq("active", true)
+            .limit(1)
+            .maybeSingle();
+
+          const passwordFingerprint = await getPasswordFingerprint(adminRow?.password ?? "");
           setLocalAuth({
-            id: user.id,
-            email: user.email,
+            id: adminRow?.id ?? user.id,
+            email: adminRow?.email ?? user.email,
             full_name:
+              adminRow?.name ||
               (user.user_metadata?.full_name as string | undefined) ||
               user.email.split("@")[0],
-            avatar_url: (user.user_metadata?.avatar_url as string | undefined) ?? null,
+            avatar_url:
+              adminRow?.avatar_url ??
+              (user.user_metadata?.avatar_url as string | undefined) ??
+              null,
             role: "admin",
+            password_updated_at: adminRow?.password_updated_at ?? null,
+            password_fingerprint: passwordFingerprint,
           });
         }
         navigate(redirectPath ?? "/admin/equipe");
@@ -64,13 +80,14 @@ const AuthCallback = () => {
               },
               { onConflict: "email" }
             )
-            .select("id, name, email, password_updated_at")
+            .select("id, name, email, password, password_updated_at")
             .single();
 
           if (upsertError) {
             console.warn("Google signup users upsert failed:", upsertError.message);
           }
 
+          const passwordFingerprint = await getPasswordFingerprint(upsertedUser?.password ?? "");
           setLocalAuth({
             id: upsertedUser?.id ?? user.id,
             email: upsertedUser?.email ?? normalizedEmail,
@@ -78,6 +95,7 @@ const AuthCallback = () => {
             avatar_url: (user.user_metadata?.avatar_url as string | undefined) ?? null,
             role: "user",
             password_updated_at: upsertedUser?.password_updated_at ?? null,
+            password_fingerprint: passwordFingerprint,
           });
         }
         navigate(redirectPath ?? "/");
