@@ -8,6 +8,28 @@ type Msg = { role: "user" | "assistant"; content: string };
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
+const buildFallbackReply = (userText: string) => {
+  const normalized = userText.trim().toLowerCase();
+
+  if (!normalized) {
+    return "Bonjour. Je peux vous aider pour le bornage, la topographie, la copropriete et les demarches foncieres.";
+  }
+
+  if (normalized.includes("devis") || normalized.includes("prix") || normalized.includes("tarif")) {
+    return "Pour un prix precis, merci de demander un devis gratuit. Le tarif depend du type de mission et de la localisation.";
+  }
+
+  if (normalized.includes("bornage")) {
+    return "Le bornage fixe officiellement les limites d'un terrain. Nous pouvons vous accompagner pour tout le dossier.";
+  }
+
+  if (normalized.includes("contact") || normalized.includes("telephone") || normalized.includes("rendez")) {
+    return "Vous pouvez nous contacter via la page Contact. Horaires: lundi-vendredi 9h-18h, samedi 9h-12h.";
+  }
+
+  return "Je peux vous orienter sur nos services de geometre-expert et sur la demande de devis gratuit.";
+};
+
 const extractAssistantText = (payload: any) => {
   const deltaText = payload?.choices?.[0]?.delta?.content;
   if (typeof deltaText === "string" && deltaText) return deltaText;
@@ -50,6 +72,12 @@ async function streamChat({
   onDone: () => void;
   onError: (msg: string) => void;
 }) {
+  if (!import.meta.env.VITE_SUPABASE_URL || !SUPABASE_KEY) {
+    onError("Configuration Supabase manquante (VITE_SUPABASE_URL ou VITE_SUPABASE_PUBLISHABLE_KEY).");
+    onDone();
+    return;
+  }
+
   let resp: Response;
 
   try {
@@ -210,7 +238,16 @@ export function ChatWidget() {
         onDelta: upsert,
         onDone: () => setLoading(false),
         onError: (msg) => {
-          setMessages((prev) => [...prev, { role: "assistant", content: `[Erreur] ${msg}` }]);
+          const isNetworkError =
+            msg.toLowerCase().includes("impossible de contacter") ||
+            msg.toLowerCase().includes("failed to fetch") ||
+            msg.toLowerCase().includes("configuration supabase manquante");
+
+          const content = isNetworkError
+            ? `${buildFallbackReply(text)}\n\n[Mode secours: assistant serveur indisponible]`
+            : `[Erreur] ${msg}`;
+
+          setMessages((prev) => [...prev, { role: "assistant", content }]);
           setLoading(false);
         },
       });
