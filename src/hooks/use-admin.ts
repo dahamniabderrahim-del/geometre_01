@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchAdminByEmail } from "@/lib/admin";
+import { ADMIN_CACHE_UPDATED_EVENT, fetchAdminByEmail } from "@/lib/admin";
 import { isAdminEmail } from "@/lib/auth";
 import type { AdminProfile } from "@/lib/admin";
 import { getLocalAuthRecord } from "@/lib/local-auth";
@@ -38,8 +38,9 @@ export function useAdminProfile(email?: string | null) {
 
   useEffect(() => {
     let active = true;
+    const normalizedEmail = email?.trim().toLowerCase() ?? null;
 
-    if (!email) {
+    if (!normalizedEmail) {
       setAdmin(null);
       setLoading(false);
       return () => {
@@ -47,20 +48,29 @@ export function useAdminProfile(email?: string | null) {
       };
     }
 
-    setLoading(true);
-    fetchAdminByEmail(email)
-      .then((data) => {
+    const loadAdmin = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchAdminByEmail(normalizedEmail);
         if (!active) return;
         setAdmin(data);
-        setLoading(false);
-      })
-      .catch(() => {
+      } finally {
         if (!active) return;
         setLoading(false);
-      });
+      }
+    };
+
+    void loadAdmin();
+
+    const onAdminCacheUpdated = () => {
+      void loadAdmin();
+    };
+
+    window.addEventListener(ADMIN_CACHE_UPDATED_EVENT, onAdminCacheUpdated);
 
     return () => {
       active = false;
+      window.removeEventListener(ADMIN_CACHE_UPDATED_EVENT, onAdminCacheUpdated);
     };
   }, [email]);
 

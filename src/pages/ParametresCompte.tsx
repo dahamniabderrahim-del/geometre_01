@@ -13,6 +13,7 @@ import {
   invalidateAdminCache,
   listActiveAdmins,
   pickPrimaryAdmin,
+  upsertAdminCache,
   type AdminProfile,
 } from "@/lib/admin";
 import { getLocalAuthRecord, setLocalAuth } from "@/lib/local-auth";
@@ -284,7 +285,23 @@ const ParametresCompte = () => {
       title: "Parametres mis a jour",
       description: "Les informations du geometre et du cabinet ont ete enregistrees.",
     });
-    invalidateAdminCache();
+
+    const updatedAdmin = {
+      ...currentAdmin,
+      ...basePayload,
+      updated_at: new Date().toISOString(),
+    } as AdminProfile & {
+      cabinet_name?: string | null;
+      nom_du_cabinet?: string | null;
+      nom_cabinet?: string | null;
+    };
+
+    updatedAdmin.cabinet_name = cabinetName || null;
+    updatedAdmin.nom_du_cabinet = cabinetName || null;
+    updatedAdmin.nom_cabinet = cabinetName || null;
+
+    setFallbackAdmin(updatedAdmin);
+    upsertAdminCache(updatedAdmin);
 
     setSavingAdmin(false);
   };

@@ -14,7 +14,8 @@ type AdminWithCabinetAliases = AdminProfile & {
 
 const ADMIN_SELECT = "*";
 
-const CACHE_TTL_MS = 60_000;
+const CACHE_TTL_MS = 300_000;
+export const ADMIN_CACHE_UPDATED_EVENT = "geomweb-admin-cache-updated";
 
 type CacheEntry<T> = {
   value: T;
@@ -22,6 +23,12 @@ type CacheEntry<T> = {
 };
 
 const now = () => Date.now();
+const canUseWindow = () => typeof window !== "undefined";
+
+const emitAdminCacheUpdated = () => {
+  if (!canUseWindow()) return;
+  window.dispatchEvent(new Event(ADMIN_CACHE_UPDATED_EVENT));
+};
 
 const readCache = <T>(entry?: CacheEntry<T> | null): { hit: boolean; value?: T } => {
   if (!entry) return { hit: false };
@@ -96,6 +103,7 @@ export async function fetchAdminByEmail(email?: string | null) {
       const value = error ? null : data ?? null;
       adminByEmailCache.set(cacheKey, { value, expiresAt: now() + CACHE_TTL_MS });
       adminByEmailPromise.delete(cacheKey);
+      emitAdminCacheUpdated();
       return value;
     })
     .catch(() => {
@@ -132,6 +140,7 @@ export async function fetchAdminBySlug(slug?: string | null) {
       const value = error ? null : data ?? null;
       adminBySlugCache.set(cacheKey, { value, expiresAt: now() + CACHE_TTL_MS });
       adminBySlugPromise.delete(cacheKey);
+      emitAdminCacheUpdated();
       return value;
     })
     .catch(() => {
@@ -162,6 +171,7 @@ export async function listActiveAdmins() {
       const value = error ? [] : data ?? [];
       activeAdminsCache = { value, expiresAt: now() + CACHE_TTL_MS };
       activeAdminsPromise = null;
+      emitAdminCacheUpdated();
       return value;
     })
     .catch(() => {
@@ -210,4 +220,25 @@ export function invalidateAdminCache() {
   adminByEmailPromise.clear();
   adminBySlugCache.clear();
   adminBySlugPromise.clear();
+  emitAdminCacheUpdated();
+}
+
+export function upsertAdminCache(admin: AdminProfile) {
+  const nextActiveAdmins = (() => {
+    const existing = activeAdminsCache?.value ?? [];
+    const withoutCurrent = existing.filter((item) => item.id !== admin.id);
+
+    if (admin.active) {
+      return [admin, ...withoutCurrent];
+    }
+
+    return withoutCurrent;
+  })();
+
+  activeAdminsCache = { value: nextActiveAdmins, expiresAt: now() + CACHE_TTL_MS };
+  adminByEmailCache.set(normalizeEmail(admin.email), {
+    value: admin.active ? admin : null,
+    expiresAt: now() + CACHE_TTL_MS,
+  });
+  emitAdminCacheUpdated();
 }
