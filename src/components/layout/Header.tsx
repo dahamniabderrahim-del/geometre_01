@@ -20,7 +20,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useAdminProfile } from "@/hooks/use-admin";
 import { clearLocalAuth } from "@/lib/local-auth";
 import { parseDatabaseTimestamp } from "@/lib/datetime";
-import { listActiveAdmins, type AdminProfile } from "@/lib/admin";
+import { listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 import { parseContactNotificationMessage } from "@/lib/notification-message";
 
 const navLinks = [
@@ -131,7 +131,7 @@ export function Header() {
   const { admin, isAdmin } = useAdminProfile(user?.email);
   const [publicAdmin, setPublicAdmin] = useState<AdminProfile | null>(null);
   const visibleAdmin = admin ?? publicAdmin;
-  const cabinetName = visibleAdmin?.tagline?.trim() || "Cabinet geometre expert foncier";
+  const cabinetName = visibleAdmin?.tagline?.trim() || "Cabinet non renseigne";
   const cabinetSubtitle = visibleAdmin?.grade?.trim() || "GEOMETRE-EXPERT AGREE";
   const userDisplayName =
     (isAdmin && admin?.name) ||
@@ -232,7 +232,7 @@ export function Header() {
     listActiveAdmins()
       .then((admins) => {
         if (!active) return;
-        setPublicAdmin(admins[0] ?? null);
+        setPublicAdmin(pickPrimaryAdmin(admins));
       })
       .catch(() => {
         if (!active) return;

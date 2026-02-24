@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useAdminProfile } from "@/hooks/use-admin";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { invalidateAdminCache, listActiveAdmins, type AdminProfile } from "@/lib/admin";
+import { invalidateAdminCache, listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 import { getLocalAuthRecord, setLocalAuth } from "@/lib/local-auth";
 import { uploadAdminAvatarImage, uploadAdminHeroImage } from "@/lib/storage";
 import { KeyRound, Save, Settings } from "lucide-react";
@@ -30,8 +30,8 @@ type AdminForm = {
   hero_image_url: string;
 };
 
-const DEFAULT_GEOMETRE_NAME = "Ayoub Benali";
-const DEFAULT_CABINET_NAME = "Cabinet geometre expert foncier";
+const DEFAULT_GEOMETRE_NAME = "";
+const DEFAULT_CABINET_NAME = "";
 
 const emptyAdminForm: AdminForm = {
   name: DEFAULT_GEOMETRE_NAME,
@@ -93,7 +93,7 @@ const ParametresCompte = () => {
     listActiveAdmins()
       .then((admins) => {
         if (!active) return;
-        setFallbackAdmin(admins[0] ?? null);
+        setFallbackAdmin(pickPrimaryAdmin(admins));
         setLoadingExistingValues(false);
       })
       .catch(() => {

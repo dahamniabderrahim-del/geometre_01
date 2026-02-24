@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { MessageCircle, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { listActiveAdmins, type AdminProfile } from "@/lib/admin";
+import { listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 
 export function FloatingSocial() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +20,7 @@ export function FloatingSocial() {
     listActiveAdmins()
       .then((admins) => {
         if (!active) return;
-        setPublicAdmin(admins[0] ?? null);
+        setPublicAdmin(pickPrimaryAdmin(admins));
       })
       .catch(() => {
         if (!active) return;

@@ -4,7 +4,7 @@ import { MapPin, Phone, Mail, Clock, ArrowRight } from "lucide-react";
 import { SocialButtons } from "@/components/social/SocialButtons";
 import { useAuth } from "@/hooks/use-auth";
 import { useAdminProfile } from "@/hooks/use-admin";
-import { listActiveAdmins, type AdminProfile } from "@/lib/admin";
+import { listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 
 const services = [
   "Bornage & Délimitation",
@@ -41,7 +41,7 @@ export function Footer() {
     listActiveAdmins()
       .then((admins) => {
         if (!active) return;
-        setPublicAdmin(admins[0] ?? null);
+        setPublicAdmin(pickPrimaryAdmin(admins));
       })
       .catch(() => {
         if (!active) return;

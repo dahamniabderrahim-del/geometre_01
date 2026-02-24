@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
-import { listActiveAdmins, type AdminProfile } from "@/lib/admin";
+import { listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 
 export function CTASection() {
   const [publicAdmin, setPublicAdmin] = useState<AdminProfile | null>(null);
@@ -13,7 +13,7 @@ export function CTASection() {
     listActiveAdmins()
       .then((admins) => {
         if (!active) return;
-        setPublicAdmin(admins[0] ?? null);
+        setPublicAdmin(pickPrimaryAdmin(admins));
       })
       .catch(() => {
         if (!active) return;

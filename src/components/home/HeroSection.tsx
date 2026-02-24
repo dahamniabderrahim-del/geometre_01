@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Shield, Award, MapPin, Calendar } from "lucide-react";
+import { ArrowRight, Shield, Award, MapPin, Calendar, Phone, Mail } from "lucide-react";
 import heroImage from "@/assets/hero-surveyor.jpg";
 import { useEffect, useState } from "react";
-import { listActiveAdmins } from "@/lib/admin";
+import { listActiveAdmins, pickPrimaryAdmin } from "@/lib/admin";
 import { supabase } from "@/integrations/supabase/client";
 
 const heroContent = {
@@ -13,14 +13,16 @@ const heroContent = {
   titleAfter: "en Algerie",
   description:
     "Cabinet de Geometre-Expert specialise en bornage, topographie, cadastre et expertise fonciere. Precision, legalite et professionnalisme au service de vos projets.",
-  cabinetName: "Cabinet geometre expert foncier",
+  cabinetName: "Cabinet non renseigne",
 };
 
 export function HeroSection() {
   const [heroBackgroundImage, setHeroBackgroundImage] = useState(heroImage);
   const [heroCabinetName, setHeroCabinetName] = useState(heroContent.cabinetName);
-  const [geometreName, setGeometreName] = useState("Ayoub Benali");
-  const [geometreGrade, setGeometreGrade] = useState("Geometre expert foncier");
+  const [geometreName, setGeometreName] = useState("");
+  const [geometreGrade, setGeometreGrade] = useState("");
+  const [geometrePhone, setGeometrePhone] = useState("");
+  const [geometreEmail, setGeometreEmail] = useState("");
   const [teamCount, setTeamCount] = useState(0);
   const [projectsCount, setProjectsCount] = useState(0);
   const [servicesCount, setServicesCount] = useState(0);
@@ -32,12 +34,14 @@ export function HeroSection() {
       const admins = await listActiveAdmins();
       if (!active) return;
 
-      const mainAdmin = admins[0];
+      const mainAdmin = pickPrimaryAdmin(admins);
       const dynamicHeroImage = mainAdmin?.hero_image_url?.trim();
       setHeroBackgroundImage(dynamicHeroImage || heroImage);
       setHeroCabinetName(mainAdmin?.tagline?.trim() || heroContent.cabinetName);
-      setGeometreName(mainAdmin?.name?.trim() || "Ayoub Benali");
-      setGeometreGrade(mainAdmin?.grade?.trim() || "Geometre expert foncier");
+      setGeometreName(mainAdmin?.name?.trim() || "");
+      setGeometreGrade(mainAdmin?.grade?.trim() || "");
+      setGeometrePhone(mainAdmin?.phone?.trim() || "");
+      setGeometreEmail(mainAdmin?.email?.trim() || "");
 
       let teamCountQuery = supabase.from("equipe").select("id", { count: "exact", head: true }).eq("active", true);
       let projectsCountQuery = supabase.from("realisations").select("id", { count: "exact", head: true });
@@ -69,8 +73,10 @@ export function HeroSection() {
         if (!active) return;
         setHeroBackgroundImage(heroImage);
         setHeroCabinetName(heroContent.cabinetName);
-        setGeometreName("Ayoub Benali");
-        setGeometreGrade("Geometre expert foncier");
+        setGeometreName("");
+        setGeometreGrade("");
+        setGeometrePhone("");
+        setGeometreEmail("");
         setTeamCount(0);
         setProjectsCount(0);
         setServicesCount(0);
@@ -80,6 +86,8 @@ export function HeroSection() {
       active = false;
     };
   }, []);
+
+  const geometrePhoneHref = geometrePhone ? `tel:${geometrePhone.replace(/[^\d+]/g, "")}` : "";
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
@@ -201,9 +209,31 @@ export function HeroSection() {
                   </svg>
                 </div>
                 <h3 className="font-serif text-xl font-bold text-primary-foreground">Cabinet {heroCabinetName}</h3>
-                <p className="text-secondary font-medium">{geometreGrade}</p>
+                <p className="text-secondary font-medium">{geometreGrade || "Grade non renseigne"}</p>
                 {geometreName && (
                   <p className="mt-1 text-sm text-primary-foreground/85">{geometreName}</p>
+                )}
+                {(geometrePhone || geometreEmail) && (
+                  <div className="mt-3 flex flex-wrap justify-center gap-2">
+                    {geometrePhone && geometrePhoneHref && (
+                      <a
+                        href={geometrePhoneHref}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/10 px-3 py-1 text-xs text-primary-foreground/90 hover:bg-primary-foreground/20 transition-colors"
+                      >
+                        <Phone className="h-3.5 w-3.5 text-secondary" />
+                        {geometrePhone}
+                      </a>
+                    )}
+                    {geometreEmail && (
+                      <a
+                        href={`mailto:${geometreEmail}`}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/10 px-3 py-1 text-xs text-primary-foreground/90 hover:bg-primary-foreground/20 transition-colors"
+                      >
+                        <Mail className="h-3.5 w-3.5 text-secondary" />
+                        {geometreEmail}
+                      </a>
+                    )}
+                  </div>
                 )}
               </div>
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Facebook, Instagram, Linkedin, MessageCircle, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { listActiveAdmins, type AdminProfile } from "@/lib/admin";
+import { listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 
 interface SocialButtonsProps {
   size?: "sm" | "md" | "lg";
@@ -50,7 +50,7 @@ export function SocialButtons({ size = "md", showLabels = false, className }: So
     listActiveAdmins()
       .then((admins) => {
         if (!active) return;
-        setPublicAdmin(admins[0] ?? null);
+        setPublicAdmin(pickPrimaryAdmin(admins));
       })
       .catch(() => {
         if (!active) return;

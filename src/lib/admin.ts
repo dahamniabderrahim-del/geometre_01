@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
-import { isAdminEmail } from "@/lib/auth";
+import { getConfiguredAdminEmails, isAdminEmail } from "@/lib/auth";
 
 export type AdminProfile = Tables<"admins">;
 
@@ -30,6 +30,8 @@ const adminByEmailPromise = new Map<string, Promise<AdminProfile | null>>();
 
 const adminBySlugCache = new Map<string, CacheEntry<AdminProfile | null>>();
 const adminBySlugPromise = new Map<string, Promise<AdminProfile | null>>();
+
+const normalizeEmail = (value?: string | null) => value?.trim().toLowerCase() ?? "";
 
 export async function fetchAdminByEmail(email?: string | null) {
   if (!email) return null;
@@ -130,6 +132,29 @@ export async function listActiveAdmins() {
     });
 
   return activeAdminsPromise;
+}
+
+export function pickPrimaryAdmin(admins: AdminProfile[]) {
+  if (!admins.length) return null;
+
+  const configuredEmails = getConfiguredAdminEmails();
+  if (!configuredEmails.length) {
+    return admins[0];
+  }
+
+  const matchedAdmin = admins.find((admin) =>
+    configuredEmails.includes(normalizeEmail(admin.email))
+  );
+
+  if (matchedAdmin) {
+    return matchedAdmin;
+  }
+
+  return [...admins].sort((a, b) => {
+    const updatedAtA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+    const updatedAtB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+    return updatedAtB - updatedAtA;
+  })[0] ?? admins[0];
 }
 
 export async function isAdminUser(email?: string | null) {

@@ -1,6 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
-import { isAdminUser, listActiveAdmins } from "@/lib/admin";
+import { isAdminUser, listActiveAdmins, pickPrimaryAdmin } from "@/lib/admin";
 import { setLocalAuth } from "@/lib/local-auth";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -44,7 +44,7 @@ const AuthCallback = () => {
       } else {
         const user = data.session?.user;
         const admins = await listActiveAdmins();
-        const defaultAdmin = admins[0];
+        const defaultAdmin = pickPrimaryAdmin(admins);
 
         if (user?.email) {
           const normalizedEmail = user.email.trim().toLowerCase();

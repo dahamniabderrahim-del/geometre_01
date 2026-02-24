@@ -2,7 +2,7 @@ import { CheckCircle2, Award, Shield, Users, Target, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { listActiveAdmins, type AdminProfile } from "@/lib/admin";
+import { listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 import { useEffect, useMemo, useState } from "react";
 
 const values = [
@@ -32,7 +32,7 @@ export function AboutSection() {
       const admins = await listActiveAdmins();
       if (!active) return;
 
-      const mainAdmin = admins[0] ?? null;
+      const mainAdmin = pickPrimaryAdmin(admins);
       setPublicAdmin(mainAdmin);
 
       let teamCountQuery = supabase.from("equipe").select("id", { count: "exact", head: true }).eq("active", true);
@@ -62,9 +62,9 @@ export function AboutSection() {
     };
   }, []);
 
-  const cabinetName = publicAdmin?.tagline?.trim() || "Cabinet geometre expert foncier";
-  const geometreName = publicAdmin?.name?.trim() || "Ayoub Benali";
-  const geometreGrade = publicAdmin?.grade?.trim() || "Geometre expert foncier";
+  const cabinetName = publicAdmin?.tagline?.trim() || "Cabinet non renseigne";
+  const geometreName = publicAdmin?.name?.trim() || "Geometre non renseigne";
+  const geometreGrade = publicAdmin?.grade?.trim() || "";
   const teamValue = teamCount === null ? "--" : String(teamCount);
   const projectsValue = projectsCount === null ? "--" : String(projectsCount);
   const teamFeatureLabel =
@@ -107,7 +107,11 @@ export function AboutSection() {
                   </div>
                   <h3 className="font-serif text-3xl font-bold mb-2">{cabinetName}</h3>
                   <p className="text-primary-foreground/80">{geometreName}</p>
-                  <p className="text-primary-foreground/70 mb-4 text-sm">{geometreGrade}</p>
+                  {geometreGrade ? (
+                    <p className="text-primary-foreground/70 mb-4 text-sm">{geometreGrade}</p>
+                  ) : (
+                    <p className="text-primary-foreground/70 mb-4 text-sm">Grade non renseigne</p>
+                  )}
                   <p className="text-secondary font-semibold">
                     {publicAdmin?.city?.trim() ? `Base a ${publicAdmin.city.trim()}` : "Informations du compte"}
                   </p>

@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { listActiveAdmins, type AdminProfile } from "@/lib/admin";
+import { listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 import { formatContactNotificationMessage } from "@/lib/notification-message";
 import { Link } from "react-router-dom";
 
@@ -36,7 +36,7 @@ const Contact = () => {
     listActiveAdmins()
       .then((admins) => {
         if (!active) return;
-        setDefaultAdmin(admins[0] ?? null);
+        setDefaultAdmin(pickPrimaryAdmin(admins));
       })
       .catch(() => {
         if (!active) return;
@@ -49,8 +49,8 @@ const Contact = () => {
   }, []);
 
   const contactAdmin = defaultAdmin;
-  const contactCabinetName = contactAdmin?.tagline?.trim() || "Cabinet geometre expert foncier";
-  const contactGeometreName = contactAdmin?.name?.trim() || "Ayoub Benali";
+  const contactCabinetName = contactAdmin?.tagline?.trim() ?? "";
+  const contactGeometreName = contactAdmin?.name?.trim() ?? "";
   const contactAddress = contactAdmin?.address?.trim() ?? "";
   const contactCity = contactAdmin?.city?.trim() ?? "";
   const contactPhone = contactAdmin?.phone?.trim() ?? "";
@@ -98,7 +98,7 @@ const Contact = () => {
 
       if (!targetAdminId) {
         const admins = await listActiveAdmins();
-        targetAdminId = admins[0]?.id ?? null;
+        targetAdminId = pickPrimaryAdmin(admins)?.id ?? null;
       }
 
       if (!targetAdminId) {
@@ -209,7 +209,7 @@ const Contact = () => {
                       {contactCabinetName || "Cabinet non renseigne."}
                     </p>
                     <p className="text-muted-foreground text-sm mt-1">
-                      Geometre: {contactGeometreName}
+                      Geometre: {contactGeometreName || "Non renseigne"}
                     </p>
                   </div>
                 </div>
