@@ -23,7 +23,7 @@ const buildFallbackReply = (userText: string) => {
     return "Bonjour. Dites-moi votre besoin: bornage, topographie ou demarches cadastrales.";
   }
 
-  if (normalized.includes("devis") || normalized.includes("prix") || normalized.includes("tarif")) {
+  if (normalized.includes("prix") || normalized.includes("tarif")) {
     return "Pour un prix precis, merci de nous contacter. Le tarif depend du type de mission et de la localisation.";
   }
 

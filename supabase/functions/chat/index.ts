@@ -44,7 +44,7 @@ const buildFallbackReply = (userText: string) => {
     return "Bonjour. Je peux vous aider pour le bornage, la topographie, la copropriete et les demarches foncieres.";
   }
 
-  if (normalized.includes("devis") || normalized.includes("prix") || normalized.includes("tarif")) {
+  if (normalized.includes("prix") || normalized.includes("tarif")) {
     return "Pour un tarif precis, merci de nous contacter via le formulaire. Le montant depend du type de mission et de la localisation.";
   }
 
@@ -53,10 +53,10 @@ const buildFallbackReply = (userText: string) => {
   }
 
   if (normalized.includes("contact") || normalized.includes("telephone") || normalized.includes("rendez")) {
-    return "Vous pouvez nous contacter via la page Contact ou demander un devis en ligne. Horaires: lundi-vendredi 9h-18h, samedi 9h-12h.";
+    return "Vous pouvez nous contacter via la page Contact. Horaires: lundi-vendredi 9h-18h, samedi 9h-12h.";
   }
 
-  return "Merci pour votre message. Je peux vous aider sur les services de geometre-expert, les demarches foncieres et la preparation de votre demande de devis.";
+  return "Merci pour votre message. Je peux vous aider sur les services de geometre-expert et les demarches foncieres.";
 };
 
 serve(async (req) => {
