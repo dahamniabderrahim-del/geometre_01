@@ -20,7 +20,7 @@ type AdminForm = {
   email: string;
   phone: string;
   active: boolean;
-  geometre_expert_name: string;
+  cabinet_name: string;
   bio: string;
   address: string;
   city: string;
@@ -30,12 +30,15 @@ type AdminForm = {
   hero_image_url: string;
 };
 
+const DEFAULT_GEOMETRE_NAME = "Ayoub Benali";
+const DEFAULT_CABINET_NAME = "Cabinet geometre expert foncier";
+
 const emptyAdminForm: AdminForm = {
-  name: "",
+  name: DEFAULT_GEOMETRE_NAME,
   email: "",
   phone: "",
   active: true,
-  geometre_expert_name: "",
+  cabinet_name: DEFAULT_CABINET_NAME,
   bio: "",
   address: "",
   city: "",
@@ -107,11 +110,11 @@ const ParametresCompte = () => {
   useEffect(() => {
     if (!currentAdmin) return;
     setForm({
-      name: currentAdmin.name ?? "",
+      name: currentAdmin.name ?? DEFAULT_GEOMETRE_NAME,
       email: currentAdmin.email ?? "",
       phone: currentAdmin.phone ?? "",
       active: currentAdmin.active ?? true,
-      geometre_expert_name: currentAdmin.tagline ?? "",
+      cabinet_name: currentAdmin.tagline ?? DEFAULT_CABINET_NAME,
       bio: currentAdmin.bio ?? "",
       address: currentAdmin.address ?? "",
       city: currentAdmin.city ?? "",
@@ -144,12 +147,13 @@ const ParametresCompte = () => {
   const saveAdminSettings = async () => {
     if (!isAdmin || !currentAdmin?.id) return;
 
-    const name = form.name.trim();
+    const geometreName = form.name.trim();
+    const cabinetName = form.cabinet_name.trim();
     const email = normalizeEmail(form.email);
-    if (!name) {
+    if (!geometreName) {
       toast({
         title: "Champ requis",
-        description: "Le nom du bureau est obligatoire.",
+        description: "Le nom du geometre est obligatoire.",
         variant: "destructive",
       });
       return;
@@ -203,11 +207,11 @@ const ParametresCompte = () => {
     }
 
     const payload = {
-      name,
+      name: geometreName,
       email,
       phone: form.phone.trim() || null,
       active: form.active,
-      tagline: form.geometre_expert_name.trim() || null,
+      tagline: cabinetName || null,
       bio: form.bio.trim() || null,
       address: form.address.trim() || null,
       city: form.city.trim() || null,
@@ -234,14 +238,14 @@ const ParametresCompte = () => {
       setLocalAuth({
         ...localAuth,
         email,
-        full_name: name,
+        full_name: geometreName,
         avatar_url: payload.avatar_url ?? localAuth.avatar_url,
       });
     }
 
     toast({
       title: "Parametres mis a jour",
-      description: "Les informations du bureau ont ete enregistrees.",
+      description: "Les informations du geometre et du cabinet ont ete enregistrees.",
     });
     invalidateAdminCache();
 
@@ -423,8 +427,10 @@ const ParametresCompte = () => {
                 <h2 className="font-serif text-xl font-bold mb-4">Informations du bureau</h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Nom du bureau</label>
-                    <Input name="name" value={form.name} onChange={handleFieldChange} />
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Nom du geometre expert foncier
+                    </label>
+                    <Input name="name" value={form.name} onChange={handleFieldChange} placeholder="Ex: Ayoub Benali" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">Email</label>
@@ -454,13 +460,13 @@ const ParametresCompte = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
-                      Nom du geometre expert foncier
+                      Nom du cabinet
                     </label>
                     <Input
-                      name="geometre_expert_name"
-                      value={form.geometre_expert_name}
+                      name="cabinet_name"
+                      value={form.cabinet_name}
                       onChange={handleFieldChange}
-                      placeholder="Ex: Ayoub Benali"
+                      placeholder="Ex: Cabinet geometre expert foncier"
                     />
                   </div>
                   <div>

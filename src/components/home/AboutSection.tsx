@@ -62,8 +62,8 @@ export function AboutSection() {
     };
   }, []);
 
-  const cabinetName = publicAdmin?.name?.trim() || "Cabinet";
-  const geometreName = publicAdmin?.tagline?.trim() || "Geometre-Expert";
+  const cabinetName = publicAdmin?.tagline?.trim() || "Cabinet geometre expert foncier";
+  const geometreName = publicAdmin?.name?.trim() || "Ayoub Benali";
   const teamValue = teamCount === null ? "--" : String(teamCount);
   const projectsValue = projectsCount === null ? "--" : String(projectsCount);
   const teamFeatureLabel =

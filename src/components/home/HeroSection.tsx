@@ -13,13 +13,13 @@ const heroContent = {
   titleAfter: "en Algerie",
   description:
     "Cabinet de Geometre-Expert specialise en bornage, topographie, cadastre et expertise fonciere. Precision, legalite et professionnalisme au service de vos projets.",
-  cabinetName: "GeoExpert",
+  cabinetName: "Cabinet geometre expert foncier",
 };
 
 export function HeroSection() {
   const [heroBackgroundImage, setHeroBackgroundImage] = useState(heroImage);
   const [heroCabinetName, setHeroCabinetName] = useState(heroContent.cabinetName);
-  const [geometreName, setGeometreName] = useState("");
+  const [geometreName, setGeometreName] = useState("Ayoub Benali");
   const [teamCount, setTeamCount] = useState(0);
   const [projectsCount, setProjectsCount] = useState(0);
   const [servicesCount, setServicesCount] = useState(0);
@@ -34,8 +34,8 @@ export function HeroSection() {
       const mainAdmin = admins[0];
       const dynamicHeroImage = mainAdmin?.hero_image_url?.trim();
       setHeroBackgroundImage(dynamicHeroImage || heroImage);
-      setHeroCabinetName(mainAdmin?.name?.trim() || heroContent.cabinetName);
-      setGeometreName(mainAdmin?.tagline?.trim() || "");
+      setHeroCabinetName(mainAdmin?.tagline?.trim() || heroContent.cabinetName);
+      setGeometreName(mainAdmin?.name?.trim() || "Ayoub Benali");
 
       let teamCountQuery = supabase.from("equipe").select("id", { count: "exact", head: true }).eq("active", true);
       let projectsCountQuery = supabase.from("realisations").select("id", { count: "exact", head: true });
@@ -67,7 +67,7 @@ export function HeroSection() {
         if (!active) return;
         setHeroBackgroundImage(heroImage);
         setHeroCabinetName(heroContent.cabinetName);
-        setGeometreName("");
+        setGeometreName("Ayoub Benali");
         setTeamCount(0);
         setProjectsCount(0);
         setServicesCount(0);

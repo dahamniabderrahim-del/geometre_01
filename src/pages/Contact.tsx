@@ -49,7 +49,7 @@ const Contact = () => {
   }, []);
 
   const contactAdmin = defaultAdmin;
-  const contactCabinetName = contactAdmin?.name?.trim() ?? "";
+  const contactCabinetName = contactAdmin?.tagline?.trim() || "Cabinet geometre expert foncier";
   const contactAddress = contactAdmin?.address?.trim() ?? "";
   const contactCity = contactAdmin?.city?.trim() ?? "";
   const contactPhone = contactAdmin?.phone?.trim() ?? "";
@@ -402,7 +402,7 @@ const Contact = () => {
             allowFullScreen
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            title="Localisation GéoExpert"
+            title={`Localisation ${contactCabinetName || "Cabinet"}`}
           />
         ) : (
           <div className="h-full w-full bg-muted flex items-center justify-center px-4 text-center">

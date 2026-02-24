@@ -150,8 +150,8 @@ const APropos = () => {
   const contactPhone = publicAdmin?.phone?.trim() ?? "";
   const contactEmail = publicAdmin?.email?.trim() ?? "";
   const contactPhoneHref = contactPhone ? `tel:${contactPhone.replace(/[^\d+]/g, "")}` : "";
-  const cabinetName = publicAdmin?.name?.trim() || "Cabinet";
-  const geometreName = publicAdmin?.tagline?.trim() || "Geometre-Expert";
+  const cabinetName = publicAdmin?.tagline?.trim() || "Cabinet geometre expert foncier";
+  const geometreName = publicAdmin?.name?.trim() || "Ayoub Benali";
   const cabinetCity = publicAdmin?.city?.trim() || "";
   const teamCount = teamMembers.length;
   const contactChannelsCount = [contactPhone, contactEmail].filter(Boolean).length;

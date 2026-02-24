@@ -131,7 +131,7 @@ export function Header() {
   const { admin, isAdmin } = useAdminProfile(user?.email);
   const [publicAdmin, setPublicAdmin] = useState<AdminProfile | null>(null);
   const visibleAdmin = admin ?? publicAdmin;
-  const cabinetName = visibleAdmin?.name?.trim() || "GeoExpert";
+  const cabinetName = visibleAdmin?.tagline?.trim() || "Cabinet geometre expert foncier";
   const cabinetSubtitle = "GEOMETRE-EXPERT AGREE";
   const userDisplayName =
     (isAdmin && admin?.name) ||
