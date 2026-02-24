@@ -1,0 +1,276 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 20% 97%;
+    --foreground: 220 30% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 12%;
+
+    /* Navy Blue - Primary */
+    --primary: 220 50% 20%;
+    --primary-foreground: 45 80% 95%;
+
+    /* Gold - Secondary */
+    --secondary: 45 85% 55%;
+    --secondary-foreground: 220 50% 15%;
+
+    --muted: 220 15% 92%;
+    --muted-foreground: 220 15% 40%;
+
+    /* Gold accent */
+    --accent: 45 85% 55%;
+    --accent-foreground: 220 50% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 20% 88%;
+    --input: 220 20% 88%;
+    --ring: 220 50% 20%;
+
+    --radius: 0.5rem;
+
+    /* Custom design tokens - Institutional Navy/Gold */
+    --gradient-hero: linear-gradient(135deg, hsl(220 50% 15%) 0%, hsl(220 45% 25%) 50%, hsl(220 40% 30%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(45 85% 55%) 0%, hsl(40 80% 50%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 20% 97%) 100%);
+    --shadow-soft: 0 4px 20px -4px hsl(220 30% 12% / 0.08);
+    --shadow-medium: 0 8px 30px -8px hsl(220 30% 12% / 0.12);
+    --shadow-strong: 0 20px 50px -12px hsl(220 30% 12% / 0.2);
+    --shadow-gold: 0 4px 20px -4px hsl(45 85% 55% / 0.3);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 220 30% 8%;
+    --foreground: 220 20% 95%;
+
+    --card: 220 30% 12%;
+    --card-foreground: 220 20% 95%;
+
+    --popover: 220 30% 12%;
+    --popover-foreground: 220 20% 95%;
+
+    --primary: 220 45% 45%;
+    --primary-foreground: 220 20% 95%;
+
+    --secondary: 45 80% 60%;
+    --secondary-foreground: 220 30% 10%;
+
+    --muted: 220 25% 18%;
+    --muted-foreground: 220 15% 60%;
+
+    --accent: 45 80% 60%;
+    --accent-foreground: 220 30% 10%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 25% 18%;
+    --input: 220 25% 18%;
+    --ring: 220 45% 45%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+  }
+}
+
+@layer components {
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+
+  .gold-gradient {
+    background: var(--gradient-gold);
+  }
+
+  .card-gradient {
+    background: var(--gradient-card);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+
+  .shadow-strong {
+    box-shadow: var(--shadow-strong);
+  }
+
+  .shadow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+
+  .geometric-pattern {
+    background-image: 
+      linear-gradient(30deg, hsl(var(--primary) / 0.02) 12%, transparent 12.5%, transparent 87%, hsl(var(--primary) / 0.02) 87.5%, hsl(var(--primary) / 0.02)),
+      linear-gradient(150deg, hsl(var(--primary) / 0.02) 12%, transparent 12.5%, transparent 87%, hsl(var(--primary) / 0.02) 87.5%, hsl(var(--primary) / 0.02)),
+      linear-gradient(30deg, hsl(var(--primary) / 0.02) 12%, transparent 12.5%, transparent 87%, hsl(var(--primary) / 0.02) 87.5%, hsl(var(--primary) / 0.02)),
+      linear-gradient(150deg, hsl(var(--primary) / 0.02) 12%, transparent 12.5%, transparent 87%, hsl(var(--primary) / 0.02) 87.5%, hsl(var(--primary) / 0.02)),
+      linear-gradient(60deg, hsl(var(--secondary) / 0.03) 25%, transparent 25.5%, transparent 75%, hsl(var(--secondary) / 0.03) 75%, hsl(var(--secondary) / 0.03)),
+      linear-gradient(60deg, hsl(var(--secondary) / 0.03) 25%, transparent 25.5%, transparent 75%, hsl(var(--secondary) / 0.03) 75%, hsl(var(--secondary) / 0.03));
+    background-size: 80px 140px;
+    background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+  }
+
+  .gold-border {
+    border: 2px solid hsl(var(--secondary));
+  }
+
+  .navy-section {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  /* Social media button styles */
+  .social-btn {
+    @apply flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 hover:scale-110;
+  }
+
+  .social-btn-facebook {
+    @apply bg-[#1877F2] text-white hover:bg-[#166FE5];
+  }
+
+  .social-btn-whatsapp {
+    @apply bg-[#25D366] text-white hover:bg-[#22C55E];
+  }
+
+  .social-btn-instagram {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    @apply text-white;
+  }
+
+  .social-btn-linkedin {
+    @apply bg-[#0A66C2] text-white hover:bg-[#004182];
+  }
+
+  /* Notification badge */
+  .notification-badge {
+    @apply absolute -top-1 -right-1 flex items-center justify-center rounded-full bg-[#e41e3f] px-1 text-[10px] font-semibold text-white;
+    min-width: 1.1rem;
+    height: 1.1rem;
+    box-shadow: 0 0 0 2px hsl(var(--card));
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-gold);
+  }
+
+  .text-gradient-navy {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-hero);
+  }
+
+  .animate-fade-up {
+    animation: fadeUp 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.5s ease-out forwards;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px hsl(45 85% 55% / 0.2);
+  }
+  to {
+    box-shadow: 0 0 30px hsl(45 85% 55% / 0.4);
+  }
+}

@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Admin {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  email     String   @unique
+  password  String   @default("") @db.Text
+  phone     String?
+  active    Boolean  @default(true)
+  slug      String?  @unique
+  tagline   String?  @db.Text
+  bio       String?  @db.Text
+  address   String?  @db.Text
+  city      String?
+  openingHoursWeekdays String? @map("opening_hours_weekdays")
+  openingHoursSaturday String? @map("opening_hours_saturday")
+  avatarUrl String?  @map("avatar_url")
+  heroImageUrl String? @map("hero_image_url")
+  themePrimary String? @map("theme_primary")
+  themePrimaryForeground String? @map("theme_primary_foreground")
+  themeSecondary String? @map("theme_secondary")
+  themeSecondaryForeground String? @map("theme_secondary_foreground")
+  themeGradientHero String? @map("theme_gradient_hero")
+  themeGradientGold String? @map("theme_gradient_gold")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users User[]
+  equipes Equipe[]
+  notifications Notification[]
+  services Service[]
+  realisations Realisation[]
+
+  @@map("admins")
+}
+
+model User {
+  id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
+  email         String         @unique
+  password      String         @default("") @db.Text
+  subject       String?        @db.Text
+  message       String?        @db.Text
+  phone         String?
+  adminId       String?        @map("admin_id") @db.Uuid
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  admin         Admin?         @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([adminId])
+  @@map("users")
+}
+
+model Realisation {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  adminId     String   @map("admin_id") @db.Uuid
+  title       String
+  category    String
+  imageUrl    String   @map("image_url")
+  location    String
+  date        String
+  surface     String
+  description String   @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId, createdAt])
+  @@map("realisations")
+}
+
+model Service {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  adminId     String   @map("admin_id") @db.Uuid
+  title       String
+  slug        String
+  category    String?
+  description String   @db.Text
+  icon        String?
+  imageUrl    String?  @map("image_url")
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@unique([adminId, slug])
+  @@index([adminId, active, sortOrder])
+  @@map("services")
+}
+
+model Equipe {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  adminId   String   @map("admin_id") @db.Uuid
+  name      String
+  prenom    String?
+  role      String?
+  dateOfBirth DateTime? @map("date_of_birth") @db.Date
+  email     String?
+  phone     String?
+  bio       String?  @db.Text
+  imageUrl  String?  @map("image_url")
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId, active, sortOrder])
+  @@map("equipe")
+}
+
+enum NotificationType {
+  success
+  info
+  warning
+}
+
+model Notification {
+  id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  adminId   String?          @map("admin_id") @db.Uuid
+  title     String
+  message   String
+  type      NotificationType @default(info)
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  admin Admin? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([adminId])
+  @@map("notifications")
+}

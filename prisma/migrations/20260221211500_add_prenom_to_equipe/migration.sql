@@ -1,0 +1,2 @@
+ALTER TABLE "equipe"
+ADD COLUMN IF NOT EXISTS "prenom" TEXT;

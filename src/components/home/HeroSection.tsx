@@ -1,0 +1,208 @@
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Shield, Award, MapPin, Calendar } from "lucide-react";
+import heroImage from "@/assets/hero-surveyor.jpg";
+import { useEffect, useState } from "react";
+import { listActiveAdmins } from "@/lib/admin";
+
+const heroContent = {
+  badge: "Geometre-Expert Agree",
+  titleBefore: "L'Excellence du",
+  titleHighlight: "Foncier",
+  titleAfter: "en Algerie",
+  description:
+    "Cabinet de Geometre-Expert specialise en bornage, topographie, cadastre et expertise fonciere. Precision, legalite et professionnalisme au service de vos projets.",
+  yearsExperience: 25,
+  projectsCompleted: 2000,
+  responseHours: 48,
+  cabinetName: "GeoExpert",
+};
+
+export function HeroSection() {
+  const [heroBackgroundImage, setHeroBackgroundImage] = useState(heroImage);
+  const [heroCabinetName, setHeroCabinetName] = useState(heroContent.cabinetName);
+  const [geometreName, setGeometreName] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    listActiveAdmins()
+      .then((admins) => {
+        if (!active) return;
+        const mainAdmin = admins[0];
+        const dynamicHeroImage = mainAdmin?.hero_image_url?.trim();
+        setHeroBackgroundImage(dynamicHeroImage || heroImage);
+        setHeroCabinetName(mainAdmin?.name?.trim() || heroContent.cabinetName);
+        setGeometreName(mainAdmin?.tagline?.trim() || "");
+      })
+      .catch(() => {
+        if (!active) return;
+        setHeroBackgroundImage(heroImage);
+        setHeroCabinetName(heroContent.cabinetName);
+        setGeometreName("");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return (
+    <section className="relative min-h-screen flex items-center overflow-hidden">
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroBackgroundImage})` }}
+      >
+        <div className="absolute inset-0 hero-gradient opacity-95" />
+      </div>
+
+      <div className="absolute top-20 right-10 w-64 h-64 border-2 border-secondary/20 rounded-full animate-float" />
+      <div
+        className="absolute bottom-20 left-10 w-32 h-32 border-2 border-secondary/30 rounded-full animate-float"
+        style={{ animationDelay: "2s" }}
+      />
+      <div className="absolute top-1/3 right-1/4 w-4 h-4 bg-secondary rounded-full animate-pulse" />
+
+      <div className="container mx-auto px-4 relative z-10 py-20">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="max-w-xl">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/20 text-secondary mb-6 animate-fade-up border border-secondary/30">
+              <Shield className="w-4 h-4" />
+              <span className="text-sm font-semibold tracking-wide">{heroContent.badge}</span>
+            </div>
+
+            <h1
+              className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground leading-tight mb-6 animate-fade-up"
+              style={{ animationDelay: "0.1s" }}
+            >
+              {heroContent.titleBefore}{" "}
+              <span className="text-secondary">{heroContent.titleHighlight}</span>{" "}
+              {heroContent.titleAfter}
+            </h1>
+
+            <p
+              className="text-lg text-primary-foreground/80 mb-8 leading-relaxed animate-fade-up"
+              style={{ animationDelay: "0.2s" }}
+            >
+              {heroContent.description}
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 animate-fade-up" style={{ animationDelay: "0.3s" }}>
+              <Button size="lg" className="gold-gradient text-secondary-foreground font-semibold shadow-gold hover:shadow-strong" asChild>
+                <Link to="/devis">
+                  Demander un devis
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="border-2 border-primary-foreground/30 text-primary-foreground bg-transparent hover:bg-primary-foreground/10"
+                asChild
+              >
+                <Link to="/services">Decouvrir nos services</Link>
+              </Button>
+            </div>
+
+            <div
+              className="flex flex-wrap gap-6 mt-10 pt-8 border-t border-primary-foreground/20 animate-fade-up"
+              style={{ animationDelay: "0.4s" }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center">
+                  <Award className="w-6 h-6 text-secondary" />
+                </div>
+                <div>
+                  <p className="text-2xl font-serif font-bold text-primary-foreground">
+                    {heroContent.yearsExperience}+
+                  </p>
+                  <p className="text-xs text-primary-foreground/60 uppercase tracking-wider">
+                    Annees d'experience
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center">
+                  <MapPin className="w-6 h-6 text-secondary" />
+                </div>
+                <div>
+                  <p className="text-2xl font-serif font-bold text-primary-foreground">
+                    {heroContent.projectsCompleted}+
+                  </p>
+                  <p className="text-xs text-primary-foreground/60 uppercase tracking-wider">
+                    Projets realises
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center">
+                  <Calendar className="w-6 h-6 text-secondary" />
+                </div>
+                <div>
+                  <p className="text-2xl font-serif font-bold text-primary-foreground">
+                    {heroContent.responseHours}h
+                  </p>
+                  <p className="text-xs text-primary-foreground/60 uppercase tracking-wider">
+                    Delai de reponse
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="hidden lg:block animate-fade-up" style={{ animationDelay: "0.5s" }}>
+            <div className="bg-card/10 backdrop-blur-sm rounded-2xl p-8 border border-primary-foreground/20">
+              <div className="text-center mb-6">
+                <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-secondary/20 border-4 border-secondary flex items-center justify-center">
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="w-12 h-12 text-secondary"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <polygon points="12 2 2 22 22 22" />
+                    <line x1="12" y1="8" x2="12" y2="16" />
+                    <line x1="8" y1="14" x2="16" y2="14" />
+                  </svg>
+                </div>
+                <h3 className="font-serif text-xl font-bold text-primary-foreground">Cabinet {heroCabinetName}</h3>
+                <p className="text-secondary font-medium">Geometre-Expert Foncier</p>
+                {geometreName && (
+                  <p className="mt-1 text-sm text-primary-foreground/85">{geometreName}</p>
+                )}
+              </div>
+
+              <div className="space-y-4 text-sm">
+                <div className="flex items-center gap-3 p-3 bg-primary-foreground/5 rounded-lg">
+                  <Shield className="w-5 h-5 text-secondary shrink-0" />
+                  <span className="text-primary-foreground/90">Inscrit a l'ordre des geometres-experts</span>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-primary-foreground/5 rounded-lg">
+                  <Award className="w-5 h-5 text-secondary shrink-0" />
+                  <span className="text-primary-foreground/90">
+                    Diplome d'ingenieur d'etat en sciences geodesiques et travaux topographiques
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-primary-foreground/5 rounded-lg">
+                  <MapPin className="w-5 h-5 text-secondary shrink-0" />
+                  <span className="text-primary-foreground/90">Agree sur tout le territoire national</span>
+                </div>
+              </div>
+
+              <Button className="w-full mt-6 gold-gradient text-secondary-foreground font-semibold" asChild>
+                <Link to="/a-propos">En savoir plus</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="w-6 h-10 rounded-full border-2 border-primary-foreground/30 flex items-start justify-center p-2">
+          <div className="w-1.5 h-3 bg-secondary rounded-full animate-pulse" />
+        </div>
+      </div>
+    </section>
+  );
+}
