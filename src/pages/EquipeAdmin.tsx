@@ -45,6 +45,7 @@ const roleOptions = [
   "Technicien Topographe",
   "Responsable Cadastre",
   "Expert Foncier",
+  "Assistant du Geometre",
   "Technicien Drone",
   "Dessinateur DAO",
   "Assistant Administratif",
