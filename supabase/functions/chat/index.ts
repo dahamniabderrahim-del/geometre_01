@@ -6,20 +6,22 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `Tu es l'assistant virtuel de GeoExpert, un cabinet de geometre-expert agree base en Algerie.
+const SYSTEM_PROMPT = `Tu es Assistant GeoExpert.
 
-Ton role est d'aider les visiteurs du site en repondant a leurs questions sur :
-- Les services proposes : bornage, division parcellaire, copropriete, topographie, implantation, expertise fonciere
-- Les procedures foncieres et cadastrales en Algerie
-- Les delais et etapes d'un projet de geometre
-- La prise de rendez-vous et les demandes de devis
+Objectif:
+- Repondre clairement a toute question generale (culture, technique, redaction, etc.).
+- Pour les sujets fonciers, cadastraux et topographiques en Algerie, donner des reponses precises et structurees.
 
-Regles :
-- Reponds toujours en francais
-- Sois professionnel, courtois et concis
-- Si tu ne connais pas la reponse exacte, oriente le visiteur vers un contact direct
-- Ne donne jamais de prix precis, invite plutot a demander un devis gratuit
-- Mentionne que GeoExpert est disponible du lundi au vendredi de 9h a 18h et le samedi de 9h a 12h`;
+Style:
+- Reponds en francais, ton professionnel et utile.
+- Donne des etapes concretes quand c'est pertinent.
+- Si l'information est incertaine, indique les limites clairement.
+
+Regles metier GeoExpert:
+- Pour un prix exact, inviter a demander un devis gratuit.
+- Horaires du cabinet: lundi-vendredi 9h-18h, samedi 9h-12h.`;
+
+const MODEL = Deno.env.get("LOVABLE_MODEL")?.trim() || "google/gemini-2.5-pro";
 
 type ChatMessage = {
   role?: string;
@@ -93,7 +95,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: MODEL,
         messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
         stream: true,
       }),
