@@ -4,6 +4,7 @@ import { ArrowRight, Shield, Award, MapPin, Calendar } from "lucide-react";
 import heroImage from "@/assets/hero-surveyor.jpg";
 import { useEffect, useState } from "react";
 import { listActiveAdmins } from "@/lib/admin";
+import { supabase } from "@/integrations/supabase/client";
 
 const heroContent = {
   badge: "Geometre-Expert Agree",
@@ -12,9 +13,6 @@ const heroContent = {
   titleAfter: "en Algerie",
   description:
     "Cabinet de Geometre-Expert specialise en bornage, topographie, cadastre et expertise fonciere. Precision, legalite et professionnalisme au service de vos projets.",
-  yearsExperience: 25,
-  projectsCompleted: 2000,
-  responseHours: 48,
   cabinetName: "GeoExpert",
 };
 
@@ -22,24 +20,57 @@ export function HeroSection() {
   const [heroBackgroundImage, setHeroBackgroundImage] = useState(heroImage);
   const [heroCabinetName, setHeroCabinetName] = useState(heroContent.cabinetName);
   const [geometreName, setGeometreName] = useState("");
+  const [teamCount, setTeamCount] = useState(0);
+  const [projectsCount, setProjectsCount] = useState(0);
+  const [servicesCount, setServicesCount] = useState(0);
 
   useEffect(() => {
     let active = true;
 
-    listActiveAdmins()
-      .then((admins) => {
-        if (!active) return;
-        const mainAdmin = admins[0];
-        const dynamicHeroImage = mainAdmin?.hero_image_url?.trim();
-        setHeroBackgroundImage(dynamicHeroImage || heroImage);
-        setHeroCabinetName(mainAdmin?.name?.trim() || heroContent.cabinetName);
-        setGeometreName(mainAdmin?.tagline?.trim() || "");
-      })
+    const loadHeroData = async () => {
+      const admins = await listActiveAdmins();
+      if (!active) return;
+
+      const mainAdmin = admins[0];
+      const dynamicHeroImage = mainAdmin?.hero_image_url?.trim();
+      setHeroBackgroundImage(dynamicHeroImage || heroImage);
+      setHeroCabinetName(mainAdmin?.name?.trim() || heroContent.cabinetName);
+      setGeometreName(mainAdmin?.tagline?.trim() || "");
+
+      let teamCountQuery = supabase.from("equipe").select("id", { count: "exact", head: true }).eq("active", true);
+      let projectsCountQuery = supabase.from("realisations").select("id", { count: "exact", head: true });
+      let servicesCountQuery = supabase
+        .from("services")
+        .select("id", { count: "exact", head: true })
+        .eq("active", true);
+
+      if (mainAdmin?.id) {
+        teamCountQuery = teamCountQuery.eq("admin_id", mainAdmin.id);
+        projectsCountQuery = projectsCountQuery.eq("admin_id", mainAdmin.id);
+        servicesCountQuery = servicesCountQuery.eq("admin_id", mainAdmin.id);
+      }
+
+      const [{ count: team }, { count: projects }, { count: services }] = await Promise.all([
+        teamCountQuery,
+        projectsCountQuery,
+        servicesCountQuery,
+      ]);
+
+      if (!active) return;
+      setTeamCount(team ?? 0);
+      setProjectsCount(projects ?? 0);
+      setServicesCount(services ?? 0);
+    };
+
+    loadHeroData()
       .catch(() => {
         if (!active) return;
         setHeroBackgroundImage(heroImage);
         setHeroCabinetName(heroContent.cabinetName);
         setGeometreName("");
+        setTeamCount(0);
+        setProjectsCount(0);
+        setServicesCount(0);
       });
 
     return () => {
@@ -114,10 +145,10 @@ export function HeroSection() {
                 </div>
                 <div>
                   <p className="text-2xl font-serif font-bold text-primary-foreground">
-                    {heroContent.yearsExperience}+
+                    {teamCount}
                   </p>
                   <p className="text-xs text-primary-foreground/60 uppercase tracking-wider">
-                    Annees d'experience
+                    Professionnels
                   </p>
                 </div>
               </div>
@@ -127,7 +158,7 @@ export function HeroSection() {
                 </div>
                 <div>
                   <p className="text-2xl font-serif font-bold text-primary-foreground">
-                    {heroContent.projectsCompleted}+
+                    {projectsCount}
                   </p>
                   <p className="text-xs text-primary-foreground/60 uppercase tracking-wider">
                     Projets realises
@@ -140,10 +171,10 @@ export function HeroSection() {
                 </div>
                 <div>
                   <p className="text-2xl font-serif font-bold text-primary-foreground">
-                    {heroContent.responseHours}h
+                    {servicesCount}
                   </p>
                   <p className="text-xs text-primary-foreground/60 uppercase tracking-wider">
-                    Delai de reponse
+                    Services actifs
                   </p>
                 </div>
               </div>

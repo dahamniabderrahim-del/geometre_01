@@ -20,14 +20,13 @@ import { listActiveAdmins, type AdminProfile } from "@/lib/admin";
 const credentials = [
   {
     icon: GraduationCap,
-    title: "Diplome d'Etat",
-    description:
-      "Ingenieur Geometre-Topographe diplome de l'Ecole Nationale Polytechnique d'Alger",
+    title: "Formation qualifiante",
+    description: "Parcours en sciences geodesiques et travaux topographiques.",
   },
   {
     icon: Shield,
     title: "Agrement National",
-    description: "Agree par le Ministere des Finances - N d'agrement: GE-2024-1234",
+    description: "Agree selon la reglementation en vigueur.",
   },
   {
     icon: Award,
@@ -36,16 +35,9 @@ const credentials = [
   },
   {
     icon: Building,
-    title: "Certification ISO",
-    description: "Cabinet certifie ISO 9001:2015 pour la qualite des prestations",
+    title: "Organisation qualite",
+    description: "Processus internes structures pour assurer la qualite des prestations.",
   },
-];
-
-const stats = [
-  { value: "25+", label: "Annees d'experience" },
-  { value: "2000+", label: "Projets realises" },
-  { value: "48", label: "Wilayas couvertes" },
-  { value: "98%", label: "Clients satisfaits" },
 ];
 
 const values = [
@@ -84,30 +76,58 @@ const APropos = () => {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [teamLoading, setTeamLoading] = useState(true);
   const [publicAdmin, setPublicAdmin] = useState<AdminProfile | null>(null);
+  const [projectsCount, setProjectsCount] = useState(0);
+  const [servicesCount, setServicesCount] = useState(0);
 
   useEffect(() => {
     let mounted = true;
 
-    const loadTeamMembers = async () => {
+    const loadPageData = async () => {
       setTeamLoading(true);
-      const { data } = await supabase
+      let teamQuery = supabase
         .from("equipe")
         .select("id, name, prenom, role, bio, image_url, active, sort_order")
         .eq("active", true)
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
 
+      let projectsCountQuery = supabase.from("realisations").select("id", { count: "exact", head: true });
+      let servicesCountQuery = supabase
+        .from("services")
+        .select("id", { count: "exact", head: true })
+        .eq("active", true);
+
+      if (publicAdmin?.id) {
+        teamQuery = teamQuery.eq("admin_id", publicAdmin.id);
+        projectsCountQuery = projectsCountQuery.eq("admin_id", publicAdmin.id);
+        servicesCountQuery = servicesCountQuery.eq("admin_id", publicAdmin.id);
+      }
+
+      const [{ data: teamData }, { count: projects }, { count: services }] = await Promise.all([
+        teamQuery,
+        projectsCountQuery,
+        servicesCountQuery,
+      ]);
+
       if (!mounted) return;
-      setTeamMembers(data ?? []);
+      setTeamMembers(teamData ?? []);
+      setProjectsCount(projects ?? 0);
+      setServicesCount(services ?? 0);
       setTeamLoading(false);
     };
 
-    loadTeamMembers();
+    loadPageData().catch(() => {
+      if (!mounted) return;
+      setTeamMembers([]);
+      setProjectsCount(0);
+      setServicesCount(0);
+      setTeamLoading(false);
+    });
 
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [publicAdmin?.id]);
 
   useEffect(() => {
     let active = true;
@@ -130,6 +150,17 @@ const APropos = () => {
   const contactPhone = publicAdmin?.phone?.trim() ?? "";
   const contactEmail = publicAdmin?.email?.trim() ?? "";
   const contactPhoneHref = contactPhone ? `tel:${contactPhone.replace(/[^\d+]/g, "")}` : "";
+  const cabinetName = publicAdmin?.name?.trim() || "Cabinet";
+  const geometreName = publicAdmin?.tagline?.trim() || "Geometre-Expert";
+  const cabinetCity = publicAdmin?.city?.trim() || "";
+  const teamCount = teamMembers.length;
+  const contactChannelsCount = [contactPhone, contactEmail].filter(Boolean).length;
+  const stats = [
+    { value: String(teamCount), label: "Professionnels" },
+    { value: String(projectsCount), label: "Projets realises" },
+    { value: String(servicesCount), label: "Services actifs" },
+    { value: String(contactChannelsCount), label: "Canaux de contact" },
+  ];
 
   return (
     <Layout>
@@ -144,8 +175,8 @@ const APropos = () => {
               Presentation du <span className="text-secondary">Cabinet</span>
             </h1>
             <p className="text-xl text-primary-foreground/80 leading-relaxed">
-              Depuis 1999, GeoExpert est un cabinet de Geometre-Expert de reference en Algerie,
-              alliant expertise technique et innovation technologique.
+              {cabinetName} est un cabinet de Geometre-Expert, avec une approche technique
+              rigoureuse adaptee a vos besoins fonciers.
             </p>
           </div>
         </div>
@@ -180,14 +211,14 @@ const APropos = () => {
                   foncieres de maniere definitive.
                 </p>
                 <p>
-                  Notre cabinet, fonde en 1999 par M. Ahmed BENALI, s'est impose comme une reference
-                  dans le domaine du foncier en Algerie. Nous intervenons sur l'ensemble du territoire
-                  national pour des missions de bornage, topographie, expertise et conseil.
+                  Le cabinet {cabinetName} est pilote par {geometreName}. Nous intervenons pour des
+                  missions de bornage, topographie, expertise et conseil.
                 </p>
                 <p>
-                  Equipe des dernieres technologies (GPS RTK, drones, scanner 3D), notre equipe de
-                  professionnels qualifies vous accompagne dans tous vos projets fonciers avec rigueur
-                  et professionnalisme.
+                  Equipe des dernieres technologies (GPS RTK, drones, scanner 3D),{" "}
+                  {teamCount > 0
+                    ? `notre equipe de ${teamCount} professionnel${teamCount > 1 ? "s" : ""} vous accompagne dans tous vos projets fonciers avec rigueur et professionnalisme.`
+                    : "notre equipe professionnelle vous accompagne dans tous vos projets fonciers avec rigueur et professionnalisme."}
                 </p>
               </div>
 
@@ -303,8 +334,9 @@ const APropos = () => {
                 Nous Intervenons sur <span className="text-gradient">Tout le Territoire</span>
               </h2>
               <p className="text-muted-foreground mb-6 leading-relaxed">
-                Bases a Alger, nous intervenons dans les 48 wilayas d'Algerie pour tous vos projets
-                fonciers et topographiques.
+                {cabinetCity
+                  ? `Base a ${cabinetCity}, nous intervenons sur tout le territoire national pour vos projets fonciers et topographiques.`
+                  : "Nous intervenons sur tout le territoire national pour vos projets fonciers et topographiques."}
               </p>
 
               <ul className="space-y-3 mb-8">
@@ -350,7 +382,7 @@ const APropos = () => {
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Zone d'intervention GeoExpert"
+                title={`Zone d'intervention ${cabinetName}`}
               />
             </div>
           </div>
