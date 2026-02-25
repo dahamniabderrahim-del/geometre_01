@@ -51,11 +51,7 @@ type NotificationRow = {
   user_id?: string | null;
   title: string;
   message: string;
-  sender_name?: string | null;
-  sender_email?: string | null;
-  sender_phone?: string | null;
   subject?: string | null;
-  sender_message?: string | null;
   type: "success" | "info" | "warning" | null;
   read: boolean | null;
   created_at: string;
@@ -228,10 +224,10 @@ export function Header() {
       userId: row.user_id ?? undefined,
       type: row.type ?? "info",
       title: row.title,
-      message: isLegacyFormatted ? row.sender_message?.trim() || parsedContact?.body || row.message : row.message,
-      senderName: row.sender_name?.trim() || parsedContact?.senderName,
-      senderEmail: row.sender_email?.trim() || parsedContact?.senderEmail,
-      senderPhone: row.sender_phone?.trim() || parsedContact?.senderPhone,
+      message: isLegacyFormatted ? parsedContact?.body || row.message : row.message,
+      senderName: parsedContact?.senderName,
+      senderEmail: parsedContact?.senderEmail,
+      senderPhone: parsedContact?.senderPhone,
       subject: row.subject?.trim() || (isLegacyFormatted ? parsedContact?.subject : undefined),
       read: row.read ?? false,
       time: formatDistanceToNow(parseDatabaseTimestamp(row.created_at), {
@@ -242,24 +238,22 @@ export function Header() {
   };
 
   const markAsRead = async (id: string) => {
-    if (!admin?.id) return;
+    if (!isAdmin) return;
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );
     await supabase
       .from("notifications")
       .update({ read: true })
-      .eq("id", id)
-      .eq("admin_id", admin.id);
+      .eq("id", id);
   };
 
   const markAllRead = async () => {
-    if (!admin?.id) return;
+    if (!isAdmin) return;
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     await supabase
       .from("notifications")
       .update({ read: true })
-      .eq("admin_id", admin.id)
       .eq("read", false);
   };
 
@@ -295,12 +289,12 @@ export function Header() {
 
   useEffect(() => {
     initialUnreadSoundPlayedRef.current = false;
-  }, [admin?.id]);
+  }, [isAdmin]);
 
   useEffect(() => {
     let isMounted = true;
     const loadNotifications = async () => {
-      if (!isAdmin || !admin?.id) {
+      if (!isAdmin) {
         setNotifications([]);
         setNotifLoading(false);
         return;
@@ -309,8 +303,7 @@ export function Header() {
       setNotifError(null);
       const { data, error } = await supabase
         .from("notifications")
-        .select("id, user_id, title, message, subject, sender_name, sender_email, sender_phone, sender_message, type, read, created_at")
-        .eq("admin_id", admin.id)
+        .select("id, user_id, title, message, subject, type, read, created_at")
         .order("created_at", { ascending: false })
         .limit(10);
 
@@ -340,20 +333,19 @@ export function Header() {
     return () => {
       isMounted = false;
     };
-  }, [isAdmin, admin?.id]);
+  }, [isAdmin]);
 
   useEffect(() => {
-    if (!isAdmin || !admin?.id) return;
+    if (!isAdmin) return;
 
     const channel = supabase
-      .channel(`notifications-admin-${admin.id}`)
+      .channel("notifications-admin")
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
           table: "notifications",
-          filter: `admin_id=eq.${admin.id}`,
         },
         (payload) => {
           const newRow = payload.new as NotificationRow;
@@ -378,7 +370,6 @@ export function Header() {
           event: "UPDATE",
           schema: "public",
           table: "notifications",
-          filter: `admin_id=eq.${admin.id}`,
         },
         (payload) => {
           const updatedRow = payload.new as NotificationRow;
@@ -401,7 +392,6 @@ export function Header() {
           event: "DELETE",
           schema: "public",
           table: "notifications",
-          filter: `admin_id=eq.${admin.id}`,
         },
         (payload) => {
           const oldRow = payload.old as { id?: string };
@@ -414,7 +404,7 @@ export function Header() {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [isAdmin, admin?.id]);
+  }, [isAdmin]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {

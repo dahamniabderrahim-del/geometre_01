@@ -112,33 +112,15 @@ const Contact = () => {
         targetAdminId = pickPrimaryAdmin(admins)?.id ?? null;
       }
 
-      if (!targetAdminId) {
-        toast({
-          title: "Compte non lie",
-          description: "Aucun admin n'est lie a ce compte.",
-          variant: "destructive",
-        });
-        return;
-      }
-
       const userContactPayload = {
         name: senderName,
         email: senderEmail,
         phone: senderPhone,
-        subject: messageSubject,
-        message: messageBody,
-        admin_id: targetAdminId,
+        ...(targetAdminId ? { admin_id: targetAdminId } : {}),
       };
 
       const userPayloadVariants: Array<Record<string, unknown>> = [
         userContactPayload,
-        {
-          name: senderName,
-          email: senderEmail,
-          phone: senderPhone,
-          subject: messageSubject,
-          message: messageBody,
-        },
         {
           name: senderName,
           email: senderEmail,
@@ -236,16 +218,18 @@ const Contact = () => {
       }
 
       if (!resolvedUserId) {
+        const insertUserPayload: Record<string, unknown> = {
+          id: user.id,
+          name: senderName || senderEmail.split("@")[0],
+          email: senderEmail,
+          password: "",
+          phone: senderPhone,
+          ...(targetAdminId ? { admin_id: targetAdminId } : {}),
+        };
+
         const { data: insertedUser } = await supabase
           .from("users")
-          .insert({
-            id: user.id,
-            name: senderName || senderEmail.split("@")[0],
-            email: senderEmail,
-            password: "",
-            phone: senderPhone,
-            admin_id: targetAdminId,
-          } as any)
+          .insert(insertUserPayload as any)
           .select("id")
           .maybeSingle();
         resolvedUserId = insertedUser?.id ?? null;
@@ -261,7 +245,6 @@ const Contact = () => {
       }
 
       const notificationPayload = {
-        admin_id: targetAdminId,
         user_id: resolvedUserId,
         title: "Nouveau message",
         subject: messageSubject,

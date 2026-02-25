@@ -44,8 +44,6 @@ model User {
   name          String
   email         String         @unique
   password      String         @default("") @db.Text
-  subject       String?        @db.Text
-  message       String?        @db.Text
   phone         String?
   adminId       String?        @map("admin_id") @db.Uuid
   createdAt     DateTime       @default(now()) @map("created_at")
@@ -127,22 +125,16 @@ enum NotificationType {
 
 model Notification {
   id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  adminId       String?          @map("admin_id") @db.Uuid
   userId        String?          @map("user_id") @db.Uuid
   title         String
   message       String
-  senderName    String?          @map("sender_name")
-  senderEmail   String?          @map("sender_email")
-  senderPhone   String?          @map("sender_phone")
   subject       String?          @db.Text
-  senderMessage String?          @map("sender_message") @db.Text
   type          NotificationType @default(info)
   read          Boolean          @default(false)
   createdAt     DateTime         @default(now()) @map("created_at")
 
   user  User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([adminId])
   @@index([userId])
   @@map("notifications")
 }

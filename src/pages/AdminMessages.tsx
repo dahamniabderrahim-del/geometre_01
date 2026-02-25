@@ -17,10 +17,6 @@ type AdminMessage = {
   message: string;
   user_id: string | null;
   subject: string | null;
-  sender_name?: string | null;
-  sender_email?: string | null;
-  sender_phone?: string | null;
-  sender_message?: string | null;
   read: boolean;
   created_at: string;
   type: "success" | "info" | "warning";
@@ -44,7 +40,7 @@ const displayValue = (value: string) => {
 
 const AdminMessages = () => {
   const { user, loading: authLoading } = useAuth();
-  const { admin, isAdmin, loading: adminLoading } = useAdminProfile(user?.email);
+  const { isAdmin, loading: adminLoading } = useAdminProfile(user?.email);
 
   const [messages, setMessages] = useState<AdminMessage[]>([]);
   const [usersById, setUsersById] = useState<Record<string, UserContact>>({});
@@ -52,7 +48,7 @@ const AdminMessages = () => {
   const [error, setError] = useState<string | null>(null);
 
   const loadMessages = async () => {
-    if (!admin?.id) {
+    if (!isAdmin) {
       setMessages([]);
       setLoading(false);
       return;
@@ -63,8 +59,7 @@ const AdminMessages = () => {
 
     const { data, error: loadError } = await supabase
       .from("notifications")
-      .select("id, title, message, user_id, subject, sender_name, sender_email, sender_phone, sender_message, read, created_at, type")
-      .eq("admin_id", admin.id)
+      .select("id, title, message, user_id, subject, read, created_at, type")
       .order("created_at", { ascending: false });
 
     if (loadError) {
@@ -104,29 +99,28 @@ const AdminMessages = () => {
   };
 
   const markAsRead = async (id: string) => {
-    if (!admin?.id) return;
+    if (!isAdmin) return;
     setMessages((prev) => prev.map((item) => (item.id === id ? { ...item, read: true } : item)));
     await supabase
       .from("notifications")
       .update({ read: true })
-      .eq("id", id)
-      .eq("admin_id", admin.id);
+      .eq("id", id);
   };
 
   const markAllRead = async () => {
-    if (!admin?.id) return;
+    if (!isAdmin) return;
     setMessages((prev) => prev.map((item) => ({ ...item, read: true })));
     await supabase
       .from("notifications")
       .update({ read: true })
-      .eq("admin_id", admin.id)
+      .eq("title", "Nouveau message")
       .eq("read", false);
   };
 
   useEffect(() => {
     if (!isAdmin) return;
     loadMessages();
-  }, [isAdmin, admin?.id]);
+  }, [isAdmin]);
 
   if (authLoading || adminLoading) {
     return (
@@ -227,12 +221,12 @@ const AdminMessages = () => {
                 const parsed = parseContactNotificationMessage(item.message);
                 const linkedUser = item.user_id ? usersById[item.user_id] : undefined;
                 const isLegacyFormatted = /(^|\n)\s*nom\s*:/i.test(item.message) || /(^|\n)\s*sujet\s*:/i.test(item.message);
-                const senderName = linkedUser?.name?.trim() || item.sender_name?.trim() || parsed.senderName;
-                const senderEmail = linkedUser?.email?.trim() || item.sender_email?.trim() || parsed.senderEmail;
-                const senderPhone = linkedUser?.phone?.trim() || item.sender_phone?.trim() || parsed.senderPhone;
+                const senderName = linkedUser?.name?.trim() || parsed.senderName;
+                const senderEmail = linkedUser?.email?.trim() || parsed.senderEmail;
+                const senderPhone = linkedUser?.phone?.trim() || parsed.senderPhone;
                 const subject = item.subject?.trim() || (isLegacyFormatted ? parsed.subject : "");
                 const body = isLegacyFormatted
-                  ? item.sender_message?.trim() || parsed.body || item.message
+                  ? parsed.body || item.message
                   : item.message.trim();
 
                 return (
