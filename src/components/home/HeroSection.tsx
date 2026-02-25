@@ -197,8 +197,8 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="order-1 lg:order-1 hidden lg:block animate-fade-up" style={{ animationDelay: "0.5s" }}>
-            <div className="bg-card/10 backdrop-blur-sm rounded-2xl p-8 border border-primary-foreground/20">
+          <div className="order-1 lg:order-1 animate-fade-up" style={{ animationDelay: "0.5s" }}>
+            <div className="mx-auto w-full max-w-xl bg-card/10 backdrop-blur-sm rounded-2xl p-5 sm:p-6 lg:p-8 border border-primary-foreground/20">
               <div className="text-center mb-6">
                 <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-secondary/20 border-4 border-secondary flex items-center justify-center">
                   <svg
