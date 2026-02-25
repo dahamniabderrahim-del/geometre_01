@@ -10,7 +10,7 @@ const faqs = [
   {
     question: "Combien coute une prestation de geometre-expert ?",
     answer:
-      "Les tarifs varient selon la nature de la mission, la superficie du terrain et sa complexite. Un bornage simple peut couter entre 800 EUR et 1500 EUR, une division parcellaire entre 1200 EUR et 3000 EUR. Nous analysons votre demande puis nous vous orientons vers la solution la plus adaptee.",
+      "Les tarifs varient selon la nature de la mission, la superficie du terrain et sa complexite. Un bornage simple peut couter entre 120000 DZD et 220000 DZD, une division parcellaire entre 180000 DZD et 450000 DZD. Nous analysons votre demande puis nous vous orientons vers la solution la plus adaptee.",
   },
   {
     question: "Quelle est la difference entre un geometre et un geometre-expert ?",
@@ -47,7 +47,7 @@ export function FAQSection() {
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-4">
               Vos questions, nos reponses
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
+            <p className="text-muted-foreground text-base md:text-lg max-w-xl mx-auto">
               Retrouvez les reponses aux questions les plus courantes sur nos prestations.
             </p>
           </div>
@@ -59,10 +59,10 @@ export function FAQSection() {
                 value={`item-${index}`}
                 className="bg-card rounded-xl shadow-soft px-6 border-none"
               >
-                <AccordionTrigger className="text-left font-medium text-foreground hover:text-primary py-5">
+                <AccordionTrigger className="text-left text-base md:text-lg font-medium text-foreground hover:text-primary py-5 md:py-6 [&>svg]:h-5 [&>svg]:w-5">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground pb-5 leading-relaxed">
+                <AccordionContent className="text-base md:text-lg text-muted-foreground pb-5 md:pb-6 leading-relaxed">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>
