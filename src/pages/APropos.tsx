@@ -165,17 +165,17 @@ const APropos = () => {
 
   return (
     <Layout>
-      <section className="relative py-24 hero-gradient overflow-hidden">
+      <section className="relative py-16 md:py-24 hero-gradient overflow-hidden">
         <div className="absolute inset-0 geometric-pattern opacity-10" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl">
             <span className="inline-block px-4 py-1 rounded-full bg-secondary/20 text-secondary text-sm font-semibold mb-4 tracking-wider uppercase">
               Notre Cabinet
             </span>
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6">
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6">
               Presentation du <span className="text-secondary">Cabinet</span>
             </h1>
-            <p className="text-xl text-primary-foreground/80 leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-primary-foreground/80 leading-relaxed">
               {cabinetName} est un cabinet de Geometre-Expert, avec une approche technique
               rigoureuse adaptee a vos besoins fonciers.
             </p>
@@ -198,9 +198,9 @@ const APropos = () => {
         </div>
       </section>
 
-      <section className="py-24 bg-background">
+      <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
             <div>
               <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-6">
                 Le Geometre-Expert : <span className="text-gradient">Garant du Foncier</span>
@@ -223,11 +223,11 @@ const APropos = () => {
                 </p>
               </div>
 
-              <div className="mt-8 flex gap-4">
-                <Button size="lg" className="gold-gradient text-secondary-foreground" asChild>
+              <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <Button size="lg" className="gold-gradient text-secondary-foreground w-full sm:w-auto" asChild>
                   <Link to="/contact">Envoyer un message</Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild>
+                <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
                   <Link to="/services">Voir nos services</Link>
                 </Button>
               </div>
@@ -251,7 +251,7 @@ const APropos = () => {
         </div>
       </section>
 
-      <section className="py-24 bg-muted/50">
+      <section className="py-16 md:py-24 bg-muted/50">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="inline-block px-4 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-semibold mb-4 tracking-wider uppercase">
@@ -276,7 +276,7 @@ const APropos = () => {
         </div>
       </section>
 
-      <section className="py-24 bg-background">
+      <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="inline-block px-4 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-semibold mb-4 tracking-wider uppercase">
@@ -324,9 +324,9 @@ const APropos = () => {
         </div>
       </section>
 
-      <section className="py-24 bg-muted/50">
+      <section className="py-16 md:py-24 bg-muted/50">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
             <div>
               <span className="inline-block px-4 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-semibold mb-4 tracking-wider uppercase">
                 Zone d'Intervention
@@ -354,9 +354,9 @@ const APropos = () => {
                 ))}
               </ul>
 
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 {contactPhoneHref && (
-                  <Button className="hero-gradient text-primary-foreground" asChild>
+                  <Button className="hero-gradient text-primary-foreground w-full sm:w-auto" asChild>
                     <a href={contactPhoneHref}>
                       <Phone className="w-4 h-4 mr-2" />
                       Nous Appeler
@@ -364,7 +364,7 @@ const APropos = () => {
                   </Button>
                 )}
                 {contactEmail && (
-                  <Button variant="outline" asChild>
+                  <Button variant="outline" className="w-full sm:w-auto" asChild>
                     <a href={`mailto:${contactEmail}`}>
                       <Mail className="w-4 h-4 mr-2" />
                       Nous Ecrire
@@ -374,7 +374,7 @@ const APropos = () => {
               </div>
             </div>
 
-            <div className="rounded-2xl overflow-hidden shadow-strong h-[400px]">
+            <div className="rounded-2xl overflow-hidden shadow-strong h-[320px] sm:h-[400px]">
               <iframe
                 src="https://www.google.com/maps?q=35.6971,-0.6308&z=12&output=embed"
                 width="100%"
@@ -390,7 +390,7 @@ const APropos = () => {
         </div>
       </section>
 
-      <section className="py-24 hero-gradient">
+      <section className="py-16 md:py-24 hero-gradient">
         <div className="container mx-auto px-4 text-center">
           <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary-foreground mb-6">
             Besoin d'un Geometre-Expert ?

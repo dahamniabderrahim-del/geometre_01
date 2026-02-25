@@ -562,12 +562,12 @@ export function Header() {
         </div>
 
         {/* Main nav */}
-        <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-12 h-12 hero-gradient rounded-lg flex items-center justify-center shadow-medium group-hover:shadow-gold transition-all duration-300">
+        <div className="flex items-center justify-between h-16 gap-2">
+          <Link to="/" className="group flex min-w-0 flex-1 items-center gap-2 sm:gap-3 lg:flex-none">
+            <div className="h-10 w-10 sm:h-12 sm:w-12 hero-gradient rounded-lg flex items-center justify-center shadow-medium group-hover:shadow-gold transition-all duration-300">
               <svg
                 viewBox="0 0 24 24"
-                className="w-7 h-7 text-secondary"
+                className="h-6 w-6 sm:w-7 sm:h-7 text-secondary"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
@@ -577,8 +577,13 @@ export function Header() {
                 <line x1="8" y1="14" x2="16" y2="14" />
               </svg>
             </div>
-            <div>
-              <span className={cn("font-serif text-2xl font-bold", isHomeTop ? "text-black" : "text-foreground")}>
+            <div className="min-w-0">
+              <span
+                className={cn(
+                  "block truncate font-serif text-lg sm:text-xl md:text-2xl font-bold",
+                  isHomeTop ? "text-black" : "text-foreground"
+                )}
+              >
                 {cabinetName}
               </span>
               <span className={cn(
@@ -611,7 +616,7 @@ export function Header() {
           </nav>
 
           {/* Right side actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3 pl-2">
             {/* Notifications (admin only) */}
             {isAdmin && (
               <div className="relative" ref={notifRef}>
@@ -638,7 +643,7 @@ export function Header() {
 
                 {/* Notification panel */}
                 {notifOpen && (
-                  <div className="absolute right-0 top-12 z-50 w-[22rem] sm:w-[24rem] overflow-hidden rounded-2xl border border-black/10 bg-[#f0f2f5] shadow-[0_18px_42px_rgba(0,0,0,0.24)] animate-fade-in">
+                  <div className="absolute right-0 top-12 z-50 w-[min(22rem,calc(100vw-1rem))] sm:w-[24rem] overflow-hidden rounded-2xl border border-black/10 bg-[#f0f2f5] shadow-[0_18px_42px_rgba(0,0,0,0.24)] animate-fade-in">
                     <div className="px-3 pb-2 pt-3">
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex min-w-0 items-center gap-2.5">
@@ -663,7 +668,7 @@ export function Header() {
                           </button>
 
                           {notifActionsOpen && (
-                            <div className="absolute right-0 top-11 z-20 w-80 rounded-2xl border border-black/10 bg-white p-2 shadow-[0_12px_30px_rgba(0,0,0,0.24)]">
+                            <div className="absolute right-0 top-11 z-20 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-black/10 bg-white p-2 shadow-[0_12px_30px_rgba(0,0,0,0.24)]">
                               <button
                                 onClick={() => {
                                   void markAllRead();

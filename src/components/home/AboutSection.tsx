@@ -85,9 +85,9 @@ export function AboutSection() {
   );
 
   return (
-    <section className="py-24 bg-muted/50">
+    <section className="py-16 md:py-24 bg-muted/50">
       <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
           <div className="relative">
             <div className="relative rounded-2xl overflow-hidden shadow-strong">
               <div className="aspect-[4/5] hero-gradient flex items-center justify-center">
@@ -119,17 +119,17 @@ export function AboutSection() {
               </div>
             </div>
 
-            <div className="absolute -bottom-6 -right-6 bg-card rounded-xl shadow-strong p-6 animate-float">
+            <div className="absolute -bottom-6 -right-6 hidden sm:block bg-card rounded-xl shadow-strong p-6 animate-float">
               <p className="text-4xl font-serif font-bold text-secondary">{teamValue}</p>
               <p className="text-sm text-muted-foreground">Professionnels</p>
             </div>
 
-            <div className="absolute -top-6 -left-6 bg-secondary rounded-xl shadow-gold p-6 text-secondary-foreground">
+            <div className="absolute -top-6 -left-6 hidden sm:block bg-secondary rounded-xl shadow-gold p-6 text-secondary-foreground">
               <p className="text-4xl font-serif font-bold">{projectsValue}</p>
               <p className="text-sm">Projets realises</p>
             </div>
 
-            <div className="absolute -bottom-4 left-1/4 w-32 h-32 border-4 border-secondary/30 rounded-xl -z-10" />
+            <div className="absolute -bottom-4 left-1/4 hidden sm:block w-32 h-32 border-4 border-secondary/30 rounded-xl -z-10" />
           </div>
 
           <div>
@@ -152,7 +152,7 @@ export function AboutSection() {
                 : "Notre equipe professionnelle met son savoir-faire et ses equipements a votre service."}
             </p>
 
-            <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
               {values.map((value) => (
                 <div key={value.title} className="text-center p-4 bg-card rounded-xl shadow-soft">
                   <h4 className="font-serif font-bold text-foreground mb-1">{value.title}</h4>
@@ -161,7 +161,7 @@ export function AboutSection() {
               ))}
             </div>
 
-            <ul className="grid grid-cols-2 gap-3 mb-8">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
               {features.map((feature) => (
                 <li key={feature.text} className="flex items-center gap-3 text-sm text-foreground">
                   <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
@@ -172,11 +172,11 @@ export function AboutSection() {
               ))}
             </ul>
 
-            <div className="flex gap-4">
-              <Button size="lg" className="hero-gradient text-primary-foreground" asChild>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <Button size="lg" className="hero-gradient text-primary-foreground w-full sm:w-auto" asChild>
                 <Link to="/a-propos">Decouvrir le Cabinet</Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
                 <Link to="/contact">Nous Contacter</Link>
               </Button>
             </div>
