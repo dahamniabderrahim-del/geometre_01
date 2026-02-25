@@ -443,43 +443,43 @@ export function Header() {
       <button
         key={notif.id}
         onClick={() => !notif.read && void markAsRead(notif.id)}
-        className="group relative w-full rounded-xl px-2 py-2 text-left transition-colors hover:bg-black/[0.04]"
+        className="group relative w-full rounded-xl px-1.5 py-1.5 sm:px-2 sm:py-2 text-left transition-colors hover:bg-black/[0.04]"
       >
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-2 sm:gap-3">
           <div className="relative shrink-0">
-            <Avatar className="h-12 w-12 border border-black/10">
-              <AvatarFallback className={cn("text-sm font-semibold text-white", notifAvatarClass[notif.type])}>
+            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border border-black/10">
+              <AvatarFallback className={cn("text-xs sm:text-sm font-semibold text-white", notifAvatarClass[notif.type])}>
                 {notificationAvatarInitial}
               </AvatarFallback>
             </Avatar>
             <span className={cn(
-              "absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-[#f0f2f5] text-white",
+              "absolute -bottom-1 -right-1 flex h-4.5 w-4.5 sm:h-5 sm:w-5 items-center justify-center rounded-full border-2 border-[#f0f2f5] text-white",
               notifBadgeClass[notif.type]
             )}>
-              <Icon className="h-3 w-3" />
+              <Icon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
             </span>
           </div>
-          <div className="min-w-0 flex-1 pr-4">
+          <div className="min-w-0 flex-1 pr-3 sm:pr-4">
             {isContactMessage ? (
               <>
-                <p className="truncate text-[1rem] font-semibold leading-5 text-[#1c1e21]">{senderName}</p>
-                <p className="line-clamp-1 text-[0.92rem] leading-5 text-[#1c1e21]/90">
+                <p className="truncate text-[0.92rem] sm:text-[1rem] font-semibold leading-5 text-[#1c1e21]">{senderName}</p>
+                <p className="line-clamp-1 text-[0.84rem] sm:text-[0.92rem] leading-5 text-[#1c1e21]/90">
                   Sujet: {subject}
                 </p>
-                <p className="line-clamp-1 text-[0.88rem] leading-5 text-[#1c1e21]/75">
+                <p className="line-clamp-1 text-[0.82rem] sm:text-[0.88rem] leading-5 text-[#1c1e21]/75">
                   {messagePreview}
                 </p>
               </>
             ) : (
-              <p className="text-[0.95rem] leading-5 text-[#1c1e21]">
+              <p className="text-[0.88rem] sm:text-[0.95rem] leading-5 text-[#1c1e21]">
                 <span className="font-semibold">{notif.title}</span>{" "}
                 <span className="text-[#1c1e21]/90">{notif.message}</span>
               </p>
             )}
-            <p className="mt-1 text-xs font-semibold text-[#1877f2]">{toCompactTime(notif.time)}</p>
+            <p className="mt-1 text-[11px] sm:text-xs font-semibold text-[#1877f2]">{toCompactTime(notif.time)}</p>
           </div>
         </div>
-        {!notif.read && <span className="absolute right-3 top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full bg-[#1877f2]" />}
+        {!notif.read && <span className="absolute right-2 sm:right-3 top-1/2 h-2 w-2 sm:h-2.5 sm:w-2.5 -translate-y-1/2 rounded-full bg-[#1877f2]" />}
       </button>
     );
   };
@@ -622,7 +622,7 @@ export function Header() {
               <div className="relative" ref={notifRef}>
                 <button
                   className={cn(
-                    "relative p-2 rounded-full transition-colors",
+                    "relative p-1.5 sm:p-2 rounded-full transition-colors",
                     isHomeTop ? "hover:bg-black/10" : "hover:bg-muted"
                   )}
                   onClick={() => {
@@ -635,7 +635,7 @@ export function Header() {
                     });
                   }}
                 >
-                  <Bell className={cn("w-5 h-5", isHomeTop ? "text-black/90" : "text-foreground/70")} />
+                  <Bell className={cn("h-4.5 w-4.5 sm:w-5 sm:h-5", isHomeTop ? "text-black/90" : "text-foreground/70")} />
                   {unreadCount > 0 && (
                     <span className="notification-badge">{unreadCount}</span>
                   )}
@@ -643,39 +643,39 @@ export function Header() {
 
                 {/* Notification panel */}
                 {notifOpen && (
-                  <div className="absolute right-0 top-12 z-50 w-[min(22rem,calc(100vw-1rem))] sm:w-[24rem] overflow-hidden rounded-2xl border border-black/10 bg-[#f0f2f5] shadow-[0_18px_42px_rgba(0,0,0,0.24)] animate-fade-in">
-                    <div className="px-3 pb-2 pt-3">
+                  <div className="absolute right-0 top-12 z-50 w-[min(19.5rem,calc(100vw-0.75rem))] sm:w-[22rem] lg:w-[24rem] max-w-[calc(100vw-0.75rem)] overflow-hidden rounded-2xl border border-black/10 bg-[#f0f2f5] shadow-[0_18px_42px_rgba(0,0,0,0.24)] animate-fade-in">
+                    <div className="px-2.5 sm:px-3 pb-2 pt-2.5 sm:pt-3">
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex min-w-0 items-center gap-2.5">
-                          <Avatar className="h-10 w-10 shrink-0 border border-black/10">
+                          <Avatar className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 border border-black/10">
                             <AvatarImage src={userAvatarUrl} alt={userDisplayName} />
-                            <AvatarFallback className="bg-[#e2e5ea] text-sm font-semibold text-[#1c1e21]">
+                            <AvatarFallback className="bg-[#e2e5ea] text-xs sm:text-sm font-semibold text-[#1c1e21]">
                               {userInitial}
                             </AvatarFallback>
                           </Avatar>
-                          <h3 className="truncate font-sans text-[2rem] font-bold leading-none text-[#1c1e21]">Notifications</h3>
+                          <h3 className="truncate font-sans text-[1.35rem] sm:text-[2rem] font-bold leading-none text-[#1c1e21]">Notifications</h3>
                         </div>
                         <div className="relative">
                           <button
                             onClick={() => setNotifActionsOpen((prev) => !prev)}
-                            className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-[#65676b] transition-colors hover:bg-black/5"
+                            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-white text-[#65676b] transition-colors hover:bg-black/5"
                             title="Options des notifications"
                             aria-label="Options des notifications"
                             aria-expanded={notifActionsOpen}
                             aria-haspopup="menu"
                           >
-                            <MoreHorizontal className="h-5 w-5" />
+                            <MoreHorizontal className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
                           </button>
 
                           {notifActionsOpen && (
-                            <div className="absolute right-0 top-11 z-20 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-black/10 bg-white p-2 shadow-[0_12px_30px_rgba(0,0,0,0.24)]">
+                            <div className="absolute right-0 top-10 sm:top-11 z-20 w-[min(17rem,calc(100vw-1.25rem))] sm:w-[20rem] rounded-2xl border border-black/10 bg-white p-2 shadow-[0_12px_30px_rgba(0,0,0,0.24)]">
                               <button
                                 onClick={() => {
                                   void markAllRead();
                                   setNotifActionsOpen(false);
                                 }}
                                 disabled={unreadCount === 0}
-                                className="flex w-full items-center gap-3 rounded-lg bg-black/[0.06] px-3 py-2 text-left text-[1.12rem] font-medium text-[#1c1e21] transition-colors hover:bg-black/[0.09] disabled:cursor-not-allowed disabled:opacity-50"
+                                className="flex w-full items-center gap-3 rounded-lg bg-black/[0.06] px-3 py-2 text-left text-[0.96rem] sm:text-[1.12rem] font-medium text-[#1c1e21] transition-colors hover:bg-black/[0.09] disabled:cursor-not-allowed disabled:opacity-50"
                               >
                                 <Check className="h-4 w-4 shrink-0 text-[#2e3135]" />
                                 <span>Tout marquer comme lu</span>
@@ -687,7 +687,7 @@ export function Header() {
                                   setNotifActionsOpen(false);
                                   setNotifOpen(false);
                                 }}
-                                className="mt-1 flex items-center gap-3 rounded-lg px-3 py-2 text-[1.12rem] font-medium text-[#1c1e21] transition-colors hover:bg-black/[0.06]"
+                                className="mt-1 flex items-center gap-3 rounded-lg px-3 py-2 text-[0.96rem] sm:text-[1.12rem] font-medium text-[#1c1e21] transition-colors hover:bg-black/[0.06]"
                               >
                                 <Monitor className="h-4 w-4 shrink-0 text-[#2e3135]" />
                                 <span>Ouvrir les notifications</span>
@@ -700,7 +700,7 @@ export function Header() {
                         <button
                           onClick={() => setNotifFilter("all")}
                           className={cn(
-                            "rounded-full px-3 py-1.5 text-sm font-semibold transition-colors",
+                            "rounded-full px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold transition-colors",
                             notifFilter === "all" ? "bg-[#dce8ff] text-[#1877f2]" : "text-[#1c1e21] hover:bg-black/5"
                           )}
                         >
@@ -709,7 +709,7 @@ export function Header() {
                         <button
                           onClick={() => setNotifFilter("unread")}
                           className={cn(
-                            "rounded-full px-3 py-1.5 text-sm font-semibold transition-colors",
+                            "rounded-full px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold transition-colors",
                             notifFilter === "unread" ? "bg-[#dce8ff] text-[#1877f2]" : "text-[#1c1e21] hover:bg-black/5"
                           )}
                         >
@@ -718,7 +718,7 @@ export function Header() {
                       </div>
                     </div>
 
-                    <div className="max-h-[26rem] overflow-y-auto px-2 pb-2">
+                    <div className="max-h-[22rem] sm:max-h-[26rem] overflow-y-auto px-1.5 sm:px-2 pb-2">
                       {notifLoading && (
                         <div className="px-2 py-3 text-sm text-[#65676b]">
                           Chargement...
@@ -742,11 +742,11 @@ export function Header() {
                           {unreadNotifications.length > 0 && (
                             <>
                               <div className="flex items-center justify-between px-2 pb-1 pt-1">
-                                <p className="text-base font-bold text-[#1c1e21]">Nouveau</p>
+                                <p className="text-sm sm:text-base font-bold text-[#1c1e21]">Nouveau</p>
                                 <Link
                                   to="/admin/messages"
                                   onClick={() => setNotifOpen(false)}
-                                  className="text-sm font-medium text-[#1877f2] hover:underline"
+                                  className="text-xs sm:text-sm font-medium text-[#1877f2] hover:underline"
                                 >
                                   Voir tout
                                 </Link>
@@ -759,7 +759,7 @@ export function Header() {
 
                           {notifFilter === "all" && olderNotifications.length > 0 && (
                             <>
-                              <p className="px-2 pb-1 pt-3 text-base font-bold text-[#1c1e21]">Plus tôt</p>
+                              <p className="px-2 pb-1 pt-3 text-sm sm:text-base font-bold text-[#1c1e21]">Plus tôt</p>
                               <div className="space-y-1">
                                 {olderNotifications.map((notif) => renderNotificationItem(notif))}
                               </div>
