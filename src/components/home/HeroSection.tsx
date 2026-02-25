@@ -112,7 +112,7 @@ export function HeroSection() {
 
       <div className="container mx-auto px-4 relative z-10 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="order-2 lg:order-2 max-w-xl">
+          <div className="hidden lg:block order-2 lg:order-2 max-w-xl">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/20 text-secondary mb-6 animate-fade-up border border-secondary/30">
               <Shield className="w-4 h-4" />
               <span className="text-sm font-semibold tracking-wide">{heroContent.badge}</span>
