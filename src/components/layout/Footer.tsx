@@ -6,6 +6,15 @@ import { useAuth } from "@/hooks/use-auth";
 import { useAdminProfile } from "@/hooks/use-admin";
 import { listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 
+const toServiceAnchor = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, " et ")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 const services = [
   "Bornage & Délimitation",
   "Division Parcellaire",
@@ -13,7 +22,7 @@ const services = [
   "Copropriété",
   "Expertise Foncière",
   "Photogrammétrie Drone",
-];
+].map((label) => ({ label, anchor: toServiceAnchor(label) }));
 
 const quickLinks = [
   { label: "Accueil", href: "/" },
@@ -107,13 +116,13 @@ export function Footer() {
             </h4>
             <ul className="space-y-3 text-sm text-primary-foreground/70">
               {services.map((service) => (
-                <li key={service}>
+                <li key={service.label}>
                   <Link
-                    to="/services"
+                    to={`/services#${service.anchor}`}
                     className="hover:text-secondary transition-colors flex items-center gap-2 group"
                   >
                     <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {service}
+                    {service.label}
                   </Link>
                 </li>
               ))}

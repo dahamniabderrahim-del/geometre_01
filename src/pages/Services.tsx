@@ -9,7 +9,7 @@ import { useAdminProfile } from "@/hooks/use-admin";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadPublicImage } from "@/lib/storage";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import serviceTopographieImage from "@/assets/service-topographie.jpg";
 import serviceBornageImage from "@/assets/service-bornage.jpg";
 import serviceFoncierImage from "@/assets/service-foncier.jpg";
@@ -110,6 +110,18 @@ const formatServiceCardTitle = (title: string) => {
   return title.replace(/\bet\b/gi, "&").replace(/\s+/g, " ").trim().toUpperCase();
 };
 
+const normalizeForMatch = (value: string) => {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, " et ")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+};
+
+const normalizeAsSlug = (value: string) => normalizeForMatch(value).replace(/\s+/g, "-");
+
 const serviceFallbackImages = [
   serviceTopographieImage,
   serviceBornageImage,
@@ -138,6 +150,7 @@ const Services = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   const { admin, isAdmin } = useAdminProfile(user?.email);
+  const location = useLocation();
 
   const [services, setServices] = useState<ServiceRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -308,6 +321,48 @@ const Services = () => {
       .slice()
       .sort((a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title));
   }, [services]);
+
+  useEffect(() => {
+    if (!location.hash || loading || publicServices.length === 0) return;
+
+    const targetHash = decodeURIComponent(location.hash.replace(/^#/, ""));
+    const targetSlug = normalizeAsSlug(targetHash);
+
+    let targetService =
+      publicServices.find((item) => normalizeAsSlug(item.slug) === targetSlug) ??
+      publicServices.find((item) => normalizeAsSlug(item.title) === targetSlug);
+
+    if (!targetService) {
+      const targetTokens = normalizeForMatch(targetHash).split(" ").filter(Boolean);
+      const scored = publicServices
+        .map((item) => {
+          const haystack = normalizeForMatch(
+            `${item.slug} ${item.title} ${item.category ?? ""}`
+          );
+          const score = targetTokens.reduce((acc, token) => {
+            if (!token) return acc;
+            return haystack.includes(token) ? acc + (token.length > 3 ? 2 : 1) : acc;
+          }, 0);
+          return { item, score };
+        })
+        .sort((a, b) => b.score - a.score);
+
+      if ((scored[0]?.score ?? 0) > 0) {
+        targetService = scored[0].item;
+      }
+    }
+
+    if (!targetService) return;
+
+    const element = document.getElementById(`service-card-${targetService.id}`);
+    if (!element) return;
+
+    window.requestAnimationFrame(() => {
+      const headerOffset = 96;
+      const top = element.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
+    });
+  }, [location.hash, loading, publicServices]);
 
   const resetForm = () => {
     setForm(emptyForm);
@@ -662,7 +717,8 @@ const Services = () => {
                 return (
                   <article
                     key={service.id}
-                    className="group overflow-hidden rounded-[0.65rem] border border-[#cad4e2] bg-white shadow-[0_22px_40px_-30px_rgba(15,35,70,0.8)]"
+                    id={`service-card-${service.id}`}
+                    className="group overflow-hidden rounded-[0.65rem] border border-[#cad4e2] bg-white shadow-[0_22px_40px_-30px_rgba(15,35,70,0.8)] scroll-mt-24"
                   >
                     <div className="relative aspect-[16/9] overflow-hidden bg-[#dfe6f0]">
                       <div className="absolute inset-0 bg-gradient-to-t from-[#1d34661a] to-transparent" />

@@ -28,13 +28,19 @@ type UserContact = {
   phone: string | null;
 };
 
+const normalizeText = (value: unknown) => {
+  if (typeof value === "string") return value.trim();
+  if (value === null || value === undefined) return "";
+  return String(value).trim();
+};
+
 const senderInitial = (senderName: string) => {
-  const trimmed = senderName.trim();
+  const trimmed = normalizeText(senderName);
   return (trimmed.charAt(0) || "U").toUpperCase();
 };
 
 const displayValue = (value: string) => {
-  const normalized = value.trim();
+  const normalized = normalizeText(value);
   return normalized || "-";
 };
 
@@ -69,12 +75,12 @@ const AdminMessages = () => {
       return;
     }
 
-    const onlyUserMessages = ((data ?? []) as AdminMessage[]).filter((item) => item.title === "Nouveau message");
-    setMessages(onlyUserMessages);
+    const allNotifications = (data ?? []) as AdminMessage[];
+    setMessages(allNotifications);
 
     const userIds = Array.from(
       new Set(
-        onlyUserMessages
+        allNotifications
           .map((item) => item.user_id)
           .filter((id): id is string => Boolean(id))
       )
@@ -113,7 +119,6 @@ const AdminMessages = () => {
     await supabase
       .from("notifications")
       .update({ read: true })
-      .eq("title", "Nouveau message")
       .eq("read", false);
   };
 
@@ -218,16 +223,26 @@ const AdminMessages = () => {
 
             <div className="space-y-3">
               {messages.map((item) => {
-                const parsed = parseContactNotificationMessage(item.message);
+                const isContactMessage = item.title === "Nouveau message";
+                const parsed = isContactMessage ? parseContactNotificationMessage(item.message) : null;
                 const linkedUser = item.user_id ? usersById[item.user_id] : undefined;
                 const isLegacyFormatted = /(^|\n)\s*nom\s*:/i.test(item.message) || /(^|\n)\s*sujet\s*:/i.test(item.message);
-                const senderName = linkedUser?.name?.trim() || parsed.senderName;
-                const senderEmail = linkedUser?.email?.trim() || parsed.senderEmail;
-                const senderPhone = linkedUser?.phone?.trim() || parsed.senderPhone;
-                const subject = item.subject?.trim() || (isLegacyFormatted ? parsed.subject : "");
-                const body = isLegacyFormatted
-                  ? parsed.body || item.message
-                  : item.message.trim();
+                const senderName = isContactMessage
+                  ? normalizeText(linkedUser?.name) || normalizeText(parsed?.senderName) || "Utilisateur"
+                  : normalizeText(linkedUser?.name) || "Systeme";
+                const senderEmail = isContactMessage
+                  ? normalizeText(linkedUser?.email) || normalizeText(parsed?.senderEmail) || ""
+                  : normalizeText(linkedUser?.email);
+                const senderPhone = isContactMessage
+                  ? normalizeText(linkedUser?.phone) || normalizeText(parsed?.senderPhone) || ""
+                  : normalizeText(linkedUser?.phone);
+                const subject =
+                  normalizeText(item.subject) ||
+                  (isContactMessage ? (isLegacyFormatted ? normalizeText(parsed?.subject) : "") : normalizeText(item.title));
+                const body =
+                  isContactMessage && isLegacyFormatted
+                    ? normalizeText(parsed?.body) || normalizeText(item.message)
+                    : normalizeText(item.message);
 
                 return (
                   <div
@@ -247,6 +262,9 @@ const AdminMessages = () => {
                         </Avatar>
                         <div>
                           <p className="font-semibold text-foreground">{displayValue(senderName)}</p>
+                          {!isContactMessage && (
+                            <p className="text-xs text-muted-foreground">{displayValue(item.title)}</p>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">

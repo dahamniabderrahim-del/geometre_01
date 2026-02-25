@@ -5,11 +5,20 @@ import {
   getLocalAuthRecord,
   getLocalAuthUser,
   LOCAL_AUTH_CHANGED_EVENT,
+  setLocalAuth,
 } from "@/lib/local-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { getPasswordFingerprint } from "@/lib/password-fingerprint";
 
 const PASSWORD_CHECK_INTERVAL_MS = 3_000;
+
+const sameTimestamp = (a?: string | null, b?: string | null) => {
+  if (!a || !b) return false;
+  const aMs = Date.parse(a);
+  const bMs = Date.parse(b);
+  if (Number.isNaN(aMs) || Number.isNaN(bMs)) return a === b;
+  return aMs === bMs;
+};
 
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
@@ -42,13 +51,14 @@ export function useAuth() {
       if (record.role === "admin") {
         const { data, error } = await supabase
           .from("admins")
-          .select("id, active, password, password_updated_at")
-          .eq("id", record.id)
+          .select("id, name, email, avatar_url, active, password, password_updated_at")
+          .ilike("email", record.email.trim().toLowerCase())
+          .limit(1)
           .maybeSingle();
 
         if (cancelled) return;
         if (error) {
-          clearLocalAuth();
+          console.warn("auth admin check failed:", error.message);
           return;
         }
         if (!data || !data.active) {
@@ -56,9 +66,20 @@ export function useAuth() {
           return;
         }
 
+        if (record.id !== data.id || record.email !== data.email) {
+          setLocalAuth({
+            ...record,
+            id: data.id,
+            email: data.email,
+            full_name: data.name?.trim() || record.full_name,
+            avatar_url: data.avatar_url ?? record.avatar_url ?? null,
+            password_updated_at: data.password_updated_at ?? record.password_updated_at ?? null,
+          });
+        }
+
         if (hasStamp) {
           const dbStamp = data.password_updated_at ?? null;
-          if (!dbStamp || record.password_updated_at !== dbStamp) {
+          if (!dbStamp || !sameTimestamp(record.password_updated_at, dbStamp)) {
             clearLocalAuth();
             return;
           }
@@ -75,25 +96,56 @@ export function useAuth() {
         return;
       }
 
-      const { data, error } = await supabase
+      const normalizedEmail = record.email.trim().toLowerCase();
+
+      const { data: byId, error: byIdError } = await supabase
         .from("users")
-        .select("id, password, password_updated_at")
+        .select("id, name, email, password, password_updated_at")
         .eq("id", record.id)
         .maybeSingle();
 
       if (cancelled) return;
-      if (error) {
-        clearLocalAuth();
+      if (byIdError) {
+        console.warn("auth user(id) check failed:", byIdError.message);
         return;
       }
+
+      let data = byId;
+
+      if (!data) {
+        const { data: byEmail, error: byEmailError } = await supabase
+          .from("users")
+          .select("id, name, email, password, password_updated_at")
+          .ilike("email", normalizedEmail)
+          .limit(1)
+          .maybeSingle();
+
+        if (cancelled) return;
+        if (byEmailError) {
+          console.warn("auth user(email) check failed:", byEmailError.message);
+          return;
+        }
+        data = byEmail;
+      }
+
       if (!data) {
         clearLocalAuth();
         return;
       }
 
+      if (record.id !== data.id || record.email !== data.email) {
+        setLocalAuth({
+          ...record,
+          id: data.id,
+          email: data.email,
+          full_name: data.name?.trim() || record.full_name,
+          password_updated_at: data.password_updated_at ?? record.password_updated_at ?? null,
+        });
+      }
+
       if (hasStamp) {
         const dbStamp = data.password_updated_at ?? null;
-        if (!dbStamp || record.password_updated_at !== dbStamp) {
+        if (!dbStamp || !sameTimestamp(record.password_updated_at, dbStamp)) {
           clearLocalAuth();
           return;
         }

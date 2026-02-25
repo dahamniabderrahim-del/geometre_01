@@ -112,7 +112,7 @@ export function HeroSection() {
 
       <div className="container mx-auto px-4 relative z-10 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="max-w-xl">
+          <div className="order-2 lg:order-2 max-w-xl">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/20 text-secondary mb-6 animate-fade-up border border-secondary/30">
               <Shield className="w-4 h-4" />
               <span className="text-sm font-semibold tracking-wide">{heroContent.badge}</span>
@@ -197,7 +197,7 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="hidden lg:block animate-fade-up" style={{ animationDelay: "0.5s" }}>
+          <div className="order-1 lg:order-1 hidden lg:block animate-fade-up" style={{ animationDelay: "0.5s" }}>
             <div className="bg-card/10 backdrop-blur-sm rounded-2xl p-8 border border-primary-foreground/20">
               <div className="text-center mb-6">
                 <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-secondary/20 border-4 border-secondary flex items-center justify-center">

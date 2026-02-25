@@ -99,6 +99,12 @@ const toCompactTime = (value: string) => {
   return normalized;
 };
 
+const normalizeText = (value: unknown) => {
+  if (typeof value === "string") return value.trim();
+  if (value === null || value === undefined) return "";
+  return String(value).trim();
+};
+
 const playNotificationSound = () => {
   if (typeof window === "undefined" || typeof window.AudioContext === "undefined") return;
 
@@ -429,14 +435,17 @@ export function Header() {
     const Icon = notifIcon[notif.type];
     const isContactMessage = notif.title === "Nouveau message";
     const linkedUser = notif.userId ? notificationUsers[notif.userId] : undefined;
-    const senderName = linkedUser?.name?.trim() || notif.senderName?.trim() || "Utilisateur";
-    const subject = notif.subject?.trim() || "Sans sujet";
-    const messagePreview = notif.message.trim();
+    const senderName = normalizeText(linkedUser?.name) || normalizeText(notif.senderName) || "Utilisateur";
+    const subject = normalizeText(notif.subject) || "Sans sujet";
+    const messagePreview = normalizeText(notif.message);
+    const linkedEmail = normalizeText(linkedUser?.email);
+    const notifEmail = normalizeText(notif.senderEmail);
+    const notifTitle = normalizeText(notif.title);
     const notificationAvatarInitial =
       senderName.charAt(0).toUpperCase() ||
-      linkedUser?.email?.trim().charAt(0).toUpperCase() ||
-      notif.senderEmail?.trim().charAt(0).toUpperCase() ||
-      notif.title.trim().charAt(0).toUpperCase() ||
+      linkedEmail.charAt(0).toUpperCase() ||
+      notifEmail.charAt(0).toUpperCase() ||
+      notifTitle.charAt(0).toUpperCase() ||
       "N";
 
     return (
