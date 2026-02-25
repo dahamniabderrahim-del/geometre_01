@@ -282,8 +282,14 @@ export type Database = {
         Row: {
           id: string
           admin_id: string | null
+          user_id: string | null
           title: string
           message: string
+          sender_name: string | null
+          sender_email: string | null
+          sender_phone: string | null
+          subject: string | null
+          sender_message: string | null
           type: "success" | "info" | "warning"
           read: boolean
           created_at: string
@@ -291,8 +297,14 @@ export type Database = {
         Insert: {
           id?: string
           admin_id?: string | null
+          user_id?: string | null
           title: string
           message: string
+          sender_name?: string | null
+          sender_email?: string | null
+          sender_phone?: string | null
+          subject?: string | null
+          sender_message?: string | null
           type?: "success" | "info" | "warning"
           read?: boolean
           created_at?: string
@@ -300,8 +312,14 @@ export type Database = {
         Update: {
           id?: string
           admin_id?: string | null
+          user_id?: string | null
           title?: string
           message?: string
+          sender_name?: string | null
+          sender_email?: string | null
+          sender_phone?: string | null
+          subject?: string | null
+          sender_message?: string | null
           type?: "success" | "info" | "warning"
           read?: boolean
           created_at?: string

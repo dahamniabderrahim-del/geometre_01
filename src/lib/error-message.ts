@@ -41,5 +41,12 @@ export const getReadableErrorMessage = (
     return "Identifiants invalides.";
   }
 
+  if (
+    includesAny(message, ["schema cache", "does not exist", "could not find the"]) &&
+    includesAny(message, ["column", "'users'"])
+  ) {
+    return "Base de donnees non synchronisee. Appliquez les migrations SQL puis reessayez.";
+  }
+
   return error?.message ?? fallback;
 };

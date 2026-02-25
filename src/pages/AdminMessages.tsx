@@ -15,9 +15,21 @@ type AdminMessage = {
   id: string;
   title: string;
   message: string;
+  user_id: string | null;
+  subject: string | null;
+  sender_name?: string | null;
+  sender_email?: string | null;
+  sender_phone?: string | null;
+  sender_message?: string | null;
   read: boolean;
   created_at: string;
   type: "success" | "info" | "warning";
+};
+type UserContact = {
+  id: string;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
 };
 
 const senderInitial = (senderName: string) => {
@@ -35,6 +47,7 @@ const AdminMessages = () => {
   const { admin, isAdmin, loading: adminLoading } = useAdminProfile(user?.email);
 
   const [messages, setMessages] = useState<AdminMessage[]>([]);
+  const [usersById, setUsersById] = useState<Record<string, UserContact>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,7 +63,7 @@ const AdminMessages = () => {
 
     const { data, error: loadError } = await supabase
       .from("notifications")
-      .select("id, title, message, read, created_at, type")
+      .select("id, title, message, user_id, subject, sender_name, sender_email, sender_phone, sender_message, read, created_at, type")
       .eq("admin_id", admin.id)
       .order("created_at", { ascending: false });
 
@@ -63,6 +76,30 @@ const AdminMessages = () => {
 
     const onlyUserMessages = ((data ?? []) as AdminMessage[]).filter((item) => item.title === "Nouveau message");
     setMessages(onlyUserMessages);
+
+    const userIds = Array.from(
+      new Set(
+        onlyUserMessages
+          .map((item) => item.user_id)
+          .filter((id): id is string => Boolean(id))
+      )
+    );
+
+    if (userIds.length > 0) {
+      const { data: usersData } = await supabase
+        .from("users")
+        .select("id, name, email, phone")
+        .in("id", userIds);
+
+      if (usersData) {
+        const nextUsersById = (usersData as UserContact[]).reduce<Record<string, UserContact>>((acc, current) => {
+          acc[current.id] = current;
+          return acc;
+        }, {});
+        setUsersById(nextUsersById);
+      }
+    }
+
     setLoading(false);
   };
 
@@ -188,6 +225,15 @@ const AdminMessages = () => {
             <div className="space-y-3">
               {messages.map((item) => {
                 const parsed = parseContactNotificationMessage(item.message);
+                const linkedUser = item.user_id ? usersById[item.user_id] : undefined;
+                const isLegacyFormatted = /(^|\n)\s*nom\s*:/i.test(item.message) || /(^|\n)\s*sujet\s*:/i.test(item.message);
+                const senderName = linkedUser?.name?.trim() || item.sender_name?.trim() || parsed.senderName;
+                const senderEmail = linkedUser?.email?.trim() || item.sender_email?.trim() || parsed.senderEmail;
+                const senderPhone = linkedUser?.phone?.trim() || item.sender_phone?.trim() || parsed.senderPhone;
+                const subject = item.subject?.trim() || (isLegacyFormatted ? parsed.subject : "");
+                const body = isLegacyFormatted
+                  ? item.sender_message?.trim() || parsed.body || item.message
+                  : item.message.trim();
 
                 return (
                   <div
@@ -202,11 +248,11 @@ const AdminMessages = () => {
                       <div className="flex items-start gap-3">
                         <Avatar className="h-10 w-10 border border-border">
                           <AvatarFallback className="bg-muted text-foreground text-xs font-semibold">
-                            {senderInitial(parsed.senderName)}
+                            {senderInitial(senderName)}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-semibold text-foreground">{displayValue(parsed.senderName)}</p>
+                          <p className="font-semibold text-foreground">{displayValue(senderName)}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -222,16 +268,16 @@ const AdminMessages = () => {
                     </div>
 
                     <div className="mb-3 grid gap-1 text-sm text-foreground/90 sm:grid-cols-2 sm:gap-x-6">
-                      <p><span className="font-semibold text-foreground">Nom:</span> {displayValue(parsed.senderName)}</p>
-                      <p><span className="font-semibold text-foreground">Email:</span> {displayValue(parsed.senderEmail)}</p>
-                      <p><span className="font-semibold text-foreground">Telephone:</span> {displayValue(parsed.senderPhone)}</p>
-                      <p><span className="font-semibold text-foreground">Sujet:</span> {displayValue(parsed.subject)}</p>
+                      <p><span className="font-semibold text-foreground">Nom:</span> {displayValue(senderName)}</p>
+                      <p><span className="font-semibold text-foreground">Email:</span> {displayValue(senderEmail)}</p>
+                      <p><span className="font-semibold text-foreground">Telephone:</span> {displayValue(senderPhone)}</p>
+                      <p><span className="font-semibold text-foreground">Sujet:</span> {displayValue(subject)}</p>
                     </div>
 
                     <div className="mb-3 rounded-lg bg-muted/40 p-3">
                       <p className="mb-1 text-sm font-semibold text-foreground">Message:</p>
                       <p className="whitespace-pre-line text-sm text-foreground/90">
-                        {displayValue(parsed.body)}
+                        {displayValue(body)}
                       </p>
                     </div>
 

@@ -33,7 +33,6 @@ model Admin {
 
   users User[]
   equipes Equipe[]
-  notifications Notification[]
   services Service[]
   realisations Realisation[]
 
@@ -52,6 +51,7 @@ model User {
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
   admin         Admin?         @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  notifications Notification[]
 
   @@index([adminId])
   @@map("users")
@@ -126,16 +126,23 @@ enum NotificationType {
 }
 
 model Notification {
-  id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  adminId   String?          @map("admin_id") @db.Uuid
-  title     String
-  message   String
-  type      NotificationType @default(info)
-  read      Boolean          @default(false)
-  createdAt DateTime         @default(now()) @map("created_at")
+  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  adminId       String?          @map("admin_id") @db.Uuid
+  userId        String?          @map("user_id") @db.Uuid
+  title         String
+  message       String
+  senderName    String?          @map("sender_name")
+  senderEmail   String?          @map("sender_email")
+  senderPhone   String?          @map("sender_phone")
+  subject       String?          @db.Text
+  senderMessage String?          @map("sender_message") @db.Text
+  type          NotificationType @default(info)
+  read          Boolean          @default(false)
+  createdAt     DateTime         @default(now()) @map("created_at")
 
-  admin Admin? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  user  User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([adminId])
+  @@index([userId])
   @@map("notifications")
 }

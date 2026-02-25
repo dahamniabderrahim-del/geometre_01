@@ -8,7 +8,6 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { getAdminCabinetName, listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
-import { formatContactNotificationMessage } from "@/lib/notification-message";
 import { getReadableErrorMessage } from "@/lib/error-message";
 import { Link } from "react-router-dom";
 
@@ -80,6 +79,17 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
+      const isSchemaMismatchError = (error?: { message?: string | null; code?: string | null } | null) => {
+        const message = (error?.message ?? "").toLowerCase();
+        const code = (error?.code ?? "").toLowerCase();
+        return (
+          code === "pgrst204" ||
+          message.includes("schema cache") ||
+          (message.includes("could not find the") && message.includes("column")) ||
+          (message.includes("column") && message.includes("does not exist"))
+        );
+      };
+
       const { name, email, phone, subject, message } = formData;
       const senderName = name.trim();
       const senderEmail = (user.email ?? email).trim();
@@ -111,37 +121,156 @@ const Contact = () => {
         return;
       }
 
-      const { error: userError } = await supabase
-        .from("users")
-        .upsert(
-          {
-            id: user.id,
-            name: senderName,
-            email: senderEmail,
-            password: "",
-            phone: senderPhone,
-            subject: messageSubject,
-            message: messageBody,
-            admin_id: targetAdminId,
-          },
-          { onConflict: "email" }
-        );
-
-      const notificationPayload = {
+      const userContactPayload = {
+        name: senderName,
+        email: senderEmail,
+        phone: senderPhone,
+        subject: messageSubject,
+        message: messageBody,
         admin_id: targetAdminId,
-        title: "Nouveau message",
-        message: formatContactNotificationMessage({
+      };
+
+      const userPayloadVariants: Array<Record<string, unknown>> = [
+        userContactPayload,
+        {
           name: senderName,
           email: senderEmail,
           phone: senderPhone,
           subject: messageSubject,
           message: messageBody,
-        }),
+        },
+        {
+          name: senderName,
+          email: senderEmail,
+          phone: senderPhone,
+        },
+        {
+          name: senderName,
+          email: senderEmail,
+        },
+      ];
+
+      let userSaveError: { message?: string | null; code?: string | null } | null = null;
+
+      for (const payload of userPayloadVariants) {
+        const { data: updatedById, error: updateByIdError } = await supabase
+          .from("users")
+          .update(payload as any)
+          .eq("id", user.id)
+          .select("id")
+          .maybeSingle();
+
+        if (updateByIdError) {
+          userSaveError = updateByIdError;
+          if (isSchemaMismatchError(updateByIdError)) {
+            continue;
+          }
+          break;
+        }
+
+        if (updatedById) {
+          userSaveError = null;
+          break;
+        }
+
+        const { data: updatedByEmail, error: updateByEmailError } = await supabase
+          .from("users")
+          .update(payload as any)
+          .eq("email", senderEmail)
+          .select("id")
+          .maybeSingle();
+
+        if (updateByEmailError) {
+          userSaveError = updateByEmailError;
+          if (isSchemaMismatchError(updateByEmailError)) {
+            continue;
+          }
+          break;
+        }
+
+        if (updatedByEmail) {
+          userSaveError = null;
+          break;
+        }
+
+        const { error: insertUserError } = await supabase.from("users").insert({
+          id: user.id,
+          ...payload,
+          password: "",
+        } as any);
+
+        if (!insertUserError) {
+          userSaveError = null;
+          break;
+        }
+
+        userSaveError = insertUserError;
+        if (!isSchemaMismatchError(insertUserError)) {
+          break;
+        }
+      }
+
+      if (userSaveError) {
+        // Non bloquant: l'envoi de notification continue meme si la table users
+        // refuse la mise a jour (RLS/politiques/colonnes).
+        console.warn("users write fallback:", userSaveError.message);
+      }
+
+      let resolvedUserId: string | null = null;
+
+      const { data: userById } = await supabase
+        .from("users")
+        .select("id")
+        .eq("id", user.id)
+        .maybeSingle();
+      resolvedUserId = userById?.id ?? null;
+
+      if (!resolvedUserId) {
+        const { data: userByEmail } = await supabase
+          .from("users")
+          .select("id")
+          .ilike("email", senderEmail)
+          .limit(1)
+          .maybeSingle();
+        resolvedUserId = userByEmail?.id ?? null;
+      }
+
+      if (!resolvedUserId) {
+        const { data: insertedUser } = await supabase
+          .from("users")
+          .insert({
+            id: user.id,
+            name: senderName || senderEmail.split("@")[0],
+            email: senderEmail,
+            password: "",
+            phone: senderPhone,
+            admin_id: targetAdminId,
+          } as any)
+          .select("id")
+          .maybeSingle();
+        resolvedUserId = insertedUser?.id ?? null;
+      }
+
+      if (!resolvedUserId) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de lier le message a cet utilisateur. Reconnectez-vous puis reessayez.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const notificationPayload = {
+        admin_id: targetAdminId,
+        user_id: resolvedUserId,
+        title: "Nouveau message",
+        subject: messageSubject,
+        message: messageBody,
         type: "info",
         read: false,
       };
 
-      let { error: notifError } = await supabase.from("notifications").insert(notificationPayload);
+      const { error: notifError } = await supabase.from("notifications").insert(notificationPayload as any);
 
       if (notifError) {
         toast({
@@ -150,11 +279,6 @@ const Contact = () => {
           variant: "destructive",
         });
         return;
-      }
-
-      if (userError) {
-        // Non bloquant: certaines politiques RLS peuvent refuser la mise a jour de la table users.
-        console.warn("users upsert ignored:", userError.message);
       }
 
       toast({

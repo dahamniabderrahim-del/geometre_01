@@ -35,22 +35,36 @@ const navLinks = [
 
 type NotificationItem = {
   id: string;
+  userId?: string;
   type: "success" | "info" | "warning";
   title: string;
   message: string;
   senderName?: string;
   senderEmail?: string;
+  senderPhone?: string;
   subject?: string;
   time: string;
   read: boolean;
 };
 type NotificationRow = {
   id: string;
+  user_id?: string | null;
   title: string;
   message: string;
+  sender_name?: string | null;
+  sender_email?: string | null;
+  sender_phone?: string | null;
+  subject?: string | null;
+  sender_message?: string | null;
   type: "success" | "info" | "warning" | null;
   read: boolean | null;
   created_at: string;
+};
+type NotificationUser = {
+  id: string;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
 };
 type NotificationFilter = "all" | "unread";
 
@@ -153,6 +167,7 @@ export function Header() {
   const [notifActionsOpen, setNotifActionsOpen] = useState(false);
   const [notifFilter, setNotifFilter] = useState<NotificationFilter>("all");
   const [notifications, setNotifications] = useState<NotificationItem[]>(fallbackNotifications);
+  const [notificationUsers, setNotificationUsers] = useState<Record<string, NotificationUser>>({});
   const [notifLoading, setNotifLoading] = useState(true);
   const [notifError, setNotifError] = useState<string | null>(null);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -174,20 +189,50 @@ export function Header() {
   const olderNotifications = notifications.filter((n) => n.read);
   const visibleCount = notifFilter === "unread" ? unreadNotifications.length : notifications.length;
 
+  const loadUsersForNotifications = async (rows: NotificationRow[]) => {
+    const userIds = Array.from(
+      new Set(
+        rows
+          .map((row) => row.user_id)
+          .filter((id): id is string => Boolean(id))
+      )
+    );
+
+    if (userIds.length === 0) return;
+
+    const { data } = await supabase
+      .from("users")
+      .select("id, name, email, phone")
+      .in("id", userIds);
+
+    if (!data) return;
+
+    setNotificationUsers((prev) => {
+      const next = { ...prev };
+      for (const row of data as NotificationUser[]) {
+        next[row.id] = row;
+      }
+      return next;
+    });
+  };
+
   const mapNotificationRowToItem = (row: NotificationRow): NotificationItem => {
     const parsedContact =
       row.title === "Nouveau message"
         ? parseContactNotificationMessage(row.message)
         : null;
+    const isLegacyFormatted = /(^|\n)\s*nom\s*:/i.test(row.message) || /(^|\n)\s*sujet\s*:/i.test(row.message);
 
     return {
       id: row.id,
+      userId: row.user_id ?? undefined,
       type: row.type ?? "info",
       title: row.title,
-      message: row.message,
-      senderName: parsedContact?.senderName,
-      senderEmail: parsedContact?.senderEmail,
-      subject: parsedContact?.subject,
+      message: isLegacyFormatted ? row.sender_message?.trim() || parsedContact?.body || row.message : row.message,
+      senderName: row.sender_name?.trim() || parsedContact?.senderName,
+      senderEmail: row.sender_email?.trim() || parsedContact?.senderEmail,
+      senderPhone: row.sender_phone?.trim() || parsedContact?.senderPhone,
+      subject: row.subject?.trim() || (isLegacyFormatted ? parsedContact?.subject : undefined),
       read: row.read ?? false,
       time: formatDistanceToNow(parseDatabaseTimestamp(row.created_at), {
         addSuffix: true,
@@ -264,7 +309,7 @@ export function Header() {
       setNotifError(null);
       const { data, error } = await supabase
         .from("notifications")
-        .select("id, title, message, type, read, created_at")
+        .select("id, user_id, title, message, subject, sender_name, sender_email, sender_phone, sender_message, type, read, created_at")
         .eq("admin_id", admin.id)
         .order("created_at", { ascending: false })
         .limit(10);
@@ -278,7 +323,9 @@ export function Header() {
 
       if (!isMounted) return;
 
-      const mapped = ((data ?? []) as NotificationRow[]).map((n) => mapNotificationRowToItem(n));
+      const rows = (data ?? []) as NotificationRow[];
+      await loadUsersForNotifications(rows);
+      const mapped = rows.map((n) => mapNotificationRowToItem(n));
 
       if (!initialUnreadSoundPlayedRef.current && mapped.some((item) => !item.read)) {
         playNotificationSound();
@@ -310,6 +357,7 @@ export function Header() {
         },
         (payload) => {
           const newRow = payload.new as NotificationRow;
+          void loadUsersForNotifications([newRow]);
           const nextItem = mapNotificationRowToItem(newRow);
 
           setNotifications((prev) => {
@@ -334,6 +382,7 @@ export function Header() {
         },
         (payload) => {
           const updatedRow = payload.new as NotificationRow;
+          void loadUsersForNotifications([updatedRow]);
           const updatedItem = mapNotificationRowToItem(updatedRow);
 
           setNotifications((prev) => {
@@ -389,10 +438,13 @@ export function Header() {
   const renderNotificationItem = (notif: NotificationItem) => {
     const Icon = notifIcon[notif.type];
     const isContactMessage = notif.title === "Nouveau message";
-    const senderName = notif.senderName?.trim() || "Utilisateur";
+    const linkedUser = notif.userId ? notificationUsers[notif.userId] : undefined;
+    const senderName = linkedUser?.name?.trim() || notif.senderName?.trim() || "Utilisateur";
     const subject = notif.subject?.trim() || "Sans sujet";
+    const messagePreview = notif.message.trim();
     const notificationAvatarInitial =
       senderName.charAt(0).toUpperCase() ||
+      linkedUser?.email?.trim().charAt(0).toUpperCase() ||
       notif.senderEmail?.trim().charAt(0).toUpperCase() ||
       notif.title.trim().charAt(0).toUpperCase() ||
       "N";
@@ -421,8 +473,11 @@ export function Header() {
             {isContactMessage ? (
               <>
                 <p className="truncate text-[1rem] font-semibold leading-5 text-[#1c1e21]">{senderName}</p>
-                <p className="line-clamp-2 text-[0.92rem] leading-5 text-[#1c1e21]/90">
+                <p className="line-clamp-1 text-[0.92rem] leading-5 text-[#1c1e21]/90">
                   Sujet: {subject}
+                </p>
+                <p className="line-clamp-1 text-[0.88rem] leading-5 text-[#1c1e21]/75">
+                  {messagePreview}
                 </p>
               </>
             ) : (
