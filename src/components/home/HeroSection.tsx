@@ -5,6 +5,7 @@ import heroImage from "@/assets/hero-surveyor.jpg";
 import { useEffect, useState } from "react";
 import { getAdminCabinetName, listActiveAdmins, pickPrimaryAdmin } from "@/lib/admin";
 import { supabase } from "@/integrations/supabase/client";
+import { CabinetMark } from "@/components/brand/CabinetMark";
 
 const heroContent = {
   badge: "Geometre-Expert Agree",
@@ -200,18 +201,8 @@ export function HeroSection() {
           <div className="order-1 lg:order-1 animate-fade-up" style={{ animationDelay: "0.5s" }}>
             <div className="mx-auto w-full max-w-xl bg-card/10 backdrop-blur-sm rounded-2xl p-5 sm:p-6 lg:p-8 border border-primary-foreground/20">
               <div className="text-center mb-6">
-                <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-secondary/20 border-4 border-secondary flex items-center justify-center">
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="w-12 h-12 text-secondary"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <polygon points="12 2 2 22 22 22" />
-                    <line x1="12" y1="8" x2="12" y2="16" />
-                    <line x1="8" y1="14" x2="16" y2="14" />
-                  </svg>
+                <div className="w-32 h-32 sm:w-36 sm:h-36 mx-auto mb-4 rounded-full bg-secondary/20 border-4 border-secondary flex items-center justify-center">
+                  <CabinetMark className="h-[92%] w-[92%] text-secondary" />
                 </div>
                 <h3 className="font-serif text-xl font-bold text-primary-foreground">{cabinetCardTitle}</h3>
                 <p className="text-secondary font-medium">{geometreGrade || "Grade non renseigne"}</p>

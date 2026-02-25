@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getAdminCabinetName, listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 import { useEffect, useMemo, useState } from "react";
+import { CabinetMark } from "@/components/brand/CabinetMark";
 
 const values = [
   {
@@ -92,18 +93,8 @@ export function AboutSection() {
             <div className="relative rounded-2xl overflow-hidden shadow-strong">
               <div className="aspect-[4/5] hero-gradient flex items-center justify-center">
                 <div className="text-center text-primary-foreground p-8">
-                  <div className="w-28 h-28 mx-auto mb-6 rounded-full bg-secondary/20 border-4 border-secondary flex items-center justify-center">
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="w-14 h-14 text-secondary"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <polygon points="12 2 2 22 22 22" />
-                      <line x1="12" y1="8" x2="12" y2="16" />
-                      <line x1="8" y1="14" x2="16" y2="14" />
-                    </svg>
+                  <div className="w-36 h-36 sm:w-40 sm:h-40 mx-auto mb-6 rounded-full bg-secondary/20 border-4 border-secondary flex items-center justify-center">
+                    <CabinetMark className="h-[92%] w-[92%] text-secondary" />
                   </div>
                   <h3 className="font-serif text-3xl font-bold mb-2">{cabinetName}</h3>
                   <p className="text-primary-foreground/80">{geometreName}</p>

@@ -9,7 +9,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 const AuthCallback = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectParam = new URLSearchParams(location.search).get("redirect");
+  const searchParams = new URLSearchParams(location.search);
+  const redirectParam = searchParams.get("redirect");
   const redirectPath =
     redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//")
       ? redirectParam
@@ -17,19 +18,37 @@ const AuthCallback = () => {
 
   useEffect(() => {
     const run = async () => {
-      const { data, error } = await supabase.auth.exchangeCodeForSession(
-        window.location.href
-      );
+      const code = new URLSearchParams(window.location.search).get("code");
+      const oauthError =
+        new URLSearchParams(window.location.search).get("error_description") ||
+        new URLSearchParams(window.location.search).get("error");
 
-      if (error) {
+      if (oauthError) {
         navigate(redirectPath ? `/connexion?redirect=${encodeURIComponent(redirectPath)}` : "/connexion");
         return;
       }
 
-      const email = data.session?.user?.email;
+      let user = null as Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] | null;
+
+      if (code) {
+        const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error || !data.session?.user) {
+          navigate(redirectPath ? `/connexion?redirect=${encodeURIComponent(redirectPath)}` : "/connexion");
+          return;
+        }
+        user = data.session.user;
+      } else {
+        const { data, error } = await supabase.auth.getSession();
+        if (error || !data.session?.user) {
+          navigate(redirectPath ? `/connexion?redirect=${encodeURIComponent(redirectPath)}` : "/connexion");
+          return;
+        }
+        user = data.session.user;
+      }
+
+      const email = user?.email;
       const isAdmin = await isAdminUser(email);
       if (isAdmin) {
-        const user = data.session?.user;
         if (user?.id && user.email) {
           const { data: adminRow } = await supabase
             .from("admins")
@@ -58,7 +77,6 @@ const AuthCallback = () => {
         }
         navigate(redirectPath ?? "/admin/equipe");
       } else {
-        const user = data.session?.user;
         const admins = await listActiveAdmins();
         const defaultAdmin = pickPrimaryAdmin(admins);
         const targetAdminId = defaultAdmin?.id ?? null;

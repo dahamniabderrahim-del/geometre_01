@@ -16,6 +16,20 @@ import { getPasswordFingerprint } from "@/lib/password-fingerprint";
 const normalizeEmail = (value: string) => value.trim().toLowerCase();
 const INVALID_TABLE_CREDENTIALS = "invalid_table_credentials";
 
+const resolveOAuthRedirectBase = () => {
+  const configuredSiteUrl = (import.meta.env.VITE_SITE_URL as string | undefined)?.trim();
+  if (configuredSiteUrl) {
+    return configuredSiteUrl.replace(/\/+$/, "");
+  }
+
+  // Render can serve an initial http URL before redirecting to https.
+  if (window.location.protocol === "http:" && window.location.hostname.endsWith("onrender.com")) {
+    return `https://${window.location.host}`;
+  }
+
+  return window.location.origin;
+};
+
 const isEmailAlreadyExistsError = (error?: { message?: string | null; code?: string | null } | null) => {
   const normalizedMessage = (error?.message ?? "").toLowerCase();
   const code = (error?.code ?? "").toLowerCase();
@@ -42,10 +56,21 @@ const Connexion = () => {
   const [defaultAdmin, setDefaultAdmin] = useState<AdminProfile | null>(null);
   const [adminLookupLoading, setAdminLookupLoading] = useState(true);
   const redirectParam = new URLSearchParams(location.search).get("redirect");
+  const oauthErrorParam = new URLSearchParams(location.search).get("oauth_error");
   const redirectPath =
     redirectParam && redirectParam.startsWith("/") && !redirectParam.startsWith("//")
       ? redirectParam
       : null;
+
+  useEffect(() => {
+    if (oauthErrorParam !== "bad_oauth_state") return;
+
+    toast({
+      title: "Session Google expiree",
+      description: "Veuillez relancer \"Continuer avec Google\".",
+      variant: "destructive",
+    });
+  }, [oauthErrorParam, toast]);
 
   useEffect(() => {
     let active = true;
@@ -267,10 +292,11 @@ const Connexion = () => {
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
+    const oauthRedirectBase = resolveOAuthRedirectBase();
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback${redirectPath ? `?redirect=${encodeURIComponent(redirectPath)}` : ""}`,
+        redirectTo: `${oauthRedirectBase}/auth/callback${redirectPath ? `?redirect=${encodeURIComponent(redirectPath)}` : ""}`,
       },
     });
 

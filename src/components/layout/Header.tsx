@@ -22,6 +22,7 @@ import { clearLocalAuth } from "@/lib/local-auth";
 import { parseDatabaseTimestamp } from "@/lib/datetime";
 import { getAdminCabinetName, listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
 import { parseContactNotificationMessage } from "@/lib/notification-message";
+import { CabinetMark } from "@/components/brand/CabinetMark";
 
 const navLinks = [
   { href: "/", label: "Accueil" },
@@ -573,18 +574,8 @@ export function Header() {
         {/* Main nav */}
         <div className="flex items-center justify-between h-16 gap-2">
           <Link to="/" className="group flex min-w-0 flex-1 items-center gap-2 sm:gap-3 lg:flex-none">
-            <div className="h-10 w-10 sm:h-12 sm:w-12 hero-gradient rounded-lg flex items-center justify-center shadow-medium group-hover:shadow-gold transition-all duration-300">
-              <svg
-                viewBox="0 0 24 24"
-                className="h-6 w-6 sm:w-7 sm:h-7 text-secondary"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <polygon points="12 2 2 22 22 22" />
-                <line x1="12" y1="8" x2="12" y2="16" />
-                <line x1="8" y1="14" x2="16" y2="14" />
-              </svg>
+            <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg bg-transparent flex items-center justify-center transition-all duration-300">
+              <CabinetMark className="h-11 w-11 sm:h-12 sm:w-12 text-secondary" />
             </div>
             <div className="min-w-0">
               <span

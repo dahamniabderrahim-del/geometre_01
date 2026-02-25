@@ -5,6 +5,7 @@ import { SocialButtons } from "@/components/social/SocialButtons";
 import { useAuth } from "@/hooks/use-auth";
 import { useAdminProfile } from "@/hooks/use-admin";
 import { listActiveAdmins, pickPrimaryAdmin, type AdminProfile } from "@/lib/admin";
+import { CabinetMark } from "@/components/brand/CabinetMark";
 
 const toServiceAnchor = (value: string) =>
   value
@@ -81,18 +82,8 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-secondary/20 border-2 border-secondary flex items-center justify-center">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-7 h-7 text-secondary"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <polygon points="12 2 2 22 22 22" />
-                  <line x1="12" y1="8" x2="12" y2="16" />
-                  <line x1="8" y1="14" x2="16" y2="14" />
-                </svg>
+              <div className="w-20 h-20 rounded-lg bg-secondary/20 border-2 border-secondary flex items-center justify-center">
+                <CabinetMark className="h-16 w-16 text-secondary" />
               </div>
               <div>
                 <span className="font-serif text-2xl font-bold">GéoExpert</span>
