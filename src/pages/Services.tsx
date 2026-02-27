@@ -306,6 +306,8 @@ const Services = () => {
   }, [isAdmin, admin?.id]);
 
   const publicServices = useMemo(() => {
+    if (loading) return [];
+
     const activeServices = services.filter((item) => item.active);
     const hasArpentageService = activeServices.some((item) => {
       const title = item.title.toLowerCase();
@@ -320,7 +322,7 @@ const Services = () => {
     return merged
       .slice()
       .sort((a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title));
-  }, [services]);
+  }, [services, loading]);
 
   useEffect(() => {
     if (!location.hash || loading || publicServices.length === 0) return;
@@ -580,13 +582,14 @@ const Services = () => {
 
   return (
     <Layout>
-      <section className="py-16 bg-muted geometric-pattern">
-        <div className="container mx-auto px-4">
+      <section className="premium-hero">
+        <div className="absolute inset-0 geometric-pattern opacity-10" />
+        <div className="container relative z-10 mx-auto px-4">
           <div className="max-w-2xl">
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
+            <h1 className="mb-4 font-serif text-4xl font-bold text-primary-foreground md:text-5xl">
               Nos <span className="text-gradient">Services</span>
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-lg text-primary-foreground/82">
               Une gamme complete de prestations pour repondre a vos besoins fonciers et topographiques.
             </p>
           </div>
@@ -594,10 +597,10 @@ const Services = () => {
       </section>
 
       {isAdmin && (
-        <section className="py-12 border-b border-border">
+        <section className="border-b border-border/70 bg-muted/30 py-12">
           <div className="container mx-auto px-4">
-            <div ref={formCardRef} className="bg-card rounded-xl shadow-soft p-6">
-              <h2 className="font-serif text-xl font-bold mb-4">
+            <div ref={formCardRef} className="premium-card-strong p-6 sm:p-7">
+              <h2 className="mb-4 font-serif text-xl font-bold">
                 {editingId ? "Modifier un service" : "Ajouter un service"}
               </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -707,82 +710,86 @@ const Services = () => {
             <p className="text-sm text-muted-foreground">Aucun service actif pour le moment.</p>
           )}
 
-          <div className="rounded-[2rem] border border-[#d6dce8] bg-gradient-to-b from-[#f8fbff] to-white p-5 md:p-8">
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {publicServices.map((service, index) => {
-                const cardTitle = formatServiceCardTitle(service.title);
-                const imageSrc = service.image_url || getServiceFallbackImage(service, index);
-                const canManageServiceCard = isAdmin && admin?.id === service.admin_id;
+          {!loading && !error && publicServices.length > 0 && (
+            <div className="premium-card-strong p-5 md:p-8">
+              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {publicServices.map((service, index) => {
+                  const cardTitle = formatServiceCardTitle(service.title);
+                  const imageSrc = service.image_url || getServiceFallbackImage(service, index);
+                  const canManageServiceCard = isAdmin && admin?.id === service.admin_id;
 
-                return (
-                  <article
-                    key={service.id}
-                    id={`service-card-${service.id}`}
-                    className="group overflow-hidden rounded-[0.65rem] border border-[#cad4e2] bg-white shadow-[0_22px_40px_-30px_rgba(15,35,70,0.8)] scroll-mt-24"
-                  >
-                    <div className="relative aspect-[16/9] overflow-hidden bg-[#dfe6f0]">
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#1d34661a] to-transparent" />
-                      <div className="absolute left-4 top-4 z-10">
-                        {service.category && (
-                          <span className="inline-flex rounded-full bg-white/85 px-3 py-1 text-xs font-semibold tracking-wide text-[#1f2d50]">
-                            {service.category}
-                          </span>
-                        )}
-                      </div>
-                      {canManageServiceCard && (
-                        <div className="absolute right-3 top-3 z-20 flex items-center gap-1.5">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={() => handleEdit(service)}
-                            className="h-7 w-7 rounded-md border-[#d5dbe6] bg-white/90 text-[#1f2d50] hover:bg-white"
-                            title="Modifier"
-                            aria-label="Modifier"
-                          >
-                            <Pencil className="h-3.5 w-3.5" />
-                          </Button>
-                          <Button
-                            type="button"
-                            size="icon"
-                            onClick={() => handleDelete(service.id)}
-                            className="h-7 w-7 rounded-md bg-[#ef2d2d] p-0 text-white hover:bg-[#dc2626]"
-                            title="Supprimer"
-                            aria-label="Supprimer"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
+                  return (
+                    <article
+                      key={service.id}
+                      id={`service-card-${service.id}`}
+                      className="group scroll-mt-24 overflow-hidden rounded-2xl border border-border/70 bg-card/90 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-strong"
+                    >
+                      <div className="relative aspect-[16/9] overflow-hidden bg-muted/50">
+                        <div className="absolute inset-0 bg-gradient-to-t from-primary/40 via-primary/10 to-transparent" />
+                        <div className="absolute left-4 top-4 z-10">
+                          {service.category && (
+                            <span className="inline-flex rounded-full border border-white/60 bg-white/80 px-3 py-1 text-xs font-semibold tracking-wide text-primary">
+                              {service.category}
+                            </span>
+                          )}
                         </div>
-                      )}
-                      <img
-                        src={imageSrc}
-                        alt={service.title}
-                        className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
-                      />
-                    </div>
+                        {canManageServiceCard && (
+                          <div className="absolute right-3 top-3 z-20 flex items-center gap-1.5">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() => handleEdit(service)}
+                              className="h-7 w-7 rounded-lg border-border/70 bg-card/90 text-primary hover:bg-card"
+                              title="Modifier"
+                              aria-label="Modifier"
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              type="button"
+                              size="icon"
+                              onClick={() => handleDelete(service.id)}
+                              className="h-7 w-7 rounded-lg bg-destructive p-0 text-destructive-foreground hover:bg-destructive/90"
+                              title="Supprimer"
+                              aria-label="Supprimer"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        )}
+                        <img
+                          src={imageSrc}
+                          alt={service.title}
+                          className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                        />
+                      </div>
 
-                    <div className="border-t border-[#d9e1ec] bg-[#f8fafc] px-5 py-4">
-                      <h2 className="text-xl font-black uppercase leading-[1.05] tracking-tight text-[#183066] md:text-[1.65rem]">
-                        {cardTitle}
-                      </h2>
-                    </div>
-                  </article>
-                );
-              })}
+                      <div className="border-t border-border/70 bg-card px-5 py-4">
+                        <h2 className="text-xl font-black uppercase leading-[1.05] tracking-tight text-primary md:text-[1.65rem]">
+                          {cardTitle}
+                        </h2>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
-      <section className="py-16 hero-gradient">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="font-serif text-3xl font-bold text-primary-foreground mb-4">Besoin d'accompagnement ?</h2>
-          <p className="text-primary-foreground/80 mb-8 max-w-lg mx-auto">
+      <section className="premium-hero">
+        <div className="container relative z-10 mx-auto px-4">
+          <div className="mx-auto max-w-3xl rounded-3xl border border-primary-foreground/25 bg-primary-foreground/10 px-6 py-10 text-center backdrop-blur-sm">
+          <h2 className="mb-4 font-serif text-3xl font-bold text-primary-foreground">Besoin d'accompagnement ?</h2>
+          <p className="mx-auto mb-8 max-w-lg text-primary-foreground/82">
             Contactez-nous pour discuter de votre projet. Nous vous repondons sous 24h.
           </p>
           <Button variant="heroOutline" size="lg" asChild>
             <Link to="/contact">Nous contacter</Link>
           </Button>
+          </div>
         </div>
       </section>
     </Layout>

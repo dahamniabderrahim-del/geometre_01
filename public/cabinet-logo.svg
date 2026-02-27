@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-labelledby="cabinetLogoTitle cabinetLogoDesc">
+  <title id="cabinetLogoTitle">Logo cabinet geometre expert</title>
+  <desc id="cabinetLogoDesc">Symbole triangulaire noir avec repere rouge et lignes topographiques</desc>
+
+  <defs>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a2531" />
+      <stop offset="100%" stop-color="#0f1822" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ea2424" />
+      <stop offset="100%" stop-color="#cf1515" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(0 8)">
+    <!-- Top red locator -->
+    <path
+      d="M300 86
+         C264 86 236 114 236 148
+         C236 173 252 197 300 262
+         C348 197 364 173 364 148
+         C364 114 336 86 300 86 Z
+         M300 178
+         C283 178 270 165 270 148
+         C270 131 283 118 300 118
+         C317 118 330 131 330 148
+         C330 165 317 178 300 178 Z"
+      fill="url(#accent)"
+    />
+
+    <!-- Main triangle -->
+    <path
+      d="M300 220 L420 406 L180 406 Z"
+      fill="url(#ink)"
+    />
+    <path
+      d="M300 272 L352 350 L248 350 Z"
+      fill="#eef0f2"
+    />
+
+    <!-- Topographic wave lines -->
+    <path d="M128 394 C164 372 206 376 246 384 C276 391 308 392 340 385 C376 377 418 374 460 394" fill="none" stroke="url(#ink)" stroke-width="8" stroke-linecap="round" />
+    <path d="M114 418 C154 395 198 398 240 406 C272 413 306 414 340 407 C380 398 426 395 474 418" fill="none" stroke="url(#ink)" stroke-width="10" stroke-linecap="round" />
+    <path d="M100 444 C144 420 190 423 234 432 C270 439 306 440 344 432 C388 423 436 420 488 444" fill="none" stroke="url(#ink)" stroke-width="12" stroke-linecap="round" />
+    <path d="M116 474 C160 450 206 454 250 463 C284 470 318 471 354 463 C398 454 446 450 490 474" fill="none" stroke="url(#ink)" stroke-width="14" stroke-linecap="round" />
+    <path d="M150 504 C194 482 238 486 278 494 C304 500 330 500 356 494 C398 486 442 482 480 502" fill="none" stroke="url(#ink)" stroke-width="16" stroke-linecap="round" />
+
+    <!-- Bottom red marker -->
+    <path d="M300 492 L332 548 L300 558 L268 548 Z" fill="url(#accent)" />
+  </g>
+</svg>

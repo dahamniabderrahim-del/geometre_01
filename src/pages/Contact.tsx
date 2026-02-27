@@ -284,13 +284,14 @@ const Contact = () => {
   return (
     <Layout>
       {/* Hero */}
-      <section className="py-16 bg-muted geometric-pattern">
-        <div className="container mx-auto px-4">
+      <section className="premium-hero">
+        <div className="absolute inset-0 geometric-pattern opacity-10" />
+        <div className="container relative z-10 mx-auto px-4">
           <div className="max-w-2xl">
-            <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground mb-4">
+            <h1 className="mb-4 font-serif text-4xl font-bold text-primary-foreground md:text-5xl">
               <span className="text-gradient">Contactez</span>-nous
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-lg text-primary-foreground/82">
               Une question, un projet ? N'hésitez pas à nous contacter. Nous vous
               répondrons sous 24h.
             </p>
@@ -301,12 +302,12 @@ const Contact = () => {
       {/* Contact */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid gap-8 lg:grid-cols-3">
             {/* Contact info */}
             <div className="lg:col-span-1 space-y-6">
-              <div className="bg-card rounded-xl shadow-soft p-6">
+              <div className="premium-card p-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg hero-gradient flex items-center justify-center shrink-0">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl hero-gradient">
                     <MapPin className="w-6 h-6 text-primary-foreground" />
                   </div>
                   <div>
@@ -323,9 +324,9 @@ const Contact = () => {
                 </div>
               </div>
 
-              <div className="bg-card rounded-xl shadow-soft p-6">
+              <div className="premium-card p-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg hero-gradient flex items-center justify-center shrink-0">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl hero-gradient">
                     <MapPin className="w-6 h-6 text-primary-foreground" />
                   </div>
                   <div>
@@ -345,9 +346,9 @@ const Contact = () => {
                 </div>
               </div>
 
-              <div className="bg-card rounded-xl shadow-soft p-6">
+              <div className="premium-card p-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg hero-gradient flex items-center justify-center shrink-0">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl hero-gradient">
                     <Phone className="w-6 h-6 text-primary-foreground" />
                   </div>
                   <div>
@@ -361,9 +362,9 @@ const Contact = () => {
                 </div>
               </div>
 
-              <div className="bg-card rounded-xl shadow-soft p-6">
+              <div className="premium-card p-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg hero-gradient flex items-center justify-center shrink-0">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl hero-gradient">
                     <Mail className="w-6 h-6 text-primary-foreground" />
                   </div>
                   <div>
@@ -375,9 +376,9 @@ const Contact = () => {
                 </div>
               </div>
 
-              <div className="bg-card rounded-xl shadow-soft p-6">
+              <div className="premium-card p-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg hero-gradient flex items-center justify-center shrink-0">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl hero-gradient">
                     <Clock className="w-6 h-6 text-primary-foreground" />
                   </div>
                   <div>
@@ -400,8 +401,8 @@ const Contact = () => {
 
             {/* Contact form */}
             <div className="lg:col-span-2">
-              <div className="bg-card rounded-xl shadow-soft p-8">
-                <h2 className="font-serif text-2xl font-bold text-foreground mb-6">
+              <div className="premium-card-strong p-8">
+                <h2 className="mb-6 font-serif text-2xl font-bold text-foreground">
                   Envoyez-nous un message
                 </h2>
 
@@ -504,7 +505,10 @@ const Contact = () => {
       </section>
 
       {/* Google Maps */}
-      <section className="h-96 relative">
+      <section className="relative py-4 pb-16">
+        <div className="container mx-auto px-4">
+        <div className="premium-card-strong overflow-hidden p-2">
+        <div className="h-96 overflow-hidden rounded-2xl">
         {mapSrc ? (
           <iframe
             src={mapSrc}
@@ -517,12 +521,15 @@ const Contact = () => {
             title={`Localisation ${contactCabinetName || "Cabinet"}`}
           />
         ) : (
-          <div className="h-full w-full bg-muted flex items-center justify-center px-4 text-center">
+          <div className="flex h-full w-full items-center justify-center bg-muted px-4 text-center">
             <p className="text-muted-foreground">
               Position indisponible. Veuillez renseigner l'adresse du cabinet dans la base de donnees.
             </p>
           </div>
         )}
+        </div>
+        </div>
+        </div>
       </section>
     </Layout>
   );

@@ -12,7 +12,7 @@ export function CabinetMark({ className, strokeWidth = 1.9 }: CabinetMarkProps) 
   if (!imageFailed) {
     return (
       <img
-        src="/cabinet-logo.png?v=20260225-6"
+        src="/cabinet-logo.svg?v=20260227-1"
         alt="Logo du cabinet"
         className={cn("shrink-0 object-contain", className)}
         onError={() => setImageFailed(true)}

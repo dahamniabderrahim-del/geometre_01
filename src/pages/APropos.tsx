@@ -165,11 +165,11 @@ const APropos = () => {
 
   return (
     <Layout>
-      <section className="relative py-16 md:py-24 hero-gradient overflow-hidden">
+      <section className="premium-hero">
         <div className="absolute inset-0 geometric-pattern opacity-10" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl">
-            <span className="inline-block px-4 py-1 rounded-full bg-secondary/20 text-secondary text-sm font-semibold mb-4 tracking-wider uppercase">
+            <span className="premium-chip mb-4 bg-secondary/20">
               Notre Cabinet
             </span>
             <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground mb-6">
@@ -183,11 +183,11 @@ const APropos = () => {
         </div>
       </section>
 
-      <section className="py-12 bg-card border-b border-border">
+      <section className="border-b border-border/70 bg-muted/35 py-12">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
             {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
+              <div key={stat.label} className="premium-card p-4 text-center">
                 <p className="text-4xl md:text-5xl font-serif font-bold text-secondary mb-2">
                   {stat.value}
                 </p>
@@ -237,7 +237,7 @@ const APropos = () => {
               {credentials.map((cred) => (
                 <div
                   key={cred.title}
-                  className="p-6 bg-card rounded-xl shadow-soft border border-border hover:shadow-medium transition-all"
+                  className="premium-card p-6 transition-all hover:-translate-y-0.5 hover:shadow-medium"
                 >
                   <div className="w-12 h-12 rounded-lg hero-gradient flex items-center justify-center mb-4">
                     <cred.icon className="w-6 h-6 text-secondary" />
@@ -251,10 +251,10 @@ const APropos = () => {
         </div>
       </section>
 
-      <section className="py-16 md:py-24 bg-muted/50">
+      <section className="py-16 md:py-24 bg-muted/55">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="inline-block px-4 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-semibold mb-4 tracking-wider uppercase">
+            <span className="premium-chip mb-4">
               Nos Engagements
             </span>
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground">
@@ -264,7 +264,7 @@ const APropos = () => {
 
           <div className="grid md:grid-cols-3 gap-8">
             {values.map((value) => (
-              <div key={value.title} className="text-center p-8 bg-card rounded-2xl shadow-soft">
+              <div key={value.title} className="premium-card p-8 text-center">
                 <div className="w-16 h-16 mx-auto rounded-full hero-gradient flex items-center justify-center mb-6">
                   <value.icon className="w-8 h-8 text-secondary" />
                 </div>
@@ -279,7 +279,7 @@ const APropos = () => {
       <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="inline-block px-4 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-semibold mb-4 tracking-wider uppercase">
+            <span className="premium-chip mb-4">
               Notre Equipe
             </span>
             <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground">
@@ -304,7 +304,7 @@ const APropos = () => {
                 return (
                 <div
                   key={member.id}
-                  className="group p-6 bg-card rounded-xl shadow-soft hover:shadow-medium transition-all text-center"
+                  className="premium-card group p-6 text-center transition-all hover:-translate-y-0.5 hover:shadow-medium"
                 >
                   <div className="w-24 h-24 mx-auto mb-4 rounded-full hero-gradient flex items-center justify-center group-hover:scale-110 transition-transform overflow-hidden">
                     {member.image_url ? (
@@ -324,11 +324,11 @@ const APropos = () => {
         </div>
       </section>
 
-      <section className="py-16 md:py-24 bg-muted/50">
+      <section className="py-16 md:py-24 bg-muted/55">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
             <div>
-              <span className="inline-block px-4 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-semibold mb-4 tracking-wider uppercase">
+              <span className="premium-chip mb-4">
                 Zone d'Intervention
               </span>
               <h2 className="font-serif text-3xl md:text-4xl font-bold text-foreground mb-6">
@@ -374,7 +374,8 @@ const APropos = () => {
               </div>
             </div>
 
-            <div className="rounded-2xl overflow-hidden shadow-strong h-[320px] sm:h-[400px]">
+            <div className="premium-card-strong overflow-hidden p-2">
+              <div className="h-[320px] overflow-hidden rounded-2xl sm:h-[400px]">
               <iframe
                 src="https://www.google.com/maps?q=35.6971,-0.6308&z=12&output=embed"
                 width="100%"
@@ -385,17 +386,19 @@ const APropos = () => {
                 referrerPolicy="no-referrer-when-downgrade"
                 title={`Zone d'intervention ${cabinetName}`}
               />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 md:py-24 hero-gradient">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="font-serif text-3xl md:text-4xl font-bold text-primary-foreground mb-6">
+      <section className="premium-hero">
+        <div className="container relative z-10 mx-auto px-4">
+          <div className="mx-auto max-w-3xl rounded-3xl border border-primary-foreground/20 bg-primary-foreground/10 px-6 py-10 text-center backdrop-blur-sm">
+          <h2 className="mb-6 font-serif text-3xl font-bold text-primary-foreground md:text-4xl">
             Besoin d'un Geometre-Expert ?
           </h2>
-          <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
+          <p className="mx-auto mb-8 max-w-2xl text-lg text-primary-foreground/82">
             Contactez-nous pour une etude personnalisee de votre projet et un accompagnement
             adapte a votre besoin.
           </p>
@@ -411,6 +414,7 @@ const APropos = () => {
             >
               <Link to="/services">Voir nos services</Link>
             </Button>
+          </div>
           </div>
         </div>
       </section>

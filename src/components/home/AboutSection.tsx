@@ -86,11 +86,11 @@ export function AboutSection() {
   );
 
   return (
-    <section className="py-16 md:py-24 bg-muted/50">
+    <section className="py-16 md:py-24 bg-muted/55">
       <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-2 gap-10 md:gap-16 items-center">
+        <div className="grid items-center gap-10 md:gap-16 lg:grid-cols-2">
           <div className="relative">
-            <div className="relative rounded-2xl overflow-hidden shadow-strong">
+            <div className="relative overflow-hidden rounded-3xl border border-border/65 shadow-strong">
               <div className="aspect-[4/5] hero-gradient flex items-center justify-center">
                 <div className="text-center text-primary-foreground p-8">
                   <div className="w-36 h-36 sm:w-40 sm:h-40 mx-auto mb-6 rounded-full bg-secondary/20 border-4 border-secondary flex items-center justify-center">
@@ -110,12 +110,12 @@ export function AboutSection() {
               </div>
             </div>
 
-            <div className="absolute -bottom-6 -right-6 hidden sm:block bg-card rounded-xl shadow-strong p-6 animate-float">
+            <div className="absolute -bottom-6 -right-6 hidden rounded-2xl border border-border/70 bg-card p-6 shadow-strong animate-float sm:block">
               <p className="text-4xl font-serif font-bold text-secondary">{teamValue}</p>
               <p className="text-sm text-muted-foreground">Professionnels</p>
             </div>
 
-            <div className="absolute -top-6 -left-6 hidden sm:block bg-secondary rounded-xl shadow-gold p-6 text-secondary-foreground">
+            <div className="absolute -top-6 -left-6 hidden rounded-2xl bg-secondary p-6 text-secondary-foreground shadow-gold sm:block">
               <p className="text-4xl font-serif font-bold">{projectsValue}</p>
               <p className="text-sm">Projets realises</p>
             </div>
@@ -124,7 +124,7 @@ export function AboutSection() {
           </div>
 
           <div>
-            <span className="inline-block px-4 py-1 rounded-full bg-secondary/10 text-secondary text-sm font-semibold mb-4 tracking-wider uppercase">
+            <span className="mb-4 inline-block rounded-full border border-secondary/30 bg-secondary/10 px-4 py-1 text-sm font-semibold uppercase tracking-[0.18em] text-secondary">
               Notre Cabinet
             </span>
 
@@ -143,19 +143,19 @@ export function AboutSection() {
                 : "Notre equipe professionnelle met son savoir-faire et ses equipements a votre service."}
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
               {values.map((value) => (
-                <div key={value.title} className="text-center p-4 bg-card rounded-xl shadow-soft">
+                <div key={value.title} className="rounded-2xl border border-border/75 bg-card/90 p-4 text-center shadow-soft">
                   <h4 className="font-serif font-bold text-foreground mb-1">{value.title}</h4>
                   <p className="text-xs text-muted-foreground">{value.description}</p>
                 </div>
               ))}
             </div>
 
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+            <ul className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
               {features.map((feature) => (
-                <li key={feature.text} className="flex items-center gap-3 text-sm text-foreground">
-                  <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
+                <li key={feature.text} className="flex items-center gap-3 rounded-xl border border-border/70 bg-card/82 px-3 py-2 text-sm text-foreground">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary/15">
                     <feature.icon className="w-4 h-4 text-secondary" />
                   </div>
                   {feature.text}

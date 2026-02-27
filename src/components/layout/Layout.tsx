@@ -79,7 +79,11 @@ const buildThemeStyle = (theme?: ThemeTokens) => {
 export function Layout({ children, theme }: LayoutProps) {
   const themeStyle = buildThemeStyle(theme);
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden" style={themeStyle}>
+    <div className="relative min-h-screen flex flex-col overflow-x-hidden" style={themeStyle}>
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-secondary/14 blur-3xl" />
+        <div className="absolute right-[-8rem] top-[28%] h-80 w-80 rounded-full bg-accent/14 blur-3xl" />
+      </div>
       <Header />
       <main className="flex-1 pt-16 md:pt-[88px]">
         {children}

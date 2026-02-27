@@ -30,7 +30,6 @@ const navLinks = [
   { href: "/equipe", label: "Equipe" },
   { href: "/services", label: "Services" },
   { href: "/realisations", label: "Réalisations" },
-  { href: "/blog", label: "Actualités" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -74,15 +73,15 @@ const notifIcon = {
 };
 
 const notifAvatarClass: Record<NotificationItem["type"], string> = {
-  success: "bg-[#1f6f43]",
-  info: "bg-[#1877f2]",
-  warning: "bg-[#c06c00]",
+  success: "bg-emerald-600",
+  info: "bg-primary",
+  warning: "bg-secondary",
 };
 
 const notifBadgeClass: Record<NotificationItem["type"], string> = {
-  success: "bg-[#42b72a]",
-  info: "bg-[#1877f2]",
-  warning: "bg-[#f7b928]",
+  success: "bg-emerald-500",
+  info: "bg-primary",
+  warning: "bg-secondary",
 };
 
 const toCompactTime = (value: string) => {
@@ -177,9 +176,7 @@ export function Header() {
   const initialUnreadSoundPlayedRef = useRef(false);
   const location = useLocation();
   const isHomeTop = !isScrolled;
-  const topBarTextClass = isHomeTop
-    ? "text-black"
-    : "text-muted-foreground";
+  const topBarTextClass = "text-foreground/75";
   const topBarPhone = admin?.phone?.trim() || publicAdmin?.phone?.trim() || "";
   const topBarEmail = admin?.email?.trim() || publicAdmin?.email?.trim() || "";
   const topBarAddress = admin?.address?.trim() || publicAdmin?.address?.trim() || "";
@@ -453,17 +450,17 @@ export function Header() {
       <button
         key={notif.id}
         onClick={() => !notif.read && void markAsRead(notif.id)}
-        className="group relative w-full rounded-xl px-1.5 py-1.5 sm:px-2 sm:py-2 text-left transition-colors hover:bg-black/[0.04]"
+        className="group relative w-full rounded-xl px-1.5 py-1.5 sm:px-2 sm:py-2 text-left transition-colors hover:bg-primary/5"
       >
         <div className="flex items-start gap-2 sm:gap-3">
           <div className="relative shrink-0">
-            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border border-black/10">
+            <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border border-border/70">
               <AvatarFallback className={cn("text-xs sm:text-sm font-semibold text-white", notifAvatarClass[notif.type])}>
                 {notificationAvatarInitial}
               </AvatarFallback>
             </Avatar>
             <span className={cn(
-              "absolute -bottom-1 -right-1 flex h-4.5 w-4.5 sm:h-5 sm:w-5 items-center justify-center rounded-full border-2 border-[#f0f2f5] text-white",
+              "absolute -bottom-1 -right-1 flex h-4.5 w-4.5 sm:h-5 sm:w-5 items-center justify-center rounded-full border-2 border-card text-white",
               notifBadgeClass[notif.type]
             )}>
               <Icon className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
@@ -472,63 +469,63 @@ export function Header() {
           <div className="min-w-0 flex-1 pr-3 sm:pr-4">
             {isContactMessage ? (
               <>
-                <p className="truncate text-[0.92rem] sm:text-[1rem] font-semibold leading-5 text-[#1c1e21]">{senderName}</p>
-                <p className="line-clamp-1 text-[0.84rem] sm:text-[0.92rem] leading-5 text-[#1c1e21]/90">
+                <p className="truncate text-[0.92rem] sm:text-[1rem] font-semibold leading-5 text-foreground">{senderName}</p>
+                <p className="line-clamp-1 text-[0.84rem] sm:text-[0.92rem] leading-5 text-foreground/85">
                   Sujet: {subject}
                 </p>
-                <p className="line-clamp-1 text-[0.82rem] sm:text-[0.88rem] leading-5 text-[#1c1e21]/75">
+                <p className="line-clamp-1 text-[0.82rem] sm:text-[0.88rem] leading-5 text-muted-foreground">
                   {messagePreview}
                 </p>
               </>
             ) : (
-              <p className="text-[0.88rem] sm:text-[0.95rem] leading-5 text-[#1c1e21]">
+              <p className="text-[0.88rem] sm:text-[0.95rem] leading-5 text-foreground">
                 <span className="font-semibold">{notif.title}</span>{" "}
-                <span className="text-[#1c1e21]/90">{notif.message}</span>
+                <span className="text-foreground/85">{notif.message}</span>
               </p>
             )}
-            <p className="mt-1 text-[11px] sm:text-xs font-semibold text-[#1877f2]">{toCompactTime(notif.time)}</p>
+            <p className="mt-1 text-[11px] sm:text-xs font-semibold text-secondary">{toCompactTime(notif.time)}</p>
           </div>
         </div>
-        {!notif.read && <span className="absolute right-2 sm:right-3 top-1/2 h-2 w-2 sm:h-2.5 sm:w-2.5 -translate-y-1/2 rounded-full bg-[#1877f2]" />}
+        {!notif.read && <span className="absolute right-2 sm:right-3 top-1/2 h-2 w-2 sm:h-2.5 sm:w-2.5 -translate-y-1/2 rounded-full bg-secondary" />}
       </button>
     );
   };
 
   return (
     <header className={cn(
-      "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+      "fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300",
       isScrolled 
-        ? "bg-card/95 backdrop-blur-md shadow-medium"
+        ? "border-border/70 bg-background/88 backdrop-blur-xl shadow-medium"
         : isHomeTop
-          ? "bg-white/70 backdrop-blur-sm"
-          : "bg-transparent"
+          ? "border-transparent bg-background/55 backdrop-blur-xl"
+          : "border-border/50 bg-background/72 backdrop-blur-xl"
     )}>
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 lg:px-6">
         {/* Top bar - Only visible when not scrolled */}
         <div className={cn(
-          "hidden md:flex items-center justify-between py-2 text-sm border-b transition-all duration-300",
+          "hidden md:flex items-center justify-between py-2.5 text-xs tracking-wide border-b transition-all duration-300",
           isScrolled 
             ? "h-0 opacity-0 overflow-hidden py-0 border-transparent" 
             : isHomeTop
-              ? "border-black/20"
-              : "border-border/50"
+              ? "border-primary/15"
+              : "border-border/70"
         )}>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-5">
             {topBarPhone && (
               <div className={cn("flex items-center gap-2", topBarTextClass)}>
-                <Phone className="w-4 h-4 text-secondary" />
+                <Phone className="w-3.5 h-3.5 text-secondary" />
                 <span>{topBarPhone}</span>
               </div>
             )}
             {topBarEmail && (
               <div className={cn("flex items-center gap-2", topBarTextClass)}>
-                <Mail className="w-4 h-4 text-secondary" />
+                <Mail className="w-3.5 h-3.5 text-secondary" />
                 <span>{topBarEmail}</span>
               </div>
             )}
             {topBarLocation && (
               <div className={cn("flex items-center gap-2", topBarTextClass)}>
-                <MapPin className="w-4 h-4 text-secondary" />
+                <MapPin className="w-3.5 h-3.5 text-secondary" />
                 <span>{topBarLocation}</span>
               </div>
             )}
@@ -538,14 +535,14 @@ export function Header() {
             {user && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-2 rounded-full border border-border bg-card/80 px-2 py-1 hover:bg-muted transition-colors">
+                  <button className="flex items-center gap-2 rounded-full border border-border/80 bg-card/85 px-2 py-1 hover:bg-muted transition-colors shadow-soft">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={userAvatarUrl} alt={userDisplayName} />
                       <AvatarFallback className="bg-primary/15 text-primary text-xs font-semibold">
                         {userInitial}
                       </AvatarFallback>
                     </Avatar>
-                    <span className={cn("max-w-28 truncate text-xs", isHomeTop ? "text-black" : "text-muted-foreground")} title={user?.email ?? ""}>
+                    <span className="max-w-28 truncate text-xs text-muted-foreground" title={user?.email ?? ""}>
                       {userDisplayName}
                     </span>
                   </button>
@@ -572,42 +569,34 @@ export function Header() {
         </div>
 
         {/* Main nav */}
-        <div className="flex items-center justify-between h-16 gap-2">
+        <div className="flex items-center justify-between h-[4.5rem] gap-2 py-1">
           <Link to="/" className="group flex min-w-0 flex-1 items-center gap-2 sm:gap-3 lg:flex-none">
-            <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg bg-transparent flex items-center justify-center transition-all duration-300">
+            <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl border border-primary/15 bg-card/65 flex items-center justify-center transition-all duration-300 shadow-soft group-hover:border-secondary/45 group-hover:shadow-medium">
               <CabinetMark className="h-11 w-11 sm:h-12 sm:w-12 text-secondary" />
             </div>
             <div className="min-w-0">
               <span
-                className={cn(
-                  "block truncate font-serif text-lg sm:text-xl md:text-2xl font-bold",
-                  isHomeTop ? "text-black" : "text-foreground"
-                )}
+                className="block truncate font-serif text-lg sm:text-xl md:text-2xl font-bold text-foreground"
               >
                 {cabinetName}
               </span>
-              <span className={cn(
-                "hidden sm:block text-xs font-medium tracking-wider uppercase",
-                isHomeTop ? "text-black/70" : "text-muted-foreground"
-              )}>
+              <span className="hidden sm:block text-[11px] font-semibold tracking-[0.18em] uppercase text-muted-foreground">
                 {cabinetSubtitle}
               </span>
             </div>
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-1 rounded-full border border-border/70 bg-card/85 px-1.5 py-1 backdrop-blur-sm shadow-soft">
             {visibleNavLinks.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
                 className={cn(
-                  "px-4 py-2 rounded-md text-sm font-medium transition-all duration-200",
+                  "px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200",
                   location.pathname === link.href
-                    ? "bg-secondary/20 text-secondary"
-                    : isHomeTop
-                      ? "text-black/90 hover:text-black hover:bg-black/10"
-                      : "text-foreground/80 hover:text-foreground hover:bg-muted"
+                    ? "bg-primary text-primary-foreground shadow-soft"
+                    : "text-foreground/80 hover:text-foreground hover:bg-white"
                 )}
               >
                 {link.label}
@@ -622,8 +611,8 @@ export function Header() {
               <div className="relative" ref={notifRef}>
                 <button
                   className={cn(
-                    "relative p-1.5 sm:p-2 rounded-full transition-colors",
-                    isHomeTop ? "hover:bg-black/10" : "hover:bg-muted"
+                    "relative p-1.5 sm:p-2 rounded-full border border-border/70 bg-card/80 transition-colors shadow-soft",
+                    isHomeTop ? "hover:bg-card" : "hover:bg-muted"
                   )}
                   onClick={() => {
                     setNotifOpen((prev) => {
@@ -635,7 +624,7 @@ export function Header() {
                     });
                   }}
                 >
-                  <Bell className={cn("h-4.5 w-4.5 sm:w-5 sm:h-5", isHomeTop ? "text-black/90" : "text-foreground/70")} />
+                  <Bell className="h-4.5 w-4.5 sm:w-5 sm:h-5 text-foreground/80" />
                   {unreadCount > 0 && (
                     <span className="notification-badge">{unreadCount}</span>
                   )}
@@ -643,22 +632,22 @@ export function Header() {
 
                 {/* Notification panel */}
                 {notifOpen && (
-                  <div className="absolute right-0 top-12 z-50 w-[min(19.5rem,calc(100vw-0.75rem))] sm:w-[22rem] lg:w-[24rem] max-w-[calc(100vw-0.75rem)] overflow-hidden rounded-2xl border border-black/10 bg-[#f0f2f5] shadow-[0_18px_42px_rgba(0,0,0,0.24)] animate-fade-in">
+                  <div className="absolute right-0 top-12 z-50 w-[min(19.5rem,calc(100vw-0.75rem))] sm:w-[22rem] lg:w-[24rem] max-w-[calc(100vw-0.75rem)] overflow-hidden rounded-2xl border border-border/80 bg-card/95 shadow-strong animate-fade-in">
                     <div className="px-2.5 sm:px-3 pb-2 pt-2.5 sm:pt-3">
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex min-w-0 items-center gap-2.5">
-                          <Avatar className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 border border-black/10">
+                          <Avatar className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 border border-border/75">
                             <AvatarImage src={userAvatarUrl} alt={userDisplayName} />
-                            <AvatarFallback className="bg-[#e2e5ea] text-xs sm:text-sm font-semibold text-[#1c1e21]">
+                            <AvatarFallback className="bg-muted text-xs sm:text-sm font-semibold text-foreground">
                               {userInitial}
                             </AvatarFallback>
                           </Avatar>
-                          <h3 className="truncate font-sans text-[1.35rem] sm:text-[2rem] font-bold leading-none text-[#1c1e21]">Notifications</h3>
+                          <h3 className="truncate font-sans text-[1.35rem] sm:text-[1.9rem] font-bold leading-none text-foreground">Notifications</h3>
                         </div>
                         <div className="relative">
                           <button
                             onClick={() => setNotifActionsOpen((prev) => !prev)}
-                            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full bg-white text-[#65676b] transition-colors hover:bg-black/5"
+                            className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full border border-border/60 bg-muted/55 text-muted-foreground transition-colors hover:bg-muted"
                             title="Options des notifications"
                             aria-label="Options des notifications"
                             aria-expanded={notifActionsOpen}
@@ -668,16 +657,16 @@ export function Header() {
                           </button>
 
                           {notifActionsOpen && (
-                            <div className="absolute right-0 top-10 sm:top-11 z-20 w-[min(17rem,calc(100vw-1.25rem))] sm:w-[20rem] rounded-2xl border border-black/10 bg-white p-2 shadow-[0_12px_30px_rgba(0,0,0,0.24)]">
+                            <div className="absolute right-0 top-10 sm:top-11 z-20 w-[min(17rem,calc(100vw-1.25rem))] sm:w-[20rem] rounded-2xl border border-border/80 bg-card p-2 shadow-medium">
                               <button
                                 onClick={() => {
                                   void markAllRead();
                                   setNotifActionsOpen(false);
                                 }}
                                 disabled={unreadCount === 0}
-                                className="flex w-full items-center gap-3 rounded-lg bg-black/[0.06] px-3 py-2 text-left text-[0.96rem] sm:text-[1.12rem] font-medium text-[#1c1e21] transition-colors hover:bg-black/[0.09] disabled:cursor-not-allowed disabled:opacity-50"
+                                className="flex w-full items-center gap-3 rounded-lg bg-muted/60 px-3 py-2 text-left text-[0.96rem] sm:text-[1.05rem] font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
                               >
-                                <Check className="h-4 w-4 shrink-0 text-[#2e3135]" />
+                                <Check className="h-4 w-4 shrink-0 text-foreground" />
                                 <span>Tout marquer comme lu</span>
                               </button>
 
@@ -687,9 +676,9 @@ export function Header() {
                                   setNotifActionsOpen(false);
                                   setNotifOpen(false);
                                 }}
-                                className="mt-1 flex items-center gap-3 rounded-lg px-3 py-2 text-[0.96rem] sm:text-[1.12rem] font-medium text-[#1c1e21] transition-colors hover:bg-black/[0.06]"
+                                className="mt-1 flex items-center gap-3 rounded-lg px-3 py-2 text-[0.96rem] sm:text-[1.05rem] font-medium text-foreground transition-colors hover:bg-muted/75"
                               >
-                                <Monitor className="h-4 w-4 shrink-0 text-[#2e3135]" />
+                                <Monitor className="h-4 w-4 shrink-0 text-foreground" />
                                 <span>Ouvrir les notifications</span>
                               </Link>
                             </div>
@@ -701,7 +690,7 @@ export function Header() {
                           onClick={() => setNotifFilter("all")}
                           className={cn(
                             "rounded-full px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold transition-colors",
-                            notifFilter === "all" ? "bg-[#dce8ff] text-[#1877f2]" : "text-[#1c1e21] hover:bg-black/5"
+                            notifFilter === "all" ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
                           )}
                         >
                           Tout
@@ -710,7 +699,7 @@ export function Header() {
                           onClick={() => setNotifFilter("unread")}
                           className={cn(
                             "rounded-full px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm font-semibold transition-colors",
-                            notifFilter === "unread" ? "bg-[#dce8ff] text-[#1877f2]" : "text-[#1c1e21] hover:bg-black/5"
+                            notifFilter === "unread" ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
                           )}
                         >
                           Non lu
@@ -720,7 +709,7 @@ export function Header() {
 
                     <div className="max-h-[22rem] sm:max-h-[26rem] overflow-y-auto px-1.5 sm:px-2 pb-2">
                       {notifLoading && (
-                        <div className="px-2 py-3 text-sm text-[#65676b]">
+                        <div className="px-2 py-3 text-sm text-muted-foreground">
                           Chargement...
                         </div>
                       )}
@@ -732,7 +721,7 @@ export function Header() {
                       )}
 
                       {!notifLoading && !notifError && visibleCount === 0 && (
-                        <div className="px-2 py-3 text-sm text-[#65676b]">
+                        <div className="px-2 py-3 text-sm text-muted-foreground">
                           {notifFilter === "unread" ? "Aucune notification non lue." : "Aucune notification pour le moment."}
                         </div>
                       )}
@@ -742,11 +731,11 @@ export function Header() {
                           {unreadNotifications.length > 0 && (
                             <>
                               <div className="flex items-center justify-between px-2 pb-1 pt-1">
-                                <p className="text-sm sm:text-base font-bold text-[#1c1e21]">Nouveau</p>
+                                <p className="text-sm sm:text-base font-bold text-foreground">Nouveau</p>
                                 <Link
                                   to="/admin/messages"
                                   onClick={() => setNotifOpen(false)}
-                                  className="text-xs sm:text-sm font-medium text-[#1877f2] hover:underline"
+                                  className="text-xs sm:text-sm font-medium text-primary hover:underline"
                                 >
                                   Voir tout
                                 </Link>
@@ -759,7 +748,7 @@ export function Header() {
 
                           {notifFilter === "all" && olderNotifications.length > 0 && (
                             <>
-                              <p className="px-2 pb-1 pt-3 text-sm sm:text-base font-bold text-[#1c1e21]">Plus tôt</p>
+                              <p className="px-2 pb-1 pt-3 text-sm sm:text-base font-bold text-foreground">Plus tôt</p>
                               <div className="space-y-1">
                                 {olderNotifications.map((notif) => renderNotificationItem(notif))}
                               </div>
@@ -782,10 +771,8 @@ export function Header() {
             {/* Mobile menu button */}
             <button
               className={cn(
-                "lg:hidden p-2 rounded-md border border-border/70 bg-background/85 shadow-sm backdrop-blur-sm transition-colors",
-                isHomeTop
-                  ? "text-black hover:bg-black/10"
-                  : "text-foreground hover:bg-muted"
+                "lg:hidden p-2 rounded-xl border border-border/70 bg-card/85 shadow-soft backdrop-blur-sm transition-colors",
+                isHomeTop ? "text-foreground hover:bg-card" : "text-foreground hover:bg-muted"
               )}
               aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
               onClick={() => setIsOpen(!isOpen)}
@@ -798,10 +785,10 @@ export function Header() {
         {/* Mobile nav */}
         {isOpen && (
           <nav className={cn(
-            "lg:hidden py-4 border-t animate-fade-in",
+            "lg:hidden py-4 border-t animate-fade-in rounded-b-2xl",
             isHomeTop
-              ? "border-black/10 bg-white/80 backdrop-blur-sm"
-              : "border-border"
+              ? "border-border/60 bg-background/90 backdrop-blur-sm"
+              : "border-border/70 bg-background/92"
           )}>
             {visibleNavLinks.map((link) => (
               <Link
@@ -809,9 +796,9 @@ export function Header() {
                 to={link.href}
                 onClick={() => setIsOpen(false)}
                 className={cn(
-                  "block px-4 py-3 rounded-md text-sm font-medium transition-colors",
+                  "block px-4 py-3 rounded-xl text-sm font-medium transition-colors",
                   location.pathname === link.href
-                    ? "bg-secondary/20 text-secondary"
+                    ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 )}
               >
@@ -822,7 +809,7 @@ export function Header() {
               {user && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="w-full flex items-center gap-3 rounded-lg border border-border bg-card/80 px-3 py-2 text-left hover:bg-muted transition-colors">
+                    <button className="w-full flex items-center gap-3 rounded-xl border border-border/80 bg-card/85 px-3 py-2 text-left hover:bg-muted transition-colors shadow-soft">
                       <Avatar className="h-9 w-9">
                         <AvatarImage src={userAvatarUrl} alt={userDisplayName} />
                         <AvatarFallback className="bg-primary/15 text-primary text-xs font-semibold">

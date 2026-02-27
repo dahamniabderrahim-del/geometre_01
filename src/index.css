@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,47 +6,43 @@
 
 @layer base {
   :root {
-    --background: 220 20% 97%;
-    --foreground: 220 30% 12%;
+    --background: 40 43% 98%;
+    --foreground: 211 42% 13%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 30% 12%;
+    --card-foreground: 211 42% 13%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 30% 12%;
+    --popover-foreground: 211 42% 13%;
 
-    /* Navy Blue - Primary */
-    --primary: 220 50% 20%;
-    --primary-foreground: 45 80% 95%;
+    --primary: 202 55% 22%;
+    --primary-foreground: 43 80% 96%;
 
-    /* Gold - Secondary */
-    --secondary: 45 85% 55%;
-    --secondary-foreground: 220 50% 15%;
+    --secondary: 27 87% 58%;
+    --secondary-foreground: 210 40% 12%;
 
-    --muted: 220 15% 92%;
-    --muted-foreground: 220 15% 40%;
+    --muted: 42 22% 93%;
+    --muted-foreground: 212 19% 36%;
 
-    /* Gold accent */
-    --accent: 45 85% 55%;
-    --accent-foreground: 220 50% 15%;
+    --accent: 164 32% 41%;
+    --accent-foreground: 210 40% 96%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 20% 88%;
-    --input: 220 20% 88%;
-    --ring: 220 50% 20%;
+    --border: 212 26% 84%;
+    --input: 212 22% 83%;
+    --ring: 202 55% 22%;
 
-    --radius: 0.5rem;
+    --radius: 0.9rem;
 
-    /* Custom design tokens - Institutional Navy/Gold */
-    --gradient-hero: linear-gradient(135deg, hsl(220 50% 15%) 0%, hsl(220 45% 25%) 50%, hsl(220 40% 30%) 100%);
-    --gradient-gold: linear-gradient(135deg, hsl(45 85% 55%) 0%, hsl(40 80% 50%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 20% 97%) 100%);
-    --shadow-soft: 0 4px 20px -4px hsl(220 30% 12% / 0.08);
-    --shadow-medium: 0 8px 30px -8px hsl(220 30% 12% / 0.12);
-    --shadow-strong: 0 20px 50px -12px hsl(220 30% 12% / 0.2);
-    --shadow-gold: 0 4px 20px -4px hsl(45 85% 55% / 0.3);
+    --gradient-hero: linear-gradient(140deg, hsl(206 63% 17%) 0%, hsl(198 56% 23%) 45%, hsl(191 47% 31%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(31 89% 60%) 0%, hsl(21 86% 57%) 100%);
+    --gradient-card: linear-gradient(160deg, hsl(0 0% 100%) 0%, hsl(43 25% 96%) 100%);
+    --shadow-soft: 0 8px 24px -16px hsl(211 46% 14% / 0.35);
+    --shadow-medium: 0 18px 40px -20px hsl(211 46% 14% / 0.42);
+    --shadow-strong: 0 30px 64px -24px hsl(206 63% 17% / 0.5);
+    --shadow-gold: 0 18px 36px -22px hsl(29 92% 56% / 0.85);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -59,33 +55,33 @@
   }
 
   .dark {
-    --background: 220 30% 8%;
-    --foreground: 220 20% 95%;
+    --background: 210 35% 10%;
+    --foreground: 38 40% 94%;
 
-    --card: 220 30% 12%;
-    --card-foreground: 220 20% 95%;
+    --card: 210 30% 13%;
+    --card-foreground: 38 40% 94%;
 
-    --popover: 220 30% 12%;
-    --popover-foreground: 220 20% 95%;
+    --popover: 210 30% 13%;
+    --popover-foreground: 38 40% 94%;
 
-    --primary: 220 45% 45%;
-    --primary-foreground: 220 20% 95%;
+    --primary: 194 48% 48%;
+    --primary-foreground: 210 35% 12%;
 
-    --secondary: 45 80% 60%;
-    --secondary-foreground: 220 30% 10%;
+    --secondary: 30 84% 62%;
+    --secondary-foreground: 208 34% 12%;
 
-    --muted: 220 25% 18%;
-    --muted-foreground: 220 15% 60%;
+    --muted: 211 22% 18%;
+    --muted-foreground: 210 14% 70%;
 
-    --accent: 45 80% 60%;
-    --accent-foreground: 220 30% 10%;
+    --accent: 165 39% 46%;
+    --accent-foreground: 210 34% 12%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 25% 18%;
-    --input: 220 25% 18%;
-    --ring: 220 45% 45%;
+    --border: 210 20% 24%;
+    --input: 210 20% 24%;
+    --ring: 194 48% 48%;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -105,12 +101,18 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    font-family: "Manrope", sans-serif;
+    background-image:
+      radial-gradient(circle at 2% -10%, hsl(var(--secondary) / 0.16), transparent 28%),
+      radial-gradient(circle at 100% 0%, hsl(var(--accent) / 0.12), transparent 22%),
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(40 25% 97%) 100%);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 600;
+    font-family: "Sora", sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
 }
 
@@ -144,15 +146,10 @@
   }
 
   .geometric-pattern {
-    background-image: 
-      linear-gradient(30deg, hsl(var(--primary) / 0.02) 12%, transparent 12.5%, transparent 87%, hsl(var(--primary) / 0.02) 87.5%, hsl(var(--primary) / 0.02)),
-      linear-gradient(150deg, hsl(var(--primary) / 0.02) 12%, transparent 12.5%, transparent 87%, hsl(var(--primary) / 0.02) 87.5%, hsl(var(--primary) / 0.02)),
-      linear-gradient(30deg, hsl(var(--primary) / 0.02) 12%, transparent 12.5%, transparent 87%, hsl(var(--primary) / 0.02) 87.5%, hsl(var(--primary) / 0.02)),
-      linear-gradient(150deg, hsl(var(--primary) / 0.02) 12%, transparent 12.5%, transparent 87%, hsl(var(--primary) / 0.02) 87.5%, hsl(var(--primary) / 0.02)),
-      linear-gradient(60deg, hsl(var(--secondary) / 0.03) 25%, transparent 25.5%, transparent 75%, hsl(var(--secondary) / 0.03) 75%, hsl(var(--secondary) / 0.03)),
-      linear-gradient(60deg, hsl(var(--secondary) / 0.03) 25%, transparent 25.5%, transparent 75%, hsl(var(--secondary) / 0.03) 75%, hsl(var(--secondary) / 0.03));
-    background-size: 80px 140px;
-    background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+    background-image:
+      radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.08) 1px, transparent 0),
+      linear-gradient(135deg, hsl(var(--secondary) / 0.07) 0%, transparent 45%);
+    background-size: 24px 24px, auto;
   }
 
   .gold-border {
@@ -161,6 +158,38 @@
 
   .navy-section {
     @apply bg-primary text-primary-foreground;
+  }
+
+  .premium-section {
+    @apply py-16 md:py-24;
+  }
+
+  .premium-card {
+    @apply rounded-2xl border border-border/75 bg-card/90 backdrop-blur-sm shadow-soft;
+  }
+
+  .premium-card-strong {
+    @apply rounded-3xl border border-border/70 bg-card/90 backdrop-blur-sm shadow-medium;
+  }
+
+  .premium-chip {
+    @apply inline-flex items-center rounded-full border border-secondary/35 bg-secondary/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-secondary;
+  }
+
+  .premium-hero {
+    @apply relative overflow-hidden py-16 md:py-24;
+    background: var(--gradient-hero);
+    color: hsl(var(--primary-foreground));
+  }
+
+  .premium-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 15% 20%, hsl(var(--secondary) / 0.25), transparent 35%),
+      radial-gradient(circle at 88% 8%, hsl(var(--accent) / 0.2), transparent 28%);
+    pointer-events: none;
   }
 
   /* Social media button styles */
@@ -187,7 +216,7 @@
 
   /* Notification badge */
   .notification-badge {
-    @apply absolute -top-1 -right-1 flex items-center justify-center rounded-full bg-[#e41e3f] px-1 text-[10px] font-semibold text-white;
+    @apply absolute -top-1 -right-1 flex items-center justify-center rounded-full bg-[#f05a44] px-1 text-[10px] font-semibold text-white;
     min-width: 1.1rem;
     height: 1.1rem;
     box-shadow: 0 0 0 2px hsl(var(--card));

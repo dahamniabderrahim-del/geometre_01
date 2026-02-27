@@ -508,9 +508,11 @@ const ParametresCompte = () => {
                 <h2 className="font-serif text-xl font-bold mb-4">Informations du bureau</h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Nom du geometre expert foncier
-                    </label>
+                    <div className="mb-2">
+                      <label className="block text-sm font-medium text-foreground">
+                        Nom du geometre expert foncier
+                      </label>
+                    </div>
                     <Input name="name" value={form.name} onChange={handleFieldChange} placeholder="Ex: Ayoub Benali" />
                   </div>
                   <div>
