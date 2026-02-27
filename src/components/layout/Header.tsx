@@ -864,16 +864,16 @@ export function Header() {
 
               <SheetContent
                 side="right"
-                className="lg:hidden w-[78vw] max-w-[18.5rem] border-l border-border/55 bg-white/96 p-0 backdrop-blur-xl [&>button]:hidden"
+                className="lg:hidden w-[78vw] max-w-[18.5rem] border-l border-white/25 bg-primary/95 p-0 backdrop-blur-xl [&>button]:hidden"
               >
                 <SheetTitle className="sr-only">Navigation mobile</SheetTitle>
                 <div className="flex h-full min-h-0 flex-col">
-                  <div className="flex items-center justify-between border-b border-border/70 px-4 py-4">
-                    <p className="font-serif text-lg font-bold text-foreground">Navigation</p>
+                  <div className="flex items-center justify-between border-b border-white/20 px-4 py-4">
+                    <p className="font-serif text-lg font-bold text-white">Navigation</p>
                     <button
                       type="button"
                       onClick={() => setIsOpen(false)}
-                      className="rounded-xl border border-border/70 bg-card/85 p-2 text-foreground shadow-soft"
+                      className="rounded-xl border border-white/25 bg-white/10 p-2 text-white shadow-soft"
                       aria-label="Fermer le menu"
                     >
                       <X className="h-5 w-5" />
@@ -890,8 +890,8 @@ export function Header() {
                           className={cn(
                             "block rounded-xl px-4 py-3 text-base font-semibold transition-colors",
                             location.pathname === link.href
-                              ? "bg-primary text-primary-foreground"
-                              : "text-foreground/85 hover:bg-muted hover:text-foreground"
+                              ? "bg-white/18 text-white"
+                              : "text-white/90 hover:bg-white/12 hover:text-white"
                           )}
                         >
                           {link.label}
@@ -899,26 +899,26 @@ export function Header() {
                       ))}
                     </div>
 
-                    <div className="mt-5 space-y-3 border-t border-border/70 pt-4">
+                    <div className="mt-5 space-y-3 border-t border-white/20 pt-4">
                       {user && (
                         <>
-                          <div className="flex items-center gap-3 rounded-xl border border-border/80 bg-card/85 px-3 py-2 shadow-soft">
+                          <div className="flex items-center gap-3 rounded-xl border border-white/25 bg-white/10 px-3 py-2 shadow-soft">
                             <Avatar className="h-10 w-10">
                               <AvatarImage src={userAvatarUrl} alt={userDisplayName} />
-                              <AvatarFallback className="bg-primary/15 text-primary text-sm font-semibold">
+                              <AvatarFallback className="bg-white/20 text-white text-sm font-semibold">
                                 {userInitial}
                               </AvatarFallback>
                             </Avatar>
                             <div className="min-w-0">
-                              <p className="truncate text-sm font-semibold text-foreground">{userDisplayName}</p>
-                              <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                              <p className="truncate text-sm font-semibold text-white">{userDisplayName}</p>
+                              <p className="truncate text-xs text-white/70">{user.email}</p>
                             </div>
                           </div>
 
                           <Link
                             to="/parametres"
                             onClick={() => setIsOpen(false)}
-                            className="flex items-center gap-2 rounded-xl border border-border/80 bg-card/70 px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                            className="flex items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/15"
                           >
                             <Settings className="h-4 w-4" />
                             Parametres
@@ -928,7 +928,7 @@ export function Header() {
                             <Link
                               to="/admin/messages"
                               onClick={() => setIsOpen(false)}
-                              className="flex items-center gap-2 rounded-xl border border-border/80 bg-card/70 px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                              className="flex items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/15"
                             >
                               <Bell className="h-4 w-4" />
                               Boite messages
@@ -937,7 +937,7 @@ export function Header() {
 
                           <Button
                             variant="outline"
-                            className="w-full justify-start"
+                            className="w-full justify-start border-white/30 bg-white/10 text-white hover:bg-white/15 hover:text-white"
                             onClick={() => {
                               void handleSignOut();
                               setIsOpen(false);
@@ -950,7 +950,7 @@ export function Header() {
 
                       {!user && (
                         <Link to="/connexion" onClick={() => setIsOpen(false)}>
-                          <Button variant="outline" className="w-full">
+                          <Button variant="outline" className="w-full border-white/30 bg-white/10 text-white hover:bg-white/15 hover:text-white">
                             Se connecter
                           </Button>
                         </Link>
@@ -958,7 +958,7 @@ export function Header() {
                     </div>
                   </nav>
 
-                  <div className="border-t border-border/70 px-4 py-3">
+                  <div className="border-t border-white/20 px-4 py-3">
                     <div className="flex justify-center">
                       <SocialButtons />
                     </div>
