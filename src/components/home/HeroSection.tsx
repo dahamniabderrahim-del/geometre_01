@@ -116,14 +116,14 @@ export function HeroSection() {
 
       <div className="container relative z-10 mx-auto px-4 py-20">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
-          <div className="order-2 max-w-2xl lg:order-1">
+          <div className="order-2 hidden max-w-2xl lg:order-1 lg:block">
             <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-secondary/35 bg-secondary/20 px-4 py-2 animate-fade-up">
               <span className="text-sm font-semibold tracking-wide text-primary-foreground">{heroContent.badge}</span>
               <div className="h-10 w-32 overflow-hidden rounded-full bg-primary-foreground/10">
                 <img
                   src={OGEF_LOGO_URL}
                   alt="Logo OGEF"
-                  className="h-full w-full scale-[1.18] object-contain"
+                  className="h-full w-full object-contain scale-100 sm:scale-[1.18]"
                   loading="lazy"
                 />
               </div>
@@ -245,11 +245,11 @@ export function HeroSection() {
 
               <div className="space-y-4 text-sm">
                 <div className="flex items-center gap-3 rounded-xl border border-primary-foreground/15 bg-primary-foreground/8 p-3">
-                  <div className="h-12 w-40 overflow-hidden rounded-full bg-primary-foreground/10">
+                  <div className="h-10 w-28 overflow-hidden rounded-full bg-primary-foreground/10 sm:h-12 sm:w-40">
                     <img
                       src={OGEF_LOGO_URL}
                       alt="Logo OGEF"
-                      className="h-full w-full scale-[1.2] object-contain"
+                      className="h-full w-full object-contain scale-100 sm:scale-[1.2]"
                       loading="lazy"
                     />
                   </div>

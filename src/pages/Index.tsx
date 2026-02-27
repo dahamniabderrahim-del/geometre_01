@@ -10,7 +10,9 @@ const Index = () => {
     <Layout>
       <HeroSection />
       <ServicesSection />
-      <AboutSection />
+      <div className="hidden md:block">
+        <AboutSection />
+      </div>
       <FAQSection />
       <CTASection />
     </Layout>
