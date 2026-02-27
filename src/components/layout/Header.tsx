@@ -429,6 +429,19 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname]);
+
   const renderNotificationItem = (notif: NotificationItem) => {
     const Icon = notifIcon[notif.type];
     const isContactMessage = notif.title === "Nouveau message";
@@ -782,87 +795,126 @@ export function Header() {
           </div>
         </div>
 
-        {/* Mobile nav */}
-        {isOpen && (
-          <nav className={cn(
-            "lg:hidden py-4 border-t animate-fade-in rounded-b-2xl",
-            isHomeTop
-              ? "border-border/60 bg-background/90 backdrop-blur-sm"
-              : "border-border/70 bg-background/92"
-          )}>
-            {visibleNavLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                onClick={() => setIsOpen(false)}
-                className={cn(
-                  "block px-4 py-3 rounded-xl text-sm font-medium transition-colors",
-                  location.pathname === link.href
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="px-4 pt-4 space-y-3">
-              {user && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="w-full flex items-center gap-3 rounded-xl border border-border/80 bg-card/85 px-3 py-2 text-left hover:bg-muted transition-colors shadow-soft">
-                      <Avatar className="h-9 w-9">
-                        <AvatarImage src={userAvatarUrl} alt={userDisplayName} />
-                        <AvatarFallback className="bg-primary/15 text-primary text-xs font-semibold">
-                          {userInitial}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium text-foreground truncate">{userDisplayName}</p>
-                        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+        {/* Mobile sidebar nav */}
+        <div
+          className={cn(
+            "fixed inset-0 z-[70] lg:hidden transition-opacity duration-300",
+            isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+          )}
+          aria-hidden={!isOpen}
+        >
+          <button
+            type="button"
+            className="absolute inset-0 bg-foreground/45 backdrop-blur-[2px]"
+            onClick={() => setIsOpen(false)}
+            aria-label="Fermer le menu"
+          />
+
+          <aside
+            className={cn(
+              "absolute right-0 top-0 h-full w-[88vw] max-w-sm border-l border-border/70 bg-background/97 shadow-strong backdrop-blur-xl transition-transform duration-300",
+              isOpen ? "translate-x-0" : "translate-x-full"
+            )}
+          >
+            <div className="flex h-full flex-col">
+              <div className="flex items-center justify-between border-b border-border/70 px-4 py-4">
+                <p className="font-serif text-lg font-bold text-foreground">Navigation</p>
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="rounded-xl border border-border/70 bg-card/85 p-2 text-foreground shadow-soft"
+                  aria-label="Fermer le menu"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <nav className="flex-1 overflow-y-auto px-3 py-3">
+                <div className="space-y-1">
+                  {visibleNavLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      to={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className={cn(
+                        "block rounded-xl px-4 py-3 text-base font-semibold transition-colors",
+                        location.pathname === link.href
+                          ? "bg-primary text-primary-foreground"
+                          : "text-foreground/85 hover:bg-muted hover:text-foreground"
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+
+                <div className="mt-5 space-y-3 border-t border-border/70 pt-4">
+                  {user && (
+                    <>
+                      <div className="flex items-center gap-3 rounded-xl border border-border/80 bg-card/85 px-3 py-2 shadow-soft">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={userAvatarUrl} alt={userDisplayName} />
+                          <AvatarFallback className="bg-primary/15 text-primary text-sm font-semibold">
+                            {userInitial}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-foreground">{userDisplayName}</p>
+                          <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                        </div>
                       </div>
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    <DropdownMenuLabel className="max-w-56 truncate">{user?.email}</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link to="/parametres" onClick={() => setIsOpen(false)}>
-                        <Settings className="w-4 h-4 mr-2" />
+
+                      <Link
+                        to="/parametres"
+                        onClick={() => setIsOpen(false)}
+                        className="flex items-center gap-2 rounded-xl border border-border/80 bg-card/70 px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                      >
+                        <Settings className="h-4 w-4" />
                         Parametres
                       </Link>
-                    </DropdownMenuItem>
-                    {isAdmin && (
-                      <DropdownMenuItem asChild>
-                        <Link to="/admin/messages" onClick={() => setIsOpen(false)}>
+
+                      {isAdmin && (
+                        <Link
+                          to="/admin/messages"
+                          onClick={() => setIsOpen(false)}
+                          className="flex items-center gap-2 rounded-xl border border-border/80 bg-card/70 px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                        >
+                          <Bell className="h-4 w-4" />
                           Boite messages
                         </Link>
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuItem
-                      onClick={() => {
-                        handleSignOut();
-                        setIsOpen(false);
-                      }}
-                    >
-                      Se deconnecter
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
+                      )}
 
-              {!user && (
-                <Link to="/connexion" onClick={() => setIsOpen(false)}>
-                  <Button variant="outline" className="w-full">
-                    Se connecter
-                  </Button>
-                </Link>
-              )}
-              <div className="flex justify-center pt-2">
-                <SocialButtons />
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start"
+                        onClick={() => {
+                          void handleSignOut();
+                          setIsOpen(false);
+                        }}
+                      >
+                        Se deconnecter
+                      </Button>
+                    </>
+                  )}
+
+                  {!user && (
+                    <Link to="/connexion" onClick={() => setIsOpen(false)}>
+                      <Button variant="outline" className="w-full">
+                        Se connecter
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              </nav>
+
+              <div className="border-t border-border/70 px-4 py-3">
+                <div className="flex justify-center">
+                  <SocialButtons />
+                </div>
               </div>
             </div>
-          </nav>
-        )}
+          </aside>
+        </div>
       </div>
     </header>
   );
