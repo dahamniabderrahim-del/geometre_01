@@ -4,6 +4,12 @@ import { Menu, X, MapPin, Phone, Mail, Bell, Check, CheckCircle, AlertTriangle, 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -782,138 +788,124 @@ export function Header() {
             )}
 
             {/* Mobile menu button */}
-            <button
-              className={cn(
-                "lg:hidden p-2 rounded-xl border border-border/70 bg-card/85 shadow-soft backdrop-blur-sm transition-colors",
-                isHomeTop ? "text-foreground hover:bg-card" : "text-foreground hover:bg-muted"
-              )}
-              aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile sidebar nav */}
-        <div
-          className={cn(
-            "fixed inset-0 z-[70] lg:hidden transition-opacity duration-300",
-            isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
-          )}
-          aria-hidden={!isOpen}
-        >
-          <button
-            type="button"
-            className="absolute inset-0 bg-foreground/45 backdrop-blur-[2px]"
-            onClick={() => setIsOpen(false)}
-            aria-label="Fermer le menu"
-          />
-
-          <aside
-            className={cn(
-              "absolute right-0 top-0 h-full w-[88vw] max-w-sm border-l border-border/70 bg-background/97 shadow-strong backdrop-blur-xl transition-transform duration-300",
-              isOpen ? "translate-x-0" : "translate-x-full"
-            )}
-          >
-            <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between border-b border-border/70 px-4 py-4">
-                <p className="font-serif text-lg font-bold text-foreground">Navigation</p>
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
                 <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="rounded-xl border border-border/70 bg-card/85 p-2 text-foreground shadow-soft"
-                  aria-label="Fermer le menu"
+                  className={cn(
+                    "lg:hidden p-2 rounded-xl border border-border/70 bg-card/85 shadow-soft backdrop-blur-sm transition-colors",
+                    isHomeTop ? "text-foreground hover:bg-card" : "text-foreground hover:bg-muted"
+                  )}
+                  aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
                 >
-                  <X className="h-5 w-5" />
+                  {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>
-              </div>
+              </SheetTrigger>
 
-              <nav className="flex-1 overflow-y-auto px-3 py-3">
-                <div className="space-y-1">
-                  {visibleNavLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      to={link.href}
+              <SheetContent
+                side="right"
+                className="lg:hidden w-[92vw] max-w-[24rem] border-l border-border/70 bg-background/98 p-0 backdrop-blur-xl [&>button]:hidden"
+              >
+                <SheetTitle className="sr-only">Navigation mobile</SheetTitle>
+                <div className="flex h-full min-h-0 flex-col">
+                  <div className="flex items-center justify-between border-b border-border/70 px-4 py-4">
+                    <p className="font-serif text-lg font-bold text-foreground">Navigation</p>
+                    <button
+                      type="button"
                       onClick={() => setIsOpen(false)}
-                      className={cn(
-                        "block rounded-xl px-4 py-3 text-base font-semibold transition-colors",
-                        location.pathname === link.href
-                          ? "bg-primary text-primary-foreground"
-                          : "text-foreground/85 hover:bg-muted hover:text-foreground"
-                      )}
+                      className="rounded-xl border border-border/70 bg-card/85 p-2 text-foreground shadow-soft"
+                      aria-label="Fermer le menu"
                     >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
 
-                <div className="mt-5 space-y-3 border-t border-border/70 pt-4">
-                  {user && (
-                    <>
-                      <div className="flex items-center gap-3 rounded-xl border border-border/80 bg-card/85 px-3 py-2 shadow-soft">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={userAvatarUrl} alt={userDisplayName} />
-                          <AvatarFallback className="bg-primary/15 text-primary text-sm font-semibold">
-                            {userInitial}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-foreground">{userDisplayName}</p>
-                          <p className="truncate text-xs text-muted-foreground">{user.email}</p>
-                        </div>
-                      </div>
-
-                      <Link
-                        to="/parametres"
-                        onClick={() => setIsOpen(false)}
-                        className="flex items-center gap-2 rounded-xl border border-border/80 bg-card/70 px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-                      >
-                        <Settings className="h-4 w-4" />
-                        Parametres
-                      </Link>
-
-                      {isAdmin && (
+                  <nav className="flex-1 overflow-y-auto px-3 py-3">
+                    <div className="space-y-1">
+                      {visibleNavLinks.map((link) => (
                         <Link
-                          to="/admin/messages"
+                          key={link.href}
+                          to={link.href}
                           onClick={() => setIsOpen(false)}
-                          className="flex items-center gap-2 rounded-xl border border-border/80 bg-card/70 px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                          className={cn(
+                            "block rounded-xl px-4 py-3 text-base font-semibold transition-colors",
+                            location.pathname === link.href
+                              ? "bg-primary text-primary-foreground"
+                              : "text-foreground/85 hover:bg-muted hover:text-foreground"
+                          )}
                         >
-                          <Bell className="h-4 w-4" />
-                          Boite messages
+                          {link.label}
+                        </Link>
+                      ))}
+                    </div>
+
+                    <div className="mt-5 space-y-3 border-t border-border/70 pt-4">
+                      {user && (
+                        <>
+                          <div className="flex items-center gap-3 rounded-xl border border-border/80 bg-card/85 px-3 py-2 shadow-soft">
+                            <Avatar className="h-10 w-10">
+                              <AvatarImage src={userAvatarUrl} alt={userDisplayName} />
+                              <AvatarFallback className="bg-primary/15 text-primary text-sm font-semibold">
+                                {userInitial}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-semibold text-foreground">{userDisplayName}</p>
+                              <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                            </div>
+                          </div>
+
+                          <Link
+                            to="/parametres"
+                            onClick={() => setIsOpen(false)}
+                            className="flex items-center gap-2 rounded-xl border border-border/80 bg-card/70 px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                          >
+                            <Settings className="h-4 w-4" />
+                            Parametres
+                          </Link>
+
+                          {isAdmin && (
+                            <Link
+                              to="/admin/messages"
+                              onClick={() => setIsOpen(false)}
+                              className="flex items-center gap-2 rounded-xl border border-border/80 bg-card/70 px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                            >
+                              <Bell className="h-4 w-4" />
+                              Boite messages
+                            </Link>
+                          )}
+
+                          <Button
+                            variant="outline"
+                            className="w-full justify-start"
+                            onClick={() => {
+                              void handleSignOut();
+                              setIsOpen(false);
+                            }}
+                          >
+                            Se deconnecter
+                          </Button>
+                        </>
+                      )}
+
+                      {!user && (
+                        <Link to="/connexion" onClick={() => setIsOpen(false)}>
+                          <Button variant="outline" className="w-full">
+                            Se connecter
+                          </Button>
                         </Link>
                       )}
+                    </div>
+                  </nav>
 
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start"
-                        onClick={() => {
-                          void handleSignOut();
-                          setIsOpen(false);
-                        }}
-                      >
-                        Se deconnecter
-                      </Button>
-                    </>
-                  )}
-
-                  {!user && (
-                    <Link to="/connexion" onClick={() => setIsOpen(false)}>
-                      <Button variant="outline" className="w-full">
-                        Se connecter
-                      </Button>
-                    </Link>
-                  )}
+                  <div className="border-t border-border/70 px-4 py-3">
+                    <div className="flex justify-center">
+                      <SocialButtons />
+                    </div>
+                  </div>
                 </div>
-              </nav>
-
-              <div className="border-t border-border/70 px-4 py-3">
-                <div className="flex justify-center">
-                  <SocialButtons />
-                </div>
-              </div>
-            </div>
-          </aside>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </div>
     </header>
