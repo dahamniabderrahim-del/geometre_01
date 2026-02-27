@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useAdminProfile } from "@/hooks/use-admin";
 import { supabase } from "@/integrations/supabase/client";
 import { Bell, Clock3, MailOpen, MessageSquare, RefreshCw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { parseDatabaseTimestamp } from "@/lib/datetime";
 import { parseContactNotificationMessage } from "@/lib/notification-message";
@@ -53,14 +53,16 @@ const AdminMessages = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadMessages = async () => {
+  const loadMessages = useCallback(async (showLoader = true) => {
     if (!isAdmin) {
       setMessages([]);
       setLoading(false);
       return;
     }
 
-    setLoading(true);
+    if (showLoader) {
+      setLoading(true);
+    }
     setError(null);
 
     const { data, error: loadError } = await supabase
@@ -102,7 +104,7 @@ const AdminMessages = () => {
     }
 
     setLoading(false);
-  };
+  }, [isAdmin]);
 
   const markAsRead = async (id: string) => {
     if (!isAdmin) return;
@@ -124,8 +126,43 @@ const AdminMessages = () => {
 
   useEffect(() => {
     if (!isAdmin) return;
-    loadMessages();
-  }, [isAdmin]);
+    void loadMessages(true);
+  }, [isAdmin, loadMessages]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const channel = supabase
+      .channel("admin-messages-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+        },
+        () => {
+          void loadMessages(false);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [isAdmin, loadMessages]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const intervalId = window.setInterval(() => {
+      void loadMessages(false);
+    }, 3000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [isAdmin, loadMessages]);
 
   if (authLoading || adminLoading) {
     return (
@@ -199,7 +236,7 @@ const AdminMessages = () => {
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
               <h2 className="font-serif text-xl font-bold">Liste des messages</h2>
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => loadMessages()}>
+                <Button variant="outline" size="sm" onClick={() => void loadMessages(true)}>
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Actualiser
                 </Button>

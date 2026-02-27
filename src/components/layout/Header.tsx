@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, MapPin, Phone, Mail, Bell, Check, CheckCircle, AlertTriangle, Info, Monitor, MoreHorizontal, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -180,9 +180,10 @@ export function Header() {
   const [notifError, setNotifError] = useState<string | null>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const initialUnreadSoundPlayedRef = useRef(false);
+  const knownNotificationIdsRef = useRef<Set<string>>(new Set());
   const location = useLocation();
   const isHomeTop = !isScrolled;
-  const topBarTextClass = "text-foreground/75";
+  const topBarTextClass = "text-slate-800 font-medium";
   const topBarPhone = admin?.phone?.trim() || publicAdmin?.phone?.trim() || "";
   const topBarEmail = admin?.email?.trim() || publicAdmin?.email?.trim() || "";
   const topBarAddress = admin?.address?.trim() || publicAdmin?.address?.trim() || "";
@@ -195,7 +196,7 @@ export function Header() {
   const olderNotifications = notifications.filter((n) => n.read);
   const visibleCount = notifFilter === "unread" ? unreadNotifications.length : notifications.length;
 
-  const loadUsersForNotifications = async (rows: NotificationRow[]) => {
+  const loadUsersForNotifications = useCallback(async (rows: NotificationRow[]) => {
     const userIds = Array.from(
       new Set(
         rows
@@ -220,9 +221,9 @@ export function Header() {
       }
       return next;
     });
-  };
+  }, []);
 
-  const mapNotificationRowToItem = (row: NotificationRow): NotificationItem => {
+  const mapNotificationRowToItem = useCallback((row: NotificationRow): NotificationItem => {
     const parsedContact =
       row.title === "Nouveau message"
         ? parseContactNotificationMessage(row.message)
@@ -245,7 +246,7 @@ export function Header() {
         locale: fr,
       }),
     };
-  };
+  }, []);
 
   const markAsRead = async (id: string) => {
     if (!isAdmin) return;
@@ -299,6 +300,7 @@ export function Header() {
 
   useEffect(() => {
     initialUnreadSoundPlayedRef.current = false;
+    knownNotificationIdsRef.current = new Set();
   }, [isAdmin]);
 
   useEffect(() => {
@@ -335,6 +337,7 @@ export function Header() {
         initialUnreadSoundPlayedRef.current = true;
       }
 
+      knownNotificationIdsRef.current = new Set(mapped.map((item) => item.id));
       setNotifications(mapped);
       setNotifLoading(false);
     };
@@ -343,7 +346,7 @@ export function Header() {
     return () => {
       isMounted = false;
     };
-  }, [isAdmin]);
+  }, [isAdmin, loadUsersForNotifications, mapNotificationRowToItem]);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -361,15 +364,18 @@ export function Header() {
           const newRow = payload.new as NotificationRow;
           void loadUsersForNotifications([newRow]);
           const nextItem = mapNotificationRowToItem(newRow);
+          const wasAlreadyKnown = knownNotificationIdsRef.current.has(nextItem.id);
 
           setNotifications((prev) => {
             if (prev.some((item) => item.id === nextItem.id)) return prev;
-            return [nextItem, ...prev].slice(0, 10);
+            const next = [nextItem, ...prev].slice(0, 10);
+            knownNotificationIdsRef.current = new Set(next.map((item) => item.id));
+            return next;
           });
           setNotifLoading(false);
           setNotifError(null);
 
-          if (!nextItem.read) {
+          if (!nextItem.read && !wasAlreadyKnown) {
             playNotificationSound();
           }
         }
@@ -388,10 +394,15 @@ export function Header() {
 
           setNotifications((prev) => {
             const index = prev.findIndex((item) => item.id === updatedItem.id);
-            if (index === -1) return [updatedItem, ...prev].slice(0, 10);
+            if (index === -1) {
+              const inserted = [updatedItem, ...prev].slice(0, 10);
+              knownNotificationIdsRef.current = new Set(inserted.map((item) => item.id));
+              return inserted;
+            }
 
             const next = [...prev];
             next[index] = updatedItem;
+            knownNotificationIdsRef.current = new Set(next.map((item) => item.id));
             return next;
           });
         }
@@ -406,7 +417,11 @@ export function Header() {
         (payload) => {
           const oldRow = payload.old as { id?: string };
           if (!oldRow?.id) return;
-          setNotifications((prev) => prev.filter((item) => item.id !== oldRow.id));
+          setNotifications((prev) => {
+            const next = prev.filter((item) => item.id !== oldRow.id);
+            knownNotificationIdsRef.current = new Set(next.map((item) => item.id));
+            return next;
+          });
         }
       )
       .subscribe();
@@ -414,7 +429,53 @@ export function Header() {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [isAdmin]);
+  }, [isAdmin, loadUsersForNotifications, mapNotificationRowToItem]);
+
+  useEffect(() => {
+    let active = true;
+
+    if (!isAdmin) {
+      return () => {
+        active = false;
+      };
+    }
+
+    const pollNotifications = async () => {
+      const { data, error } = await supabase
+        .from("notifications")
+        .select("id, user_id, title, message, subject, type, read, created_at")
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+      if (!active || error) return;
+
+      const rows = (data ?? []) as NotificationRow[];
+      await loadUsersForNotifications(rows);
+      if (!active) return;
+
+      const mapped = rows.map((row) => mapNotificationRowToItem(row));
+      const previousIds = knownNotificationIdsRef.current;
+      const hasNewUnread = mapped.some((item) => !item.read && !previousIds.has(item.id));
+
+      if (hasNewUnread) {
+        playNotificationSound();
+      }
+
+      knownNotificationIdsRef.current = new Set(mapped.map((item) => item.id));
+      setNotifications(mapped);
+      setNotifError(null);
+      setNotifLoading(false);
+    };
+
+    const intervalId = window.setInterval(() => {
+      void pollNotifications();
+    }, 3000);
+
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+    };
+  }, [isAdmin, loadUsersForNotifications, mapNotificationRowToItem]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -522,7 +583,7 @@ export function Header() {
       <div className="container mx-auto px-4 lg:px-6">
         {/* Top bar - Only visible when not scrolled */}
         <div className={cn(
-          "hidden md:flex items-center justify-between py-2.5 text-xs tracking-wide border-b transition-all duration-300",
+          "hidden md:flex items-center justify-between py-2.5 text-sm tracking-wide border-b transition-all duration-300",
           isScrolled 
             ? "h-0 opacity-0 overflow-hidden py-0 border-transparent" 
             : isHomeTop
@@ -532,19 +593,19 @@ export function Header() {
           <div className="flex items-center gap-5">
             {topBarPhone && (
               <div className={cn("flex items-center gap-2", topBarTextClass)}>
-                <Phone className="w-3.5 h-3.5 text-secondary" />
+                <Phone className="w-4 h-4 text-secondary" />
                 <span>{topBarPhone}</span>
               </div>
             )}
             {topBarEmail && (
               <div className={cn("flex items-center gap-2", topBarTextClass)}>
-                <Mail className="w-3.5 h-3.5 text-secondary" />
+                <Mail className="w-4 h-4 text-secondary" />
                 <span>{topBarEmail}</span>
               </div>
             )}
             {topBarLocation && (
               <div className={cn("flex items-center gap-2", topBarTextClass)}>
-                <MapPin className="w-3.5 h-3.5 text-secondary" />
+                <MapPin className="w-4 h-4 text-secondary" />
                 <span>{topBarLocation}</span>
               </div>
             )}
@@ -557,11 +618,11 @@ export function Header() {
                   <button className="flex items-center gap-2 rounded-full border border-border/80 bg-card/85 px-2 py-1 hover:bg-muted transition-colors shadow-soft">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={userAvatarUrl} alt={userDisplayName} />
-                      <AvatarFallback className="bg-primary/15 text-primary text-xs font-semibold">
+                      <AvatarFallback className="bg-primary/15 text-primary text-sm font-semibold">
                         {userInitial}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="max-w-28 truncate text-xs text-muted-foreground" title={user?.email ?? ""}>
+                    <span className="max-w-28 truncate text-sm text-slate-700" title={user?.email ?? ""}>
                       {userDisplayName}
                     </span>
                   </button>
@@ -599,7 +660,7 @@ export function Header() {
               >
                 {cabinetName}
               </span>
-              <span className="hidden sm:block text-[11px] font-semibold tracking-[0.18em] uppercase text-muted-foreground">
+              <span className="hidden sm:block text-xs font-semibold tracking-[0.18em] uppercase text-muted-foreground">
                 {cabinetSubtitle}
               </span>
             </div>
@@ -612,7 +673,7 @@ export function Header() {
                 key={link.href}
                 to={link.href}
                 className={cn(
-                  "px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200",
+                  "px-4 py-2 rounded-full text-base font-semibold transition-all duration-200",
                   location.pathname === link.href
                     ? "bg-primary text-primary-foreground shadow-soft"
                     : "text-foreground/80 hover:text-foreground hover:bg-white"
@@ -803,7 +864,7 @@ export function Header() {
 
               <SheetContent
                 side="right"
-                className="lg:hidden w-[92vw] max-w-[24rem] border-l border-border/70 bg-background/98 p-0 backdrop-blur-xl [&>button]:hidden"
+                className="lg:hidden w-[78vw] max-w-[18.5rem] border-l border-border/55 bg-white/96 p-0 backdrop-blur-xl [&>button]:hidden"
               >
                 <SheetTitle className="sr-only">Navigation mobile</SheetTitle>
                 <div className="flex h-full min-h-0 flex-col">

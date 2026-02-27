@@ -9,7 +9,7 @@ import { useAdminProfile } from "@/hooks/use-admin";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadPublicImage } from "@/lib/storage";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import serviceTopographieImage from "@/assets/service-topographie.jpg";
 import serviceBornageImage from "@/assets/service-bornage.jpg";
 import serviceFoncierImage from "@/assets/service-foncier.jpg";
@@ -779,19 +779,6 @@ const Services = () => {
         </div>
       </section>
 
-      <section className="premium-hero">
-        <div className="container relative z-10 mx-auto px-4">
-          <div className="mx-auto max-w-3xl rounded-3xl border border-primary-foreground/25 bg-primary-foreground/10 px-6 py-10 text-center backdrop-blur-sm">
-          <h2 className="mb-4 font-serif text-3xl font-bold text-primary-foreground">Besoin d'accompagnement ?</h2>
-          <p className="mx-auto mb-8 max-w-lg text-primary-foreground/82">
-            Contactez-nous pour discuter de votre projet. Nous vous repondons sous 24h.
-          </p>
-          <Button variant="heroOutline" size="lg" asChild>
-            <Link to="/contact">Nous contacter</Link>
-          </Button>
-          </div>
-        </div>
-      </section>
     </Layout>
   );
 };

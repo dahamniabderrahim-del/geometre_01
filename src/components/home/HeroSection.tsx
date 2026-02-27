@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Award, MapPin, Calendar, Phone, Mail } from "lucide-react";
 import heroImage from "@/assets/hero-surveyor.jpg";
 import { useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import { getAdminCabinetName, listActiveAdmins, pickPrimaryAdmin } from "@/lib/admin";
 import { supabase } from "@/integrations/supabase/client";
 import { CabinetMark } from "@/components/brand/CabinetMark";
@@ -91,6 +92,18 @@ export function HeroSection() {
   }, []);
 
   const geometrePhoneHref = geometrePhone ? `tel:${geometrePhone.replace(/[^\d+]/g, "")}` : "";
+  const cabinetCardStyle: CSSProperties = {
+    backdropFilter: "blur(26px)",
+    WebkitBackdropFilter: "blur(26px)",
+  };
+  const cabinetLayerStyle: CSSProperties = {
+    backdropFilter: "blur(14px)",
+    WebkitBackdropFilter: "blur(14px)",
+  };
+  const cabinetPillStyle: CSSProperties = {
+    backdropFilter: "blur(18px)",
+    WebkitBackdropFilter: "blur(18px)",
+  };
   const cabinetCardTitle = (() => {
     const trimmed = heroCabinetName.trim();
     if (!trimmed) return heroContent.cabinetName;
@@ -99,12 +112,13 @@ export function HeroSection() {
 
   return (
     <section className="relative isolate flex min-h-screen items-center overflow-hidden">
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroBackgroundImage})` }}
-      >
-        <div className="absolute inset-0 hero-gradient opacity-95" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_top,hsl(205_55%_12%/0.72),transparent_45%)]" />
+      <div className="absolute inset-0 overflow-hidden">
+        <div
+          className="absolute inset-0 scale-105 bg-cover bg-center bg-no-repeat blur-[4px]"
+          style={{ backgroundImage: `url(${heroBackgroundImage})` }}
+        />
+        <div className="absolute inset-0 hero-gradient-green opacity-86" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,hsl(156_36%_20%/0.24),transparent_62%)]" />
       </div>
 
       <div className="absolute top-20 right-10 h-64 w-64 rounded-full border border-secondary/35 animate-float" />
@@ -155,7 +169,7 @@ export function HeroSection() {
               <Button
                 variant="outline"
                 size="lg"
-                className="border border-primary-foreground/45 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20"
+                className="border-white/80 bg-white/92 text-slate-800 shadow-soft hover:bg-white"
                 asChild
               >
                 <Link to="/services">Decouvrir nos services</Link>
@@ -209,67 +223,77 @@ export function HeroSection() {
           </div>
 
           <div className="order-1 animate-fade-up lg:order-2" style={{ animationDelay: "0.5s" }}>
-            <div className="mx-auto w-full max-w-xl rounded-3xl border border-primary-foreground/24 bg-card/12 p-5 backdrop-blur-md sm:p-6 lg:p-8">
-              <div className="mb-6 text-center">
-                <div className="mx-auto mb-4 flex h-32 w-32 items-center justify-center rounded-full border-4 border-secondary bg-secondary/20 sm:h-36 sm:w-36">
-                  <CabinetMark className="h-[92%] w-[92%] text-secondary" />
-                </div>
-                <h3 className="font-serif text-xl font-bold text-primary-foreground">{cabinetCardTitle}</h3>
-                <p className="text-secondary font-medium">{geometreGrade || "Grade non renseigne"}</p>
-                {geometreName && (
-                  <p className="mt-1 text-sm text-primary-foreground/85">{geometreName}</p>
-                )}
-                {(geometrePhone || geometreEmail) && (
-                  <div className="mt-3 flex flex-wrap justify-center gap-2">
-                    {geometrePhone && geometrePhoneHref && (
-                      <a
-                        href={geometrePhoneHref}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-3 py-1 text-xs text-primary-foreground/90 transition-colors hover:bg-primary-foreground/20"
-                      >
-                        <Phone className="h-3.5 w-3.5 text-secondary" />
-                        {geometrePhone}
-                      </a>
-                    )}
-                    {geometreEmail && (
-                      <a
-                        href={`mailto:${geometreEmail}`}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-3 py-1 text-xs text-primary-foreground/90 transition-colors hover:bg-primary-foreground/20"
-                      >
-                        <Mail className="h-3.5 w-3.5 text-secondary" />
-                        {geometreEmail}
-                      </a>
-                    )}
-                  </div>
-                )}
-              </div>
+            <div
+              className="relative mx-auto w-full max-w-xl overflow-hidden rounded-3xl border border-white/55 bg-white/[0.28] p-5 backdrop-blur-2xl sm:p-6 lg:p-8"
+              style={cabinetCardStyle}
+            >
+              <div className="pointer-events-none absolute -inset-10 opacity-70 blur-2xl bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.72),transparent_42%),radial-gradient(circle_at_82%_78%,rgba(187,247,208,0.38),transparent_46%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-white/[0.12] backdrop-blur-md" style={cabinetLayerStyle} />
 
-              <div className="space-y-4 text-sm">
-                <div className="flex items-center gap-3 rounded-xl border border-primary-foreground/15 bg-primary-foreground/8 p-3">
-                  <div className="h-10 w-28 overflow-hidden rounded-full bg-primary-foreground/10 sm:h-12 sm:w-40">
-                    <img
-                      src={OGEF_LOGO_URL}
-                      alt="Logo OGEF"
-                      className="h-full w-full object-contain scale-100 sm:scale-[1.2]"
-                      loading="lazy"
-                    />
+              <div className="relative z-10 text-slate-900">
+                <div className="mb-6 text-center">
+                  <div className="mx-auto mb-4 flex h-32 w-32 items-center justify-center rounded-full border-4 border-secondary bg-secondary/20 sm:h-36 sm:w-36">
+                    <CabinetMark className="h-[92%] w-[92%] text-secondary" />
                   </div>
-                  <span className="text-primary-foreground/90">Inscrit a l'ordre des geometres-experts</span>
+                  <h3 className="font-serif text-xl font-bold text-slate-900">{cabinetCardTitle}</h3>
+                  <p className="text-slate-900/85 font-medium">{geometreGrade || "Grade non renseigne"}</p>
+                  {geometreName && (
+                    <p className="mt-1 text-sm text-slate-900/85">{geometreName}</p>
+                  )}
+                  {(geometrePhone || geometreEmail) && (
+                    <div className="mt-4 flex flex-wrap justify-center gap-3">
+                      {geometrePhone && geometrePhoneHref && (
+                        <a
+                          href={geometrePhoneHref}
+                          className="inline-flex min-h-11 min-w-[11.5rem] items-center justify-center gap-2 rounded-full border border-white/75 bg-white/[0.52] px-4 py-2 text-sm font-medium text-slate-900 shadow-soft backdrop-blur-lg transition-colors hover:bg-white/[0.66]"
+                          style={cabinetPillStyle}
+                        >
+                          <Phone className="h-4 w-4 text-secondary" />
+                          {geometrePhone}
+                        </a>
+                      )}
+                      {geometreEmail && (
+                        <a
+                          href={`mailto:${geometreEmail}`}
+                          className="inline-flex min-h-11 min-w-[11.5rem] items-center justify-center gap-2 rounded-full border border-white/75 bg-white/[0.52] px-4 py-2 text-sm font-medium text-slate-900 shadow-soft backdrop-blur-lg transition-colors hover:bg-white/[0.66]"
+                          style={cabinetPillStyle}
+                        >
+                          <Mail className="h-4 w-4 text-secondary" />
+                          {geometreEmail}
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-3 rounded-xl border border-primary-foreground/15 bg-primary-foreground/8 p-3">
-                  <Award className="w-5 h-5 text-secondary shrink-0" />
-                  <span className="text-primary-foreground/90">
-                    Diplome d'ingenieur d'etat en sciences geodesiques et travaux topographiques
-                  </span>
-                </div>
-                <div className="flex items-center gap-3 rounded-xl border border-primary-foreground/15 bg-primary-foreground/8 p-3">
-                  <MapPin className="w-5 h-5 text-secondary shrink-0" />
-                  <span className="text-primary-foreground/90">Agree sur tout le territoire national</span>
-                </div>
-              </div>
 
-              <Button className="w-full mt-6 gold-gradient text-secondary-foreground font-semibold" asChild>
-                <Link to="/a-propos">En savoir plus</Link>
-              </Button>
+                <div className="space-y-4 text-sm">
+                  <div className="flex items-center gap-3 rounded-xl border border-white/70 bg-white/[0.46] p-3 backdrop-blur-lg" style={cabinetPillStyle}>
+                    <div className="h-10 w-28 overflow-hidden rounded-full bg-primary-foreground/10 sm:h-12 sm:w-40">
+                      <img
+                        src={OGEF_LOGO_URL}
+                        alt="Logo OGEF"
+                        className="h-full w-full object-contain scale-100 sm:scale-[1.2]"
+                        loading="lazy"
+                      />
+                    </div>
+                    <span className="text-slate-900">Inscrit a l'ordre des geometres-experts</span>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-xl border border-white/70 bg-white/[0.46] p-3 backdrop-blur-lg" style={cabinetPillStyle}>
+                    <Award className="w-5 h-5 text-secondary shrink-0" />
+                    <span className="text-slate-900">
+                      Diplome d'ingenieur d'etat en sciences geodesiques et travaux topographiques
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-xl border border-white/70 bg-white/[0.46] p-3 backdrop-blur-lg" style={cabinetPillStyle}>
+                    <MapPin className="w-5 h-5 text-secondary shrink-0" />
+                    <span className="text-slate-900">Agree sur tout le territoire national</span>
+                  </div>
+                </div>
+
+                <Button className="w-full mt-6 gold-gradient text-slate-900 font-semibold" asChild>
+                  <Link to="/a-propos">En savoir plus</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>

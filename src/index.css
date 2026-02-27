@@ -121,6 +121,15 @@
     background: var(--gradient-hero);
   }
 
+  .hero-gradient-green {
+    background: linear-gradient(
+      140deg,
+      hsl(152 44% 52% / 0.55) 0%,
+      hsl(156 49% 64% / 0.46) 48%,
+      hsl(160 52% 76% / 0.38) 100%
+    );
+  }
+
   .gold-gradient {
     background: var(--gradient-gold);
   }

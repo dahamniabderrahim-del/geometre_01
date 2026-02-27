@@ -392,32 +392,6 @@ const APropos = () => {
         </div>
       </section>
 
-      <section className="premium-hero">
-        <div className="container relative z-10 mx-auto px-4">
-          <div className="mx-auto max-w-3xl rounded-3xl border border-primary-foreground/20 bg-primary-foreground/10 px-6 py-10 text-center backdrop-blur-sm">
-          <h2 className="mb-6 font-serif text-3xl font-bold text-primary-foreground md:text-4xl">
-            Besoin d'un Geometre-Expert ?
-          </h2>
-          <p className="mx-auto mb-8 max-w-2xl text-lg text-primary-foreground/82">
-            Contactez-nous pour une etude personnalisee de votre projet et un accompagnement
-            adapte a votre besoin.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="gold-gradient text-secondary-foreground font-semibold" asChild>
-              <Link to="/contact">Envoyer un message</Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
-              asChild
-            >
-              <Link to="/services">Voir nos services</Link>
-            </Button>
-          </div>
-          </div>
-        </div>
-      </section>
     </Layout>
   );
 };
