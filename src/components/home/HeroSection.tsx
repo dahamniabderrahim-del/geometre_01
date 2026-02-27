@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Shield, Award, MapPin, Calendar, Phone, Mail } from "lucide-react";
+import { ArrowRight, Award, MapPin, Calendar, Phone, Mail } from "lucide-react";
 import heroImage from "@/assets/hero-surveyor.jpg";
 import { useEffect, useState } from "react";
 import { getAdminCabinetName, listActiveAdmins, pickPrimaryAdmin } from "@/lib/admin";
@@ -16,6 +16,8 @@ const heroContent = {
     "Cabinet de Geometre-Expert specialise en bornage, topographie, cadastre et expertise fonciere. Precision, legalite et professionnalisme au service de vos projets.",
   cabinetName: "Cabinet non renseigne",
 };
+
+const OGEF_LOGO_URL = "https://www.geometres-francophones.org/5e8sef5sdgf/uploads/2017/10/Logo-OGEF-Algerie-1.png";
 
 export function HeroSection() {
   const [heroBackgroundImage, setHeroBackgroundImage] = useState(heroImage);
@@ -96,31 +98,39 @@ export function HeroSection() {
   })();
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden">
+    <section className="relative isolate flex min-h-screen items-center overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${heroBackgroundImage})` }}
       >
         <div className="absolute inset-0 hero-gradient opacity-95" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_top,hsl(205_55%_12%/0.72),transparent_45%)]" />
       </div>
 
-      <div className="absolute top-20 right-10 w-64 h-64 border-2 border-secondary/20 rounded-full animate-float" />
+      <div className="absolute top-20 right-10 h-64 w-64 rounded-full border border-secondary/35 animate-float" />
       <div
-        className="absolute bottom-20 left-10 w-32 h-32 border-2 border-secondary/30 rounded-full animate-float"
+        className="absolute bottom-20 left-10 h-32 w-32 rounded-full border border-secondary/40 animate-float"
         style={{ animationDelay: "2s" }}
       />
-      <div className="absolute top-1/3 right-1/4 w-4 h-4 bg-secondary rounded-full animate-pulse" />
+      <div className="absolute top-1/3 right-1/4 h-4 w-4 rounded-full bg-secondary animate-pulse" />
 
-      <div className="container mx-auto px-4 relative z-10 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="hidden lg:block order-2 lg:order-2 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/20 text-secondary mb-6 animate-fade-up border border-secondary/30">
-              <Shield className="w-4 h-4" />
-              <span className="text-sm font-semibold tracking-wide">{heroContent.badge}</span>
+      <div className="container relative z-10 mx-auto px-4 py-20">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
+          <div className="order-2 max-w-2xl lg:order-1">
+            <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-secondary/35 bg-secondary/20 px-4 py-2 animate-fade-up">
+              <span className="text-sm font-semibold tracking-wide text-primary-foreground">{heroContent.badge}</span>
+              <div className="h-10 w-32 overflow-hidden rounded-full bg-primary-foreground/10">
+                <img
+                  src={OGEF_LOGO_URL}
+                  alt="Logo OGEF"
+                  className="h-full w-full scale-[1.18] object-contain"
+                  loading="lazy"
+                />
+              </div>
             </div>
 
             <h1
-              className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground leading-tight mb-6 animate-fade-up"
+              className="mb-6 font-serif text-4xl font-bold leading-tight text-primary-foreground animate-fade-up md:text-5xl lg:text-6xl"
               style={{ animationDelay: "0.1s" }}
             >
               {heroContent.titleBefore}{" "}
@@ -129,13 +139,13 @@ export function HeroSection() {
             </h1>
 
             <p
-              className="text-lg text-primary-foreground/80 mb-8 leading-relaxed animate-fade-up"
+              className="mb-8 max-w-2xl text-lg leading-relaxed text-primary-foreground/84 animate-fade-up"
               style={{ animationDelay: "0.2s" }}
             >
               {heroContent.description}
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 animate-fade-up" style={{ animationDelay: "0.3s" }}>
+            <div className="flex flex-col gap-4 animate-fade-up sm:flex-row" style={{ animationDelay: "0.3s" }}>
               <Button size="lg" className="gold-gradient text-secondary-foreground font-semibold shadow-gold hover:shadow-strong" asChild>
                 <Link to="/contact">
                   Envoyer un message
@@ -145,7 +155,7 @@ export function HeroSection() {
               <Button
                 variant="outline"
                 size="lg"
-                className="border-2 border-primary-foreground/30 text-primary-foreground bg-transparent hover:bg-primary-foreground/10"
+                className="border border-primary-foreground/45 text-primary-foreground bg-primary-foreground/10 hover:bg-primary-foreground/20"
                 asChild
               >
                 <Link to="/services">Decouvrir nos services</Link>
@@ -153,11 +163,11 @@ export function HeroSection() {
             </div>
 
             <div
-              className="flex flex-wrap gap-6 mt-10 pt-8 border-t border-primary-foreground/20 animate-fade-up"
+              className="mt-10 grid gap-3 border-t border-primary-foreground/25 pt-8 animate-fade-up sm:grid-cols-3 sm:gap-4"
               style={{ animationDelay: "0.4s" }}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center">
+              <div className="flex items-center gap-3 rounded-2xl border border-primary-foreground/20 bg-primary-foreground/8 p-3 backdrop-blur-sm">
+                <div className="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center">
                   <Award className="w-6 h-6 text-secondary" />
                 </div>
                 <div>
@@ -169,8 +179,8 @@ export function HeroSection() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center">
+              <div className="flex items-center gap-3 rounded-2xl border border-primary-foreground/20 bg-primary-foreground/8 p-3 backdrop-blur-sm">
+                <div className="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center">
                   <MapPin className="w-6 h-6 text-secondary" />
                 </div>
                 <div>
@@ -182,8 +192,8 @@ export function HeroSection() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg bg-secondary/20 flex items-center justify-center">
+              <div className="flex items-center gap-3 rounded-2xl border border-primary-foreground/20 bg-primary-foreground/8 p-3 backdrop-blur-sm">
+                <div className="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center">
                   <Calendar className="w-6 h-6 text-secondary" />
                 </div>
                 <div>
@@ -198,10 +208,10 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="order-1 lg:order-1 animate-fade-up" style={{ animationDelay: "0.5s" }}>
-            <div className="mx-auto w-full max-w-xl bg-card/10 backdrop-blur-sm rounded-2xl p-5 sm:p-6 lg:p-8 border border-primary-foreground/20">
-              <div className="text-center mb-6">
-                <div className="w-32 h-32 sm:w-36 sm:h-36 mx-auto mb-4 rounded-full bg-secondary/20 border-4 border-secondary flex items-center justify-center">
+          <div className="order-1 animate-fade-up lg:order-2" style={{ animationDelay: "0.5s" }}>
+            <div className="mx-auto w-full max-w-xl rounded-3xl border border-primary-foreground/24 bg-card/12 p-5 backdrop-blur-md sm:p-6 lg:p-8">
+              <div className="mb-6 text-center">
+                <div className="mx-auto mb-4 flex h-32 w-32 items-center justify-center rounded-full border-4 border-secondary bg-secondary/20 sm:h-36 sm:w-36">
                   <CabinetMark className="h-[92%] w-[92%] text-secondary" />
                 </div>
                 <h3 className="font-serif text-xl font-bold text-primary-foreground">{cabinetCardTitle}</h3>
@@ -214,7 +224,7 @@ export function HeroSection() {
                     {geometrePhone && geometrePhoneHref && (
                       <a
                         href={geometrePhoneHref}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/10 px-3 py-1 text-xs text-primary-foreground/90 hover:bg-primary-foreground/20 transition-colors"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-3 py-1 text-xs text-primary-foreground/90 transition-colors hover:bg-primary-foreground/20"
                       >
                         <Phone className="h-3.5 w-3.5 text-secondary" />
                         {geometrePhone}
@@ -223,7 +233,7 @@ export function HeroSection() {
                     {geometreEmail && (
                       <a
                         href={`mailto:${geometreEmail}`}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-primary-foreground/10 px-3 py-1 text-xs text-primary-foreground/90 hover:bg-primary-foreground/20 transition-colors"
+                        className="inline-flex items-center gap-1.5 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-3 py-1 text-xs text-primary-foreground/90 transition-colors hover:bg-primary-foreground/20"
                       >
                         <Mail className="h-3.5 w-3.5 text-secondary" />
                         {geometreEmail}
@@ -234,17 +244,24 @@ export function HeroSection() {
               </div>
 
               <div className="space-y-4 text-sm">
-                <div className="flex items-center gap-3 p-3 bg-primary-foreground/5 rounded-lg">
-                  <Shield className="w-5 h-5 text-secondary shrink-0" />
+                <div className="flex items-center gap-3 rounded-xl border border-primary-foreground/15 bg-primary-foreground/8 p-3">
+                  <div className="h-12 w-40 overflow-hidden rounded-full bg-primary-foreground/10">
+                    <img
+                      src={OGEF_LOGO_URL}
+                      alt="Logo OGEF"
+                      className="h-full w-full scale-[1.2] object-contain"
+                      loading="lazy"
+                    />
+                  </div>
                   <span className="text-primary-foreground/90">Inscrit a l'ordre des geometres-experts</span>
                 </div>
-                <div className="flex items-center gap-3 p-3 bg-primary-foreground/5 rounded-lg">
+                <div className="flex items-center gap-3 rounded-xl border border-primary-foreground/15 bg-primary-foreground/8 p-3">
                   <Award className="w-5 h-5 text-secondary shrink-0" />
                   <span className="text-primary-foreground/90">
                     Diplome d'ingenieur d'etat en sciences geodesiques et travaux topographiques
                   </span>
                 </div>
-                <div className="flex items-center gap-3 p-3 bg-primary-foreground/5 rounded-lg">
+                <div className="flex items-center gap-3 rounded-xl border border-primary-foreground/15 bg-primary-foreground/8 p-3">
                   <MapPin className="w-5 h-5 text-secondary shrink-0" />
                   <span className="text-primary-foreground/90">Agree sur tout le territoire national</span>
                 </div>
